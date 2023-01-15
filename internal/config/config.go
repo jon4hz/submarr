@@ -7,8 +7,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const defaultConfigFile = "config.yml"
-
 // Config represents the config
 type Config struct {
 	Sonarr *SonarrConfig `mapstructure:"sonarr"`
@@ -37,6 +35,10 @@ func Load(path string) (cfg *Config, err error) {
 	for _, f := range [...]string{
 		".config.yml",
 		"config.yml",
+		".config.yaml",
+		"config.yaml",
+		"subrr.yml",
+		"subrr.yaml",
 	} {
 		cfg, err = load(f)
 		if err != nil && os.IsNotExist(err) {
