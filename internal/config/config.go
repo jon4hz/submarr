@@ -1,0 +1,69 @@
+package config
+
+import (
+	"errors"
+	"os"
+
+	"github.com/spf13/viper"
+)
+
+const defaultConfigFile = "config.yml"
+
+// Config represents the config
+type Config struct {
+	Sonarr *SonarrConfig `mapstructure:"sonarr"`
+}
+
+// SonarrConfig represents the sonarr config
+type SonarrConfig struct {
+	Host      string `mapstructure:"host"`
+	APIKey    string `mapstructure:"api_key"`
+	IgnoreTLS bool   `mapstructure:"ignore_tls"`
+	Timeout   int    `mapstructure:"timeout"`
+}
+
+// Load loads the config file.
+// It searches in the following locations:
+//
+// /etc/subrr/config.yml,
+// $HOME/.config/subrr/config.yml,
+// config.yml
+//
+// command arguments will overwrite the value from the config
+func Load(path string) (cfg *Config, err error) {
+	if path != "" {
+		return load(path)
+	}
+	for _, f := range [...]string{
+		".config.yml",
+		"config.yml",
+	} {
+		cfg, err = load(f)
+		if err != nil && os.IsNotExist(err) {
+			err = nil
+			continue
+		} else if err != nil && errors.As(err, &viper.ConfigFileNotFoundError{}) {
+			err = nil
+			continue
+		}
+	}
+	if cfg == nil {
+		return cfg, viper.Unmarshal(&cfg)
+	}
+	return
+}
+
+func load(file string) (cfg *Config, err error) {
+	viper.SetConfigName(file)
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath("./")
+	viper.AddConfigPath("$HOME/.config/subrr/")
+	viper.AddConfigPath("/etc/subrr/")
+	if err = viper.ReadInConfig(); err != nil {
+		return
+	}
+	if err = viper.Unmarshal(&cfg); err != nil {
+		return
+	}
+	return
+}

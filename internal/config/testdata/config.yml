@@ -1,0 +1,4 @@
+---
+sonarr:
+  host: https://sonarr.local/
+  api_key: 123456a
