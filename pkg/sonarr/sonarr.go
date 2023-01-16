@@ -2,6 +2,7 @@ package sonarr
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/jon4hz/subrr/internal/config"
 	"github.com/jon4hz/subrr/internal/httpclient"
@@ -21,17 +22,32 @@ func New(httpClient httpclient.Client, cfg *config.SonarrConfig) *Client {
 	}
 }
 
-// PingRes is the response from the ping endpoint
-type PingRes struct {
-	Status string `json:"status"`
+// Ping pings the sonarr server
+func (c *Client) Ping(ctx context.Context) (*Ping, error) {
+	var res Ping
+	_, err := c.http.Get(ctx, c.cfg.Host, "/ping", &res)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
 
-// Ping pings the sonarr server
-func (c *Client) Ping(ctx context.Context) (PingRes, error) {
-	var res PingRes
-	_, err := c.http.Get(ctx, c.cfg.Host, "/ping", &res)
+// GetSeries returns a list of all series
+func (c *Client) GetSeries(ctx context.Context) ([]Serie, error) {
+	var res []Serie
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/series", &res)
 	if err != nil {
 		return res, err
 	}
 	return res, nil
+}
+
+// GetSerie returns a serie by its TVDB ID
+func (c *Client) GetSerie(ctx context.Context, tvdbID int) (*Serie, error) {
+	var res []Serie
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/series", &res, map[string]string{"tvdbId": strconv.Itoa(tvdbID)})
+	if err != nil {
+		return nil, err
+	}
+	return &res[0], nil
 }

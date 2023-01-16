@@ -61,12 +61,26 @@ func root(cmd *cobra.Command, args []string) {
 	}
 
 	sonarrHTTP := httpclient.New(
+		httpclient.WithAPIKey(cfg.Sonarr.APIKey),
 		httpclient.WithoutTLSVerfiy(cfg.Sonarr.IgnoreTLS),
 		httpclient.WithTimeout(time.Duration(cfg.Sonarr.Timeout*int(time.Second))),
 	)
 
 	sonarrClient := sonarr.New(sonarrHTTP, cfg.Sonarr)
-	_ = sonarrClient
 
 	fmt.Println(sonarrClient.Ping(cmd.Context()))
+
+	series, err := sonarrClient.GetSeries(cmd.Context())
+	if err != nil {
+		log.Fatalln(err)
+	}
+	for _, serie := range series {
+		fmt.Println(serie.Title, serie.TVDBID)
+	}
+
+	serie, err := sonarrClient.GetSerie(cmd.Context(), 393192)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	fmt.Println(serie.Title, serie.TVDBID)
 }
