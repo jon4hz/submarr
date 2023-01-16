@@ -36,18 +36,22 @@ func New(opts ...ClientOpts) Client {
 	return c
 }
 
+// Get performs a GET request to the API.
 func (c *client) Get(ctx context.Context, base, endpoint string, expRes any, params ...map[string]string) (int, error) {
 	return c.doRequest(ctx, base, endpoint, http.MethodGet, expRes, nil, params...)
 }
 
+// Post performs a POST request to the API.
 func (c *client) Post(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error) {
 	return c.doRequest(ctx, base, endpoint, http.MethodPost, expRes, reqData, params...)
 }
 
+// Put performs a PUT request to the API.
 func (c *client) Put(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error) {
 	return c.doRequest(ctx, base, endpoint, http.MethodPut, expRes, reqData, params...)
 }
 
+// Delete performs a DELETE request to the API.
 func (c *client) Delete(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error) {
 	return c.doRequest(ctx, base, endpoint, http.MethodDelete, expRes, reqData, params...)
 }
