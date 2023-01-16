@@ -1,14 +1,16 @@
 package cmd
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
 	"time"
 
 	"github.com/jon4hz/subrr/internal/config"
+	"github.com/jon4hz/subrr/internal/core"
 	"github.com/jon4hz/subrr/internal/httpclient"
+	"github.com/jon4hz/subrr/internal/tui"
 	"github.com/jon4hz/subrr/internal/version"
+	"github.com/jon4hz/subrr/pkg/lidarr"
+	"github.com/jon4hz/subrr/pkg/radarr"
 	"github.com/jon4hz/subrr/pkg/sonarr"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -81,15 +83,49 @@ func root(cmd *cobra.Command, args []string) {
 		log.Fatalln(err)
 	}
 
-	sonarrHTTP := httpclient.New(
-		httpclient.WithAPIKey(cfg.Sonarr.APIKey),
-		httpclient.WithoutTLSVerfiy(cfg.Sonarr.IgnoreTLS),
-		httpclient.WithTimeout(time.Duration(cfg.Sonarr.Timeout*int(time.Second))),
+	var (
+		sonarrClient *sonarr.Client
+		radarrClient *radarr.Client
+		lidarrClient *lidarr.Client
 	)
 
-	sonarrClient := sonarr.New(sonarrHTTP, cfg.Sonarr)
+	if cfg.Sonarr.Host != "" {
+		sonarrHTTP := httpclient.New(
+			httpclient.WithAPIKey(cfg.Sonarr.APIKey),
+			httpclient.WithoutTLSVerfiy(cfg.Sonarr.IgnoreTLS),
+			httpclient.WithTimeout(time.Duration(cfg.Sonarr.Timeout*int(time.Second))),
+		)
+		sonarrClient = sonarr.New(sonarrHTTP, cfg.Sonarr)
+	}
 
-	fmt.Println(sonarrClient.Ping(cmd.Context()))
+	if cfg.Radarr.Host != "" {
+		radarrHTTP := httpclient.New(
+			httpclient.WithAPIKey(cfg.Radarr.APIKey),
+			httpclient.WithoutTLSVerfiy(cfg.Radarr.IgnoreTLS),
+			httpclient.WithTimeout(time.Duration(cfg.Radarr.Timeout*int(time.Second))),
+		)
+		radarrClient = radarr.New(radarrHTTP, cfg.Radarr)
+	}
+
+	if cfg.Lidarr.Host != "" {
+		lidarrHTTP := httpclient.New(
+			httpclient.WithAPIKey(cfg.Lidarr.APIKey),
+			httpclient.WithoutTLSVerfiy(cfg.Lidarr.IgnoreTLS),
+			httpclient.WithTimeout(time.Duration(cfg.Lidarr.Timeout*int(time.Second))),
+		)
+		lidarrClient = lidarr.New(lidarrHTTP, cfg.Lidarr)
+	}
+
+	client := core.New(
+		sonarrClient,
+		radarrClient,
+		lidarrClient,
+	)
+
+	tui := tui.New(client)
+	if err := tui.Run(); err != nil {
+		log.Fatalln(err)
+	}
 	/*
 		series, err := sonarrClient.GetSeries(cmd.Context())
 		if err != nil {
@@ -99,7 +135,7 @@ func root(cmd *cobra.Command, args []string) {
 			fmt.Println(serie.Title, serie.TVDBID)
 		} */
 
-	serie, err := sonarrClient.GetSerie(cmd.Context(), 76107)
+	/* serie, err := sonarrClient.GetSerie(cmd.Context(), 76107)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -115,5 +151,5 @@ func root(cmd *cobra.Command, args []string) {
 	for _, episode := range episodes {
 		x, _ := json.MarshalIndent(episode, "", " ")
 		fmt.Println(string(x))
-	}
+	} */
 }
