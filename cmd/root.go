@@ -45,6 +45,26 @@ func init() {
 	mustBindPFlag("sonarr.api_key", rootCmd.Flags().Lookup("sonarr-api-key"))
 	mustBindPFlag("sonarr.ignore_tls", rootCmd.Flags().Lookup("sonarr-ignore-tls"))
 	mustBindPFlag("sonarr.timeout", rootCmd.Flags().Lookup("sonarr-timeout"))
+
+	rootCmd.Flags().String("radarr-host", "", "radarr host")
+	rootCmd.Flags().String("radarr-api-key", "", "radarr api key")
+	rootCmd.Flags().Bool("radarr-ignore-tls", false, "ignore tls verification")
+	rootCmd.Flags().Int("radarr-timeout", 30, "timeout in seconds")
+
+	mustBindPFlag("radarr.host", rootCmd.Flags().Lookup("radarr-host"))
+	mustBindPFlag("radarr.api_key", rootCmd.Flags().Lookup("radarr-api-key"))
+	mustBindPFlag("radarr.ignore_tls", rootCmd.Flags().Lookup("radarr-ignore-tls"))
+	mustBindPFlag("radarr.timeout", rootCmd.Flags().Lookup("radarr-timeout"))
+
+	rootCmd.Flags().String("lidarr-host", "", "lidarr host")
+	rootCmd.Flags().String("lidarr-api-key", "", "lidarr api key")
+	rootCmd.Flags().Bool("lidarr-ignore-tls", false, "ignore tls verification")
+	rootCmd.Flags().Int("lidarr-timeout", 30, "timeout in seconds")
+
+	mustBindPFlag("lidarr.host", rootCmd.Flags().Lookup("lidarr-host"))
+	mustBindPFlag("lidarr.api_key", rootCmd.Flags().Lookup("lidarr-api-key"))
+	mustBindPFlag("lidarr.ignore_tls", rootCmd.Flags().Lookup("lidarr-ignore-tls"))
+	mustBindPFlag("lidarr.timeout", rootCmd.Flags().Lookup("lidarr-timeout"))
 }
 
 func mustBindPFlag(key string, flag *pflag.Flag) {

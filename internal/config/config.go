@@ -10,10 +10,28 @@ import (
 // Config represents the config
 type Config struct {
 	Sonarr *SonarrConfig `mapstructure:"sonarr"`
+	Radarr *RadarrConfig `mapstructure:"radarr"`
+	Lidarr *LidarrConfig `mapstructure:"lidarr"`
 }
 
 // SonarrConfig represents the sonarr config
 type SonarrConfig struct {
+	Host      string `mapstructure:"host"`
+	APIKey    string `mapstructure:"api_key"`
+	IgnoreTLS bool   `mapstructure:"ignore_tls"`
+	Timeout   int    `mapstructure:"timeout"`
+}
+
+// RadarrConfig represents the radarr config
+type RadarrConfig struct {
+	Host      string `mapstructure:"host"`
+	APIKey    string `mapstructure:"api_key"`
+	IgnoreTLS bool   `mapstructure:"ignore_tls"`
+	Timeout   int    `mapstructure:"timeout"`
+}
+
+// LidarrConfig represents the lidarr config
+type LidarrConfig struct {
 	Host      string `mapstructure:"host"`
 	APIKey    string `mapstructure:"api_key"`
 	IgnoreTLS bool   `mapstructure:"ignore_tls"`
