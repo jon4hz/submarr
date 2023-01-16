@@ -21,7 +21,8 @@ type Client interface {
 
 // client is the actual http client.
 type client struct {
-	http *http.Client
+	http   *http.Client
+	apiKey string
 }
 
 // New creates a new http client.
@@ -77,6 +78,11 @@ func (c *client) doRequest(ctx context.Context, base, endpoint, method string, e
 	}
 	if dataReq != nil {
 		req.Header.Add("Content-Type", "application/json")
+	}
+
+	// set the API key
+	if c.apiKey != "" {
+		req.Header.Add("X-Api-Key", c.apiKey)
 	}
 
 	resp, err := c.http.Do(req)

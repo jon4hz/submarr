@@ -31,3 +31,10 @@ func WithTimeout(t time.Duration) ClientOpts {
 		c.http.Timeout = t
 	}
 }
+
+// WithAPIKey sets the API key for the client.
+func WithAPIKey(apiKey string) ClientOpts {
+	return func(c *client) {
+		c.apiKey = apiKey
+	}
+}
