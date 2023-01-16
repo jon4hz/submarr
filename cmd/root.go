@@ -15,10 +15,11 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "subrr",
-	Short:   "subrr is a tui for sonarr, radarr and lidarr",
-	Version: version.Version,
-	Run:     root,
+	Use:               "subrr",
+	Short:             "subrr is a tui for sonarr, radarr and lidarr",
+	Version:           version.Version,
+	Run:               root,
+	CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
 }
 
 var rootCmdFlags struct {
