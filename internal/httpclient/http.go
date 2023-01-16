@@ -106,6 +106,12 @@ func (c *client) doRequest(ctx context.Context, base, endpoint, method string, e
 		}
 		return resp.StatusCode, nil
 
+	case 401:
+		return resp.StatusCode, fmt.Errorf("unauthorized")
+
+	case 404:
+		return resp.StatusCode, fmt.Errorf("not found")
+
 	default:
 		return resp.StatusCode, fmt.Errorf("%s", body)
 	}
