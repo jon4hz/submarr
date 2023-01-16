@@ -64,7 +64,7 @@ type SeriesStatusType string
 const (
 	Continuing SeriesStatusType = "continuing"
 	Ended      SeriesStatusType = "ended"
-	Upscoming  SeriesStatusType = "upcoming"
+	Upcoming   SeriesStatusType = "upcoming"
 	Deleted    SeriesStatusType = "deleted"
 )
 
