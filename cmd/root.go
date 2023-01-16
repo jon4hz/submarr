@@ -10,6 +10,7 @@ import (
 	"github.com/jon4hz/subrr/internal/version"
 	"github.com/jon4hz/subrr/pkg/sonarr"
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -38,10 +39,16 @@ func init() {
 	rootCmd.Flags().Bool("sonarr-ignore-tls", false, "ignore tls verification")
 	rootCmd.Flags().Int("sonarr-timeout", 30, "timeout in seconds")
 
-	viper.BindPFlag("sonarr.host", rootCmd.Flags().Lookup("sonarr-host"))
-	viper.BindPFlag("sonarr.api_key", rootCmd.Flags().Lookup("sonarr-api-key"))
-	viper.BindPFlag("sonarr.ignore_tls", rootCmd.Flags().Lookup("sonarr-ignore-tls"))
-	viper.BindPFlag("sonarr.timeout", rootCmd.Flags().Lookup("sonarr-timeout"))
+	mustBindPFlag("sonarr.host", rootCmd.Flags().Lookup("sonarr-host"))
+	mustBindPFlag("sonarr.api_key", rootCmd.Flags().Lookup("sonarr-api-key"))
+	mustBindPFlag("sonarr.ignore_tls", rootCmd.Flags().Lookup("sonarr-ignore-tls"))
+	mustBindPFlag("sonarr.timeout", rootCmd.Flags().Lookup("sonarr-timeout"))
+}
+
+func mustBindPFlag(key string, flag *pflag.Flag) {
+	if err := viper.BindPFlag(key, flag); err != nil {
+		log.Fatalf("unable to bind flag %q: %v", key, err)
+	}
 }
 
 func root(cmd *cobra.Command, args []string) {
