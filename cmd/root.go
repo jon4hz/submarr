@@ -68,5 +68,5 @@ func root(cmd *cobra.Command, args []string) {
 	sonarrClient := sonarr.New(sonarrHTTP, cfg.Sonarr)
 	_ = sonarrClient
 
-	fmt.Println("Hello World!")
+	fmt.Println(sonarrClient.Ping(cmd.Context()))
 }
