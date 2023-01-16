@@ -78,9 +78,9 @@ func root(cmd *cobra.Command, args []string) {
 		fmt.Println(serie.Title, serie.TVDBID)
 	}
 
-	serie, err := sonarrClient.GetSerie(cmd.Context(), 393192)
+	queue, err := sonarrClient.GetQueue(cmd.Context())
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println(serie.Title, serie.TVDBID)
+	fmt.Println(queue)
 }

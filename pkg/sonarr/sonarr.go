@@ -33,8 +33,8 @@ func (c *Client) Ping(ctx context.Context) (*Ping, error) {
 }
 
 // GetSeries returns a list of all series
-func (c *Client) GetSeries(ctx context.Context) ([]Serie, error) {
-	var res []Serie
+func (c *Client) GetSeries(ctx context.Context) ([]SeriesResource, error) {
+	var res []SeriesResource
 	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/series", &res)
 	if err != nil {
 		return res, err
@@ -43,11 +43,21 @@ func (c *Client) GetSeries(ctx context.Context) ([]Serie, error) {
 }
 
 // GetSerie returns a serie by its TVDB ID
-func (c *Client) GetSerie(ctx context.Context, tvdbID int) (*Serie, error) {
-	var res []Serie
+func (c *Client) GetSerie(ctx context.Context, tvdbID int) (*SeriesResource, error) {
+	var res []SeriesResource
 	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/series", &res, map[string]string{"tvdbId": strconv.Itoa(tvdbID)})
 	if err != nil {
 		return nil, err
 	}
 	return &res[0], nil
+}
+
+// GetQueue returns the current download queue
+func (c *Client) GetQueue(ctx context.Context) (QueueResourcePagingResource, error) {
+	var res QueueResourcePagingResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/queue", &res)
+	if err != nil {
+		return res, err
+	}
+	return res, nil
 }
