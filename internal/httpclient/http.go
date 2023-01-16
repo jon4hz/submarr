@@ -13,9 +13,13 @@ import (
 
 // Client is a http client.
 type Client interface {
+	// Get performs a GET request to the API.
 	Get(ctx context.Context, base, endpoint string, expRes any, params ...map[string]string) (int, error)
+	// Post performs a POST request to the API.
 	Post(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error)
+	// Put performs a PUT request to the API.
 	Put(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error)
+	// Delete performs a DELETE request to the API.
 	Delete(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error)
 }
 
