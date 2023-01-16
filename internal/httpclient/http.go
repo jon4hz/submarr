@@ -13,7 +13,10 @@ import (
 
 // Client is a http client.
 type Client interface {
-	DoRequest(ctx context.Context, baseURL, method string, expRes, reqData any, params ...map[string]string) (int, error)
+	Get(ctx context.Context, base, endpoint string, expRes any, params ...map[string]string) (int, error)
+	Post(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error)
+	Put(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error)
+	Delete(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error)
 }
 
 // client is the actual http client.
@@ -33,9 +36,25 @@ func New(opts ...ClientOpts) Client {
 	return c
 }
 
+func (c *client) Get(ctx context.Context, base, endpoint string, expRes any, params ...map[string]string) (int, error) {
+	return c.doRequest(ctx, base, endpoint, http.MethodGet, expRes, nil, params...)
+}
+
+func (c *client) Post(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error) {
+	return c.doRequest(ctx, base, endpoint, http.MethodPost, expRes, reqData, params...)
+}
+
+func (c *client) Put(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error) {
+	return c.doRequest(ctx, base, endpoint, http.MethodPut, expRes, reqData, params...)
+}
+
+func (c *client) Delete(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error) {
+	return c.doRequest(ctx, base, endpoint, http.MethodDelete, expRes, reqData, params...)
+}
+
 // DoRequest performs the request to the API.
-func (c *client) DoRequest(ctx context.Context, baseURL, method string, expRes, reqData any, params ...map[string]string) (int, error) {
-	callURL, err := buildRequestURL(baseURL, params...)
+func (c *client) doRequest(ctx context.Context, base, endpoint, method string, expRes, reqData any, params ...map[string]string) (int, error) {
+	callURL, err := buildRequestURL(base, endpoint, params...)
 	if err != nil {
 		return 0, err
 	}
@@ -82,11 +101,12 @@ func (c *client) DoRequest(ctx context.Context, baseURL, method string, expRes, 
 	}
 }
 
-func buildRequestURL(baseURL string, params ...map[string]string) (string, error) {
-	u, err := url.Parse(baseURL)
+func buildRequestURL(base, endpoint string, params ...map[string]string) (string, error) {
+	u, err := url.Parse(base)
 	if err != nil {
 		return "", err
 	}
+	u.Path = endpoint
 	if len(params) == 0 {
 		return u.String(), nil
 	}
