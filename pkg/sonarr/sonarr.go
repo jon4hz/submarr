@@ -61,3 +61,30 @@ func (c *Client) GetQueue(ctx context.Context) (QueueResourcePagingResource, err
 	}
 	return res, nil
 }
+
+// GetEpisodes returns a list of episodes for a given series and season
+func (c *Client) GetEpisodes(ctx context.Context, seriesID, seasonNumber int32) ([]EpisodeResource, error) {
+	params := map[string]string{
+		"seriesId":     strconv.Itoa(int(seriesID)),
+		"seasonNumber": strconv.Itoa(int(seasonNumber)),
+	}
+	var res []EpisodeResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/episode", &res, params)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// GetAllEpisodes returns a list of all episodes for a given series
+func (c *Client) GetAllEpisodes(ctx context.Context, seriesID int32) ([]EpisodeResource, error) {
+	params := map[string]string{
+		"seriesId": strconv.Itoa(int(seriesID)),
+	}
+	var res []EpisodeResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/episode", &res, params)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

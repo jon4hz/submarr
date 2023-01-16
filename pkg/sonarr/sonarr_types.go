@@ -1,6 +1,9 @@
 package sonarr
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // Ping is the response from the ping endpoint
 type Ping struct {
@@ -188,7 +191,7 @@ type QueueResource struct {
 	Size                    float64                        `json:"size"`
 	Title                   string                         `json:"title"`
 	Sizeleft                float64                        `json:"sizeleft"`
-	Timeleft                string                         `json:"timeleft"`
+	Timeleft                TimeLeft                       `json:"timeleft"`
 	EstimatedCompletionTime time.Time                      `json:"estimatedCompletionTime"`
 	Status                  string                         `json:"status"`
 	TrackedDownloadStatus   TrackedDownloadStatus          `json:"trackedDownloadStatus"`
@@ -202,6 +205,27 @@ type QueueResource struct {
 	OutputPath              string                         `json:"outputPath"`
 }
 
+// TimeLeft is a custom type to handle the timeleft field
+type TimeLeft time.Time
+
+func (tl *TimeLeft) UnmarshalJSON(b []byte) (err error) {
+	value := strings.Trim(string(b), `"`) // get rid of "
+	if value == "" || value == "null" {
+		return nil
+	}
+
+	t, err := time.Parse("15:04:05", value) // parse time
+	if err != nil {
+		return err
+	}
+	*tl = TimeLeft(t) // set result using the pointer
+	return nil
+}
+
+func (tl TimeLeft) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + time.Time(tl).Format("15:04:05") + `"`), nil
+}
+
 type EpisodeResource struct {
 	ID                         int32                `json:"id"`
 	SeriesID                   int32                `json:"seriesId"`
@@ -210,7 +234,7 @@ type EpisodeResource struct {
 	SeasonNumber               int32                `json:"seasonNumber"`
 	EpisodeNumber              int32                `json:"episodeNumber"`
 	Title                      string               `json:"title"`
-	AirDate                    time.Time            `json:"airDate"`
+	AirDate                    CivilTime            `json:"airDate"`
 	AirDateUTC                 time.Time            `json:"airDateUtc"`
 	Overview                   string               `json:"overview"`
 	EpisodeFile                *EpisodeFileResource `json:"episodeFile"`
@@ -227,6 +251,27 @@ type EpisodeResource struct {
 	Series                     *SeriesResource      `json:"series"`
 	Images                     []MediaCover         `json:"images"`
 	Grabbed                    bool                 `json:"grabbed"`
+}
+
+// CivilTime implements a custom time format for JSON marshalling/unmarshalling
+type CivilTime time.Time
+
+func (c *CivilTime) UnmarshalJSON(b []byte) (err error) {
+	value := strings.Trim(string(b), `"`) // get rid of "
+	if value == "" || value == "null" {
+		return nil
+	}
+
+	t, err := time.Parse("2006-01-02", value) // parse time
+	if err != nil {
+		return err
+	}
+	*c = CivilTime(t) // set result using the pointer
+	return nil
+}
+
+func (c CivilTime) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + time.Time(c).Format("2006-01-02") + `"`), nil
 }
 
 type EpisodeFileResource struct {

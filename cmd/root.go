@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"time"
@@ -69,18 +70,30 @@ func root(cmd *cobra.Command, args []string) {
 	sonarrClient := sonarr.New(sonarrHTTP, cfg.Sonarr)
 
 	fmt.Println(sonarrClient.Ping(cmd.Context()))
+	/*
+		series, err := sonarrClient.GetSeries(cmd.Context())
+		if err != nil {
+			log.Fatalln(err)
+		}
+		for _, serie := range series {
+			fmt.Println(serie.Title, serie.TVDBID)
+		} */
 
-	series, err := sonarrClient.GetSeries(cmd.Context())
+	serie, err := sonarrClient.GetSerie(cmd.Context(), 76107)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	for _, serie := range series {
-		fmt.Println(serie.Title, serie.TVDBID)
+	fmt.Println(serie.Title, serie.TVDBID)
+	for _, season := range serie.Seasons {
+		fmt.Println(season.SeasonNumber, season.Monitored)
 	}
 
-	queue, err := sonarrClient.GetQueue(cmd.Context())
+	episodes, err := sonarrClient.GetEpisodes(cmd.Context(), serie.ID, 1)
 	if err != nil {
 		log.Fatalln(err)
 	}
-	fmt.Println(queue)
+	for _, episode := range episodes {
+		x, _ := json.MarshalIndent(episode, "", " ")
+		fmt.Println(string(x))
+	}
 }
