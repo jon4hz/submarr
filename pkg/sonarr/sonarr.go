@@ -45,7 +45,9 @@ func (c *Client) GetSeries(ctx context.Context) ([]SeriesResource, error) {
 // GetSerie returns a serie by its TVDB ID
 func (c *Client) GetSerie(ctx context.Context, tvdbID int) (*SeriesResource, error) {
 	var res []SeriesResource
-	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/series", &res, map[string]string{"tvdbId": strconv.Itoa(tvdbID)})
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/series", &res,
+		httpclient.WithParams(map[string]string{"tvdbId": strconv.Itoa(tvdbID)}),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +71,9 @@ func (c *Client) GetEpisodes(ctx context.Context, seriesID, seasonNumber int32) 
 		"seasonNumber": strconv.Itoa(int(seasonNumber)),
 	}
 	var res []EpisodeResource
-	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/episode", &res, params)
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/episode", &res,
+		httpclient.WithParams(params),
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +86,9 @@ func (c *Client) GetAllEpisodes(ctx context.Context, seriesID int32) ([]EpisodeR
 		"seriesId": strconv.Itoa(int(seriesID)),
 	}
 	var res []EpisodeResource
-	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/episode", &res, params)
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/episode", &res,
+		httpclient.WithParams(params),
+	)
 	if err != nil {
 		return nil, err
 	}

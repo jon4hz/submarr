@@ -3,6 +3,8 @@ package sonarr
 import (
 	"strings"
 	"time"
+
+	"github.com/jon4hz/subrr/internal/httpclient"
 )
 
 // Ping is the response from the ping endpoint
@@ -157,22 +159,14 @@ type SeriesStatisticsResource struct {
 }
 
 type QueueResourcePagingResource struct {
-	Page          int32                  `json:"page"`
-	PageSize      int32                  `json:"pageSize"`
-	SortKey       string                 `json:"sortKey"`
-	SortDirection SortDirection          `json:"sortDirection"`
-	Filters       []PagingResourceFilter `json:"filters"`
-	TotalRecords  int32                  `json:"totalRecords"`
-	Records       []QueueResource        `json:"records"`
+	Page          int32                    `json:"page"`
+	PageSize      int32                    `json:"pageSize"`
+	SortKey       string                   `json:"sortKey"`
+	SortDirection httpclient.SortDirection `json:"sortDirection"`
+	Filters       []PagingResourceFilter   `json:"filters"`
+	TotalRecords  int32                    `json:"totalRecords"`
+	Records       []QueueResource          `json:"records"`
 }
-
-type SortDirection string
-
-const (
-	Default    SortDirection = "default"
-	Ascending  SortDirection = "ascending"
-	Descending SortDirection = "descending"
-)
 
 type PagingResourceFilter struct {
 	Key   string `json:"key"`

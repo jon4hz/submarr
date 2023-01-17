@@ -4,23 +4,30 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"strconv"
 	"time"
+)
+
+var (
+	ErrUnauthorized = errors.New("unauthorized")
+	ErrNotFound     = errors.New("not found")
 )
 
 // Client is a http client.
 type Client interface {
 	// Get performs a GET request to the API.
-	Get(ctx context.Context, base, endpoint string, expRes any, params ...map[string]string) (int, error)
+	Get(ctx context.Context, base, endpoint string, expRes any, opts ...RequestOpts) (int, error)
 	// Post performs a POST request to the API.
-	Post(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error)
+	Post(ctx context.Context, base, endpoint string, expRes, reqData any, opts ...RequestOpts) (int, error)
 	// Put performs a PUT request to the API.
-	Put(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error)
+	Put(ctx context.Context, base, endpoint string, expRes, reqData any, opts ...RequestOpts) (int, error)
 	// Delete performs a DELETE request to the API.
-	Delete(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error)
+	Delete(ctx context.Context, base, endpoint string, expRes, reqData any, opts ...RequestOpts) (int, error)
 }
 
 // client is the actual http client.
@@ -42,28 +49,29 @@ func New(opts ...ClientOpts) Client {
 }
 
 // Get performs a GET request to the API.
-func (c *client) Get(ctx context.Context, base, endpoint string, expRes any, params ...map[string]string) (int, error) {
-	return c.doRequest(ctx, base, endpoint, http.MethodGet, expRes, nil, params...)
+func (c *client) Get(ctx context.Context, base, endpoint string, expRes any, opts ...RequestOpts) (int, error) {
+	return c.doRequest(ctx, base, endpoint, http.MethodGet, expRes, nil, opts...)
 }
 
 // Post performs a POST request to the API.
-func (c *client) Post(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error) {
-	return c.doRequest(ctx, base, endpoint, http.MethodPost, expRes, reqData, params...)
+func (c *client) Post(ctx context.Context, base, endpoint string, expRes, reqData any, opts ...RequestOpts) (int, error) {
+	return c.doRequest(ctx, base, endpoint, http.MethodPost, expRes, reqData, opts...)
 }
 
 // Put performs a PUT request to the API.
-func (c *client) Put(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error) {
-	return c.doRequest(ctx, base, endpoint, http.MethodPut, expRes, reqData, params...)
+func (c *client) Put(ctx context.Context, base, endpoint string, expRes, reqData any, opts ...RequestOpts) (int, error) {
+	return c.doRequest(ctx, base, endpoint, http.MethodPut, expRes, reqData, opts...)
 }
 
 // Delete performs a DELETE request to the API.
-func (c *client) Delete(ctx context.Context, base, endpoint string, expRes, reqData any, params ...map[string]string) (int, error) {
-	return c.doRequest(ctx, base, endpoint, http.MethodDelete, expRes, reqData, params...)
+func (c *client) Delete(ctx context.Context, base, endpoint string, expRes, reqData any, opts ...RequestOpts) (int, error) {
+	return c.doRequest(ctx, base, endpoint, http.MethodDelete, expRes, reqData, opts...)
 }
 
 // DoRequest performs the request to the API.
-func (c *client) doRequest(ctx context.Context, base, endpoint, method string, expRes, reqData any, params ...map[string]string) (int, error) {
-	callURL, err := buildRequestURL(base, endpoint, params...)
+func (c *client) doRequest(ctx context.Context, base, endpoint, method string, expRes, reqData any, opts ...RequestOpts) (int, error) {
+	r := newRequest(opts...)
+	callURL, err := buildRequestURL(base, endpoint, r)
 	if err != nil {
 		return 0, err
 	}
@@ -111,29 +119,46 @@ func (c *client) doRequest(ctx context.Context, base, endpoint, method string, e
 		return resp.StatusCode, nil
 
 	case 401:
-		return resp.StatusCode, fmt.Errorf("unauthorized")
+		return resp.StatusCode, ErrUnauthorized
 
 	case 404:
-		return resp.StatusCode, fmt.Errorf("not found")
+		return resp.StatusCode, ErrNotFound
 
 	default:
 		return resp.StatusCode, fmt.Errorf("%s", body)
 	}
 }
 
-func buildRequestURL(base, endpoint string, params ...map[string]string) (string, error) {
+func buildRequestURL(base, endpoint string, r *request) (string, error) {
 	u, err := url.Parse(base)
 	if err != nil {
 		return "", err
 	}
 	u.Path = endpoint
-	if len(params) == 0 {
-		return u.String(), nil
-	}
 	p := url.Values{}
-	for k, v := range params[0] {
-		p.Set(k, v)
+
+	// set paging options
+	if r.page != 0 {
+		p.Set("page", strconv.Itoa(r.page))
 	}
+	if r.pageSize != 0 {
+		p.Set("pageSize", strconv.Itoa(r.pageSize))
+	}
+	// set sorting options
+	if r.sortKey != "" {
+		p.Set("sortKey", r.sortKey)
+	}
+	if r.sortDirection != "" {
+		p.Set("sortDirection", string(r.sortDirection))
+	}
+	// add additional query params if there are any
+	if r.params != nil && len(r.params) > 0 {
+		for k, v := range r.params {
+			p.Set(k, v)
+		}
+	}
+
+	// encode the query parameters
 	u.RawQuery = p.Encode()
 	return u.String(), nil
 }
