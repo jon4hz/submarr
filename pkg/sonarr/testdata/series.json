@@ -1,0 +1,934 @@
+[
+  {
+    "title": "Marvel's Agents of S.H.I.E.L.D.",
+    "alternateTitles": [
+      {
+        "title": "Marvel Agents of SHIELD",
+        "seasonNumber": -1
+      },
+      {
+        "title": "Agents of SHIELD",
+        "seasonNumber": -1
+      },
+      {
+        "title": "Marvels Agents of SHIELD",
+        "seasonNumber": -1
+      },
+      {
+        "title": "Agents Of S.H.I.E.L.D.",
+        "seasonNumber": -1
+      },
+      {
+        "title": "Marvels Agents of S H I E L D",
+        "seasonNumber": -1
+      },
+      {
+        "title": "A SHIELD ügynökei",
+        "seasonNumber": -1
+      },
+      {
+        "title": "A SHIELD ugynokei",
+        "seasonNumber": -1
+      },
+      {
+        "title": "Agentes de S H I E L D ",
+        "seasonNumber": -1
+      },
+      {
+        "title": "Agentes de S H I E L D",
+        "seasonNumber": -1
+      }
+    ],
+    "sortTitle": "marvels agents of shield",
+    "status": "ended",
+    "ended": true,
+    "overview": "Agent Phil Coulson from the film \"The Avengers\" returns to lead a small, highly skilled group of agents into the field.",
+    "previousAiring": "2020-08-13T02:43:00Z",
+    "network": "ABC (US)",
+    "airTime": "22:00",
+    "images": [
+      {
+        "coverType": "banner",
+        "url": "/MediaCover/2/banner.jpg?lastWrite=638085903349563730",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/graphical/263365-g2.jpg"
+      },
+      {
+        "coverType": "poster",
+        "url": "/MediaCover/2/poster.jpg?lastWrite=638085903353803780",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/series/263365/posters/5f03f1ff801ec.jpg"
+      },
+      {
+        "coverType": "fanart",
+        "url": "/MediaCover/2/fanart.jpg?lastWrite=637103226430000000",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/fanart/original/263365-30.jpg"
+      }
+    ],
+    "seasons": [
+      {
+        "seasonNumber": 0,
+        "monitored": false,
+        "statistics": {
+          "episodeFileCount": 0,
+          "episodeCount": 0,
+          "totalEpisodeCount": 17,
+          "sizeOnDisk": 0,
+          "releaseGroups": [],
+          "percentOfEpisodes": 0.0
+        }
+      },
+      {
+        "seasonNumber": 1,
+        "monitored": false,
+        "statistics": {
+          "previousAiring": "2014-05-14T02:00:00Z",
+          "episodeFileCount": 22,
+          "episodeCount": 22,
+          "totalEpisodeCount": 22,
+          "sizeOnDisk": 56228245486,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 2,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2015-05-13T02:43:00Z",
+          "episodeFileCount": 22,
+          "episodeCount": 22,
+          "totalEpisodeCount": 22,
+          "sizeOnDisk": 56175998607,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 3,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2016-05-18T02:43:00Z",
+          "episodeFileCount": 22,
+          "episodeCount": 22,
+          "totalEpisodeCount": 22,
+          "sizeOnDisk": 6191084098,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 4,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2017-05-17T02:00:00Z",
+          "episodeFileCount": 22,
+          "episodeCount": 22,
+          "totalEpisodeCount": 22,
+          "sizeOnDisk": 13257210805,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 5,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2018-05-19T02:00:00Z",
+          "episodeFileCount": 22,
+          "episodeCount": 22,
+          "totalEpisodeCount": 22,
+          "sizeOnDisk": 56278301250,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 6,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2019-08-03T02:43:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 23216863989,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 7,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2020-08-13T02:43:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 20054787796,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      }
+    ],
+    "year": 2013,
+    "path": "/tv/Marvel's Agents of S.H.I.E.L.D",
+    "qualityProfileId": 4,
+    "languageProfileId": 1,
+    "seasonFolder": true,
+    "monitored": true,
+    "useSceneNumbering": false,
+    "runtime": 43,
+    "tvdbId": 263365,
+    "tvRageId": 32656,
+    "tvMazeId": 31,
+    "firstAired": "2013-09-24T00:00:00Z",
+    "seriesType": "standard",
+    "cleanTitle": "marvelsagentsshield",
+    "imdbId": "tt2364582",
+    "titleSlug": "marvels-agents-of-s-h-i-e-l-d",
+    "rootFolderPath": "/tv/",
+    "certification": "TV-14",
+    "genres": [
+      "Action",
+      "Adventure",
+      "Drama",
+      "Science Fiction",
+      "Thriller"
+    ],
+    "tags": [],
+    "added": "2019-05-29T14:35:39.425524Z",
+    "ratings": {
+      "votes": 0,
+      "value": 0.0
+    },
+    "statistics": {
+      "seasonCount": 7,
+      "episodeFileCount": 136,
+      "episodeCount": 136,
+      "totalEpisodeCount": 153,
+      "sizeOnDisk": 231402492031,
+      "releaseGroups": [],
+      "percentOfEpisodes": 100.0
+    },
+    "id": 2
+  },
+  {
+    "title": "Doctor Who (2005)",
+    "alternateTitles": [
+      {
+        "title": "Doctor Who",
+        "seasonNumber": -1,
+        "comment": "Limited matching"
+      },
+      {
+        "title": "Doctor Who",
+        "seasonNumber": -1
+      }
+    ],
+    "sortTitle": "doctor who 2005",
+    "status": "continuing",
+    "ended": false,
+    "overview": "The Doctor is an alien Time Lord from the planet Gallifrey who travels through all of time and space in the TARDIS. The Doctor has a long list of friends and companions who have shared journeys along the way. Instead of dying, the Doctor is able to “regenerate” into a new body, taking on a new personality with each regeneration.",
+    "previousAiring": "2022-10-23T17:15:00Z",
+    "network": "BBC One",
+    "airTime": "18:15",
+    "images": [
+      {
+        "coverType": "banner",
+        "url": "/MediaCover/3/banner.jpg?lastWrite=638084603869379340",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/graphical/78804-g29.jpg"
+      },
+      {
+        "coverType": "poster",
+        "url": "/MediaCover/3/poster.jpg?lastWrite=637851005627509520",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/posters/78804-52.jpg"
+      },
+      {
+        "coverType": "fanart",
+        "url": "/MediaCover/3/fanart.jpg?lastWrite=638084603875299410",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/fanart/original/78804-100.jpg"
+      }
+    ],
+    "seasons": [
+      {
+        "seasonNumber": 0,
+        "monitored": false,
+        "statistics": {
+          "previousAiring": "2022-10-23T17:15:00Z",
+          "episodeFileCount": 19,
+          "episodeCount": 19,
+          "totalEpisodeCount": 160,
+          "sizeOnDisk": 21847484507,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 1,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2005-06-18T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 11023259016,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 2,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2006-07-08T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 12273079864,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 3,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2007-06-30T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 12372226822,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 4,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2008-07-05T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 13216201917,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 5,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2010-06-26T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 7932204293,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 6,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2011-10-01T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 12109261229,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 7,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2013-05-18T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 11779352048,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 8,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2014-11-08T18:15:00Z",
+          "episodeFileCount": 12,
+          "episodeCount": 12,
+          "totalEpisodeCount": 12,
+          "sizeOnDisk": 10298190001,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 9,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2015-12-05T18:15:00Z",
+          "episodeFileCount": 12,
+          "episodeCount": 12,
+          "totalEpisodeCount": 12,
+          "sizeOnDisk": 9414644817,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 10,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2017-07-01T17:15:00Z",
+          "episodeFileCount": 12,
+          "episodeCount": 12,
+          "totalEpisodeCount": 12,
+          "sizeOnDisk": 9385018263,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 11,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2018-12-09T18:15:00Z",
+          "episodeFileCount": 10,
+          "episodeCount": 10,
+          "totalEpisodeCount": 10,
+          "sizeOnDisk": 8181817938,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 12,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2020-03-01T18:15:00Z",
+          "episodeFileCount": 10,
+          "episodeCount": 10,
+          "totalEpisodeCount": 10,
+          "sizeOnDisk": 5004606774,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 13,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2021-12-05T18:15:00Z",
+          "episodeFileCount": 6,
+          "episodeCount": 6,
+          "totalEpisodeCount": 6,
+          "sizeOnDisk": 3292783929,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      }
+    ],
+    "year": 2005,
+    "path": "/tv/Doctor Who (2005)",
+    "qualityProfileId": 4,
+    "languageProfileId": 1,
+    "seasonFolder": true,
+    "monitored": true,
+    "useSceneNumbering": false,
+    "runtime": 47,
+    "tvdbId": 78804,
+    "tvRageId": 3332,
+    "tvMazeId": 210,
+    "firstAired": "2005-03-26T00:00:00Z",
+    "seriesType": "standard",
+    "cleanTitle": "doctorwho2005",
+    "imdbId": "tt0436992",
+    "titleSlug": "doctor-who-2005",
+    "rootFolderPath": "/tv/",
+    "certification": "TV-PG",
+    "genres": [
+      "Adventure",
+      "Drama",
+      "Science Fiction"
+    ],
+    "tags": [],
+    "added": "2019-05-29T15:41:25.269927Z",
+    "ratings": {
+      "votes": 0,
+      "value": 0.0
+    },
+    "statistics": {
+      "seasonCount": 13,
+      "episodeFileCount": 172,
+      "episodeCount": 172,
+      "totalEpisodeCount": 313,
+      "sizeOnDisk": 148130131418,
+      "releaseGroups": [],
+      "percentOfEpisodes": 100.0
+    },
+    "id": 3
+  },
+  {
+    "title": "Lucifer",
+    "alternateTitles": [],
+    "sortTitle": "lucifer",
+    "status": "ended",
+    "ended": true,
+    "overview": "Lucifer, the original fallen angel, is bored and unhappy in Hell and decides to retire to Los Angeles and open an upscale nightclub. After a murder takes place outside his club, he meets an intriguing homicide detective named Chloe, and partners up with her to solve cases.",
+    "previousAiring": "2021-09-10T07:00:00Z",
+    "network": "Netflix",
+    "airTime": "03:00",
+    "images": [
+      {
+        "coverType": "banner",
+        "url": "/MediaCover/4/banner.jpg?lastWrite=638085903312203250",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/graphical/295685-g2.jpg"
+      },
+      {
+        "coverType": "poster",
+        "url": "/MediaCover/4/poster.jpg?lastWrite=637876554605575390",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/posters/295685-9.jpg"
+      },
+      {
+        "coverType": "fanart",
+        "url": "/MediaCover/4/fanart.jpg?lastWrite=638085903319523340",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/fanart/original/295685-7.jpg"
+      }
+    ],
+    "seasons": [
+      {
+        "seasonNumber": 0,
+        "monitored": false,
+        "statistics": {
+          "episodeFileCount": 0,
+          "episodeCount": 0,
+          "totalEpisodeCount": 2,
+          "sizeOnDisk": 0,
+          "releaseGroups": [],
+          "percentOfEpisodes": 0.0
+        }
+      },
+      {
+        "seasonNumber": 1,
+        "monitored": false,
+        "statistics": {
+          "previousAiring": "2016-04-25T07:00:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 36168686342,
+          "releaseGroups": [
+            "SiGMA"
+          ],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 2,
+        "monitored": false,
+        "statistics": {
+          "previousAiring": "2017-05-29T07:00:00Z",
+          "episodeFileCount": 18,
+          "episodeCount": 18,
+          "totalEpisodeCount": 18,
+          "sizeOnDisk": 50483072463,
+          "releaseGroups": [
+            "SiGMA"
+          ],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 3,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2018-05-28T07:48:00Z",
+          "episodeFileCount": 26,
+          "episodeCount": 26,
+          "totalEpisodeCount": 26,
+          "sizeOnDisk": 67776143249,
+          "releaseGroups": [
+            "SiGMA"
+          ],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 4,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2019-05-08T07:00:00Z",
+          "episodeFileCount": 10,
+          "episodeCount": 10,
+          "totalEpisodeCount": 10,
+          "sizeOnDisk": 4974572178,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 5,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2021-05-28T07:00:00Z",
+          "episodeFileCount": 16,
+          "episodeCount": 16,
+          "totalEpisodeCount": 16,
+          "sizeOnDisk": 9183254643,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 6,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2021-09-10T07:00:00Z",
+          "episodeFileCount": 10,
+          "episodeCount": 10,
+          "totalEpisodeCount": 10,
+          "sizeOnDisk": 5479668052,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      }
+    ],
+    "year": 2016,
+    "path": "/tv/Lucifer",
+    "qualityProfileId": 4,
+    "languageProfileId": 1,
+    "seasonFolder": true,
+    "monitored": true,
+    "useSceneNumbering": false,
+    "runtime": 48,
+    "tvdbId": 295685,
+    "tvRageId": 45076,
+    "tvMazeId": 1859,
+    "firstAired": "2016-01-25T00:00:00Z",
+    "seriesType": "standard",
+    "cleanTitle": "lucifer",
+    "imdbId": "tt4052886",
+    "titleSlug": "lucifer",
+    "rootFolderPath": "/tv/",
+    "certification": "TV-14",
+    "genres": [
+      "Comedy",
+      "Crime",
+      "Drama",
+      "Fantasy"
+    ],
+    "tags": [],
+    "added": "2019-05-29T15:41:28.10167Z",
+    "ratings": {
+      "votes": 0,
+      "value": 0.0
+    },
+    "statistics": {
+      "seasonCount": 6,
+      "episodeFileCount": 93,
+      "episodeCount": 93,
+      "totalEpisodeCount": 95,
+      "sizeOnDisk": 174065396927,
+      "releaseGroups": [
+        "SiGMA"
+      ],
+      "percentOfEpisodes": 100.0
+    },
+    "id": 4
+  },
+  {
+    "title": "That '70s Show",
+    "alternateTitles": [
+      {
+        "title": "Die wilden Siebziger",
+        "seasonNumber": -1
+      }
+    ],
+    "sortTitle": "that 70s show",
+    "status": "ended",
+    "ended": true,
+    "overview": "Set in the Wisconsin suburbs of the United States, Eric Forman lives under the authority of his parents, Red and Kitty. Next door is his girlfriend/neighbor, Donna Pinciotti and her parents Bob and Midge. The rest of the gang includes Jackie, and her sometimes boyfriend, Kelso, Hyde, a conspiracy theorist and Fez, a foreign exchange student. The gang mostly likes to spend their time in Eric's basement, pondering their lives, parents, and their futures, while getting into many funny mishaps and adventures in their teenage lives along the way.",
+    "previousAiring": "2006-05-19T00:25:00Z",
+    "network": "FOX",
+    "airTime": "20:00",
+    "images": [
+      {
+        "coverType": "banner",
+        "url": "/MediaCover/5/banner.jpg?lastWrite=637887815198055480",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/graphical/246-g.jpg"
+      },
+      {
+        "coverType": "poster",
+        "url": "/MediaCover/5/poster.jpg?lastWrite=636947413250000000",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/posters/73787-10.jpg"
+      },
+      {
+        "coverType": "fanart",
+        "url": "/MediaCover/5/fanart.jpg?lastWrite=637913925305267010",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/fanart/original/73787-24.jpg"
+      }
+    ],
+    "seasons": [
+      {
+        "seasonNumber": 0,
+        "monitored": false,
+        "statistics": {
+          "episodeFileCount": 0,
+          "episodeCount": 0,
+          "totalEpisodeCount": 11,
+          "sizeOnDisk": 0,
+          "releaseGroups": [],
+          "percentOfEpisodes": 0.0
+        }
+      },
+      {
+        "seasonNumber": 1,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "1999-07-27T00:00:00Z",
+          "episodeFileCount": 25,
+          "episodeCount": 25,
+          "totalEpisodeCount": 25,
+          "sizeOnDisk": 11090911789,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 2,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2000-05-23T00:00:00Z",
+          "episodeFileCount": 26,
+          "episodeCount": 26,
+          "totalEpisodeCount": 26,
+          "sizeOnDisk": 11041023345,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 3,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2001-05-23T00:00:00Z",
+          "episodeFileCount": 25,
+          "episodeCount": 25,
+          "totalEpisodeCount": 25,
+          "sizeOnDisk": 7208224101,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 4,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2002-05-22T00:00:00Z",
+          "episodeFileCount": 27,
+          "episodeCount": 27,
+          "totalEpisodeCount": 27,
+          "sizeOnDisk": 7613188938,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 5,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2003-05-15T00:00:00Z",
+          "episodeFileCount": 25,
+          "episodeCount": 25,
+          "totalEpisodeCount": 25,
+          "sizeOnDisk": 11533241187,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 6,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2004-05-20T00:25:00Z",
+          "episodeFileCount": 25,
+          "episodeCount": 25,
+          "totalEpisodeCount": 25,
+          "sizeOnDisk": 11050312396,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 7,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2005-05-19T00:25:00Z",
+          "episodeFileCount": 25,
+          "episodeCount": 25,
+          "totalEpisodeCount": 25,
+          "sizeOnDisk": 11280343613,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 8,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2006-05-19T00:25:00Z",
+          "episodeFileCount": 22,
+          "episodeCount": 22,
+          "totalEpisodeCount": 22,
+          "sizeOnDisk": 9848027778,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      }
+    ],
+    "year": 1998,
+    "path": "/tv/That 70s Show",
+    "qualityProfileId": 4,
+    "languageProfileId": 1,
+    "seasonFolder": true,
+    "monitored": true,
+    "useSceneNumbering": false,
+    "runtime": 25,
+    "tvdbId": 73787,
+    "tvRageId": 5497,
+    "tvMazeId": 587,
+    "firstAired": "1998-08-23T00:00:00Z",
+    "seriesType": "standard",
+    "cleanTitle": "that70sshow",
+    "imdbId": "tt0165598",
+    "titleSlug": "that-70s-show",
+    "rootFolderPath": "/tv/",
+    "certification": "TV-14",
+    "genres": [
+      "Comedy",
+      "Drama",
+      "Romance"
+    ],
+    "tags": [],
+    "added": "2019-05-29T15:41:29.608824Z",
+    "ratings": {
+      "votes": 2824,
+      "value": 8.6
+    },
+    "statistics": {
+      "seasonCount": 8,
+      "episodeFileCount": 200,
+      "episodeCount": 200,
+      "totalEpisodeCount": 211,
+      "sizeOnDisk": 80665273147,
+      "releaseGroups": [],
+      "percentOfEpisodes": 100.0
+    },
+    "id": 5
+  },
+  {
+    "title": "Death Note",
+    "alternateTitles": [
+      {
+        "title": "Death Note 2015",
+        "seasonNumber": -1
+      }
+    ],
+    "sortTitle": "death note",
+    "status": "ended",
+    "ended": true,
+    "overview": "When a Japanese high schooler comes into possession of a mystical notebook, he finds he has the power to kill anybody whose name he enters in it.",
+    "previousAiring": "2007-06-26T16:00:00Z",
+    "network": "Nippon TV",
+    "airTime": "01:00",
+    "images": [
+      {
+        "coverType": "banner",
+        "url": "/MediaCover/78/banner.jpg?lastWrite=637887814102678670",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/graphical/79481-g12.jpg"
+      },
+      {
+        "coverType": "poster",
+        "url": "/MediaCover/78/poster.jpg?lastWrite=637653503836201220",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/posters/79481-11.jpg"
+      },
+      {
+        "coverType": "fanart",
+        "url": "/MediaCover/78/fanart.jpg?lastWrite=637887814110398790",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/fanart/original/79481-3.jpg"
+      }
+    ],
+    "seasons": [
+      {
+        "seasonNumber": 0,
+        "monitored": false,
+        "statistics": {
+          "episodeFileCount": 0,
+          "episodeCount": 0,
+          "totalEpisodeCount": 2,
+          "sizeOnDisk": 0,
+          "releaseGroups": [],
+          "percentOfEpisodes": 0.0
+        }
+      },
+      {
+        "seasonNumber": 1,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2007-06-26T16:00:00Z",
+          "episodeFileCount": 37,
+          "episodeCount": 37,
+          "totalEpisodeCount": 37,
+          "sizeOnDisk": 6012043789,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      }
+    ],
+    "year": 2006,
+    "path": "/tv/Death Note",
+    "qualityProfileId": 1,
+    "languageProfileId": 1,
+    "seasonFolder": true,
+    "monitored": true,
+    "useSceneNumbering": false,
+    "runtime": 24,
+    "tvdbId": 79481,
+    "tvRageId": 13555,
+    "tvMazeId": 40,
+    "firstAired": "2006-10-04T00:00:00Z",
+    "seriesType": "standard",
+    "cleanTitle": "deathnote",
+    "imdbId": "tt0877057",
+    "titleSlug": "death-note",
+    "rootFolderPath": "/tv/",
+    "certification": "TV-MA",
+    "genres": [
+      "Anime",
+      "Crime",
+      "Fantasy",
+      "Horror",
+      "Suspense",
+      "Thriller"
+    ],
+    "tags": [],
+    "added": "2019-09-05T11:48:18.172029Z",
+    "ratings": {
+      "votes": 21749,
+      "value": 9.0
+    },
+    "statistics": {
+      "seasonCount": 1,
+      "episodeFileCount": 37,
+      "episodeCount": 37,
+      "totalEpisodeCount": 39,
+      "sizeOnDisk": 6012043789,
+      "releaseGroups": [],
+      "percentOfEpisodes": 100.0
+    },
+    "id": 78
+  }
+]

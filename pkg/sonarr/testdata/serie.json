@@ -1,0 +1,263 @@
+[
+  {
+    "title": "Doctor Who (2005)",
+    "alternateTitles": [
+      {
+        "title": "Doctor Who",
+        "seasonNumber": -1,
+        "comment": "Limited matching"
+      },
+      {
+        "title": "Doctor Who",
+        "seasonNumber": -1
+      }
+    ],
+    "sortTitle": "doctor who 2005",
+    "status": "continuing",
+    "ended": false,
+    "overview": "The Doctor is an alien Time Lord from the planet Gallifrey who travels through all of time and space in the TARDIS. The Doctor has a long list of friends and companions who have shared journeys along the way. Instead of dying, the Doctor is able to “regenerate” into a new body, taking on a new personality with each regeneration.",
+    "previousAiring": "2022-10-23T17:15:00Z",
+    "network": "BBC One",
+    "airTime": "18:15",
+    "images": [
+      {
+        "coverType": "banner",
+        "url": "/MediaCover/3/banner.jpg?lastWrite=638084603869379340",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/graphical/78804-g29.jpg"
+      },
+      {
+        "coverType": "poster",
+        "url": "/MediaCover/3/poster.jpg?lastWrite=637851005627509520",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/posters/78804-52.jpg"
+      },
+      {
+        "coverType": "fanart",
+        "url": "/MediaCover/3/fanart.jpg?lastWrite=638084603875299410",
+        "remoteUrl": "https://artworks.thetvdb.com/banners/fanart/original/78804-100.jpg"
+      }
+    ],
+    "seasons": [
+      {
+        "seasonNumber": 0,
+        "monitored": false,
+        "statistics": {
+          "previousAiring": "2022-10-23T17:15:00Z",
+          "episodeFileCount": 19,
+          "episodeCount": 19,
+          "totalEpisodeCount": 160,
+          "sizeOnDisk": 21847484507,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 1,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2005-06-18T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 11023259016,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 2,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2006-07-08T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 12273079864,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 3,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2007-06-30T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 12372226822,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 4,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2008-07-05T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 13216201917,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 5,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2010-06-26T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 7932204293,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 6,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2011-10-01T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 12109261229,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 7,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2013-05-18T17:15:00Z",
+          "episodeFileCount": 13,
+          "episodeCount": 13,
+          "totalEpisodeCount": 13,
+          "sizeOnDisk": 11779352048,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 8,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2014-11-08T18:15:00Z",
+          "episodeFileCount": 12,
+          "episodeCount": 12,
+          "totalEpisodeCount": 12,
+          "sizeOnDisk": 10298190001,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 9,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2015-12-05T18:15:00Z",
+          "episodeFileCount": 12,
+          "episodeCount": 12,
+          "totalEpisodeCount": 12,
+          "sizeOnDisk": 9414644817,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 10,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2017-07-01T17:15:00Z",
+          "episodeFileCount": 12,
+          "episodeCount": 12,
+          "totalEpisodeCount": 12,
+          "sizeOnDisk": 9385018263,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 11,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2018-12-09T18:15:00Z",
+          "episodeFileCount": 10,
+          "episodeCount": 10,
+          "totalEpisodeCount": 10,
+          "sizeOnDisk": 8181817938,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 12,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2020-03-01T18:15:00Z",
+          "episodeFileCount": 10,
+          "episodeCount": 10,
+          "totalEpisodeCount": 10,
+          "sizeOnDisk": 5004606774,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      },
+      {
+        "seasonNumber": 13,
+        "monitored": true,
+        "statistics": {
+          "previousAiring": "2021-12-05T18:15:00Z",
+          "episodeFileCount": 6,
+          "episodeCount": 6,
+          "totalEpisodeCount": 6,
+          "sizeOnDisk": 3292783929,
+          "releaseGroups": [],
+          "percentOfEpisodes": 100.0
+        }
+      }
+    ],
+    "year": 2005,
+    "path": "/tv/Doctor Who (2005)",
+    "qualityProfileId": 4,
+    "languageProfileId": 1,
+    "seasonFolder": true,
+    "monitored": true,
+    "useSceneNumbering": false,
+    "runtime": 47,
+    "tvdbId": 78804,
+    "tvRageId": 3332,
+    "tvMazeId": 210,
+    "firstAired": "2005-03-26T00:00:00Z",
+    "seriesType": "standard",
+    "cleanTitle": "doctorwho2005",
+    "imdbId": "tt0436992",
+    "titleSlug": "doctor-who-2005",
+    "rootFolderPath": "/tv/",
+    "certification": "TV-PG",
+    "genres": [
+      "Adventure",
+      "Drama",
+      "Science Fiction"
+    ],
+    "tags": [],
+    "added": "2019-05-29T15:41:25.269927Z",
+    "ratings": {
+      "votes": 0,
+      "value": 0.0
+    },
+    "statistics": {
+      "seasonCount": 13,
+      "episodeFileCount": 172,
+      "episodeCount": 172,
+      "totalEpisodeCount": 313,
+      "sizeOnDisk": 148130131418,
+      "releaseGroups": [],
+      "percentOfEpisodes": 100.0
+    },
+    "id": 3
+  }
+]
