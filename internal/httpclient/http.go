@@ -129,7 +129,7 @@ func (c *client) doRequest(ctx context.Context, base, endpoint, method string, e
 	}
 }
 
-func buildRequestURL(base, endpoint string, r *request) (string, error) {
+func buildRequestURL(base, endpoint string, r *Request) (string, error) {
 	u, err := url.Parse(base)
 	if err != nil {
 		return "", err
