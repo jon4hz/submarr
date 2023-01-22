@@ -9,9 +9,10 @@ import (
 
 // Config represents the config
 type Config struct {
-	Sonarr *SonarrConfig `mapstructure:"sonarr"`
-	Radarr *RadarrConfig `mapstructure:"radarr"`
-	Lidarr *LidarrConfig `mapstructure:"lidarr"`
+	Sonarr  *SonarrConfig  `mapstructure:"sonarr"`
+	Radarr  *RadarrConfig  `mapstructure:"radarr"`
+	Lidarr  *LidarrConfig  `mapstructure:"lidarr"`
+	Logging *LoggingConfig `mapstructure:"logging"`
 }
 
 // SonarrConfig represents the sonarr config
@@ -36,6 +37,12 @@ type LidarrConfig struct {
 	APIKey    string `mapstructure:"api_key"`
 	IgnoreTLS bool   `mapstructure:"ignore_tls"`
 	Timeout   int    `mapstructure:"timeout"`
+}
+
+// LoggingConfig represents the logging config
+type LoggingConfig struct {
+	Level  string `mapstructure:"level"`
+	Folder string `mapstructure:"folder"`
 }
 
 // Load loads the config file.

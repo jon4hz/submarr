@@ -7,7 +7,7 @@ import (
 	"github.com/jon4hz/subrr/internal/config"
 	"github.com/jon4hz/subrr/internal/core"
 	"github.com/jon4hz/subrr/internal/httpclient"
-	"github.com/jon4hz/subrr/internal/tui"
+	"github.com/jon4hz/subrr/internal/logging"
 	"github.com/jon4hz/subrr/internal/version"
 	"github.com/jon4hz/subrr/pkg/lidarr"
 	"github.com/jon4hz/subrr/pkg/radarr"
@@ -42,7 +42,6 @@ func init() {
 	rootCmd.Flags().String("sonarr-api-key", "", "sonarr api key")
 	rootCmd.Flags().Bool("sonarr-ignore-tls", false, "ignore tls verification")
 	rootCmd.Flags().Int("sonarr-timeout", 30, "timeout in seconds")
-
 	mustBindPFlag("sonarr.host", rootCmd.Flags().Lookup("sonarr-host"))
 	mustBindPFlag("sonarr.api_key", rootCmd.Flags().Lookup("sonarr-api-key"))
 	mustBindPFlag("sonarr.ignore_tls", rootCmd.Flags().Lookup("sonarr-ignore-tls"))
@@ -52,7 +51,6 @@ func init() {
 	rootCmd.Flags().String("radarr-api-key", "", "radarr api key")
 	rootCmd.Flags().Bool("radarr-ignore-tls", false, "ignore tls verification")
 	rootCmd.Flags().Int("radarr-timeout", 30, "timeout in seconds")
-
 	mustBindPFlag("radarr.host", rootCmd.Flags().Lookup("radarr-host"))
 	mustBindPFlag("radarr.api_key", rootCmd.Flags().Lookup("radarr-api-key"))
 	mustBindPFlag("radarr.ignore_tls", rootCmd.Flags().Lookup("radarr-ignore-tls"))
@@ -62,11 +60,15 @@ func init() {
 	rootCmd.Flags().String("lidarr-api-key", "", "lidarr api key")
 	rootCmd.Flags().Bool("lidarr-ignore-tls", false, "ignore tls verification")
 	rootCmd.Flags().Int("lidarr-timeout", 30, "timeout in seconds")
-
 	mustBindPFlag("lidarr.host", rootCmd.Flags().Lookup("lidarr-host"))
 	mustBindPFlag("lidarr.api_key", rootCmd.Flags().Lookup("lidarr-api-key"))
 	mustBindPFlag("lidarr.ignore_tls", rootCmd.Flags().Lookup("lidarr-ignore-tls"))
 	mustBindPFlag("lidarr.timeout", rootCmd.Flags().Lookup("lidarr-timeout"))
+
+	rootCmd.Flags().String("logging-level", "info", "log level")
+	rootCmd.Flags().String("logging-folder", "", "log folder")
+	mustBindPFlag("logging.level", rootCmd.Flags().Lookup("logging-level"))
+	mustBindPFlag("logging.folder", rootCmd.Flags().Lookup("logging-folder"))
 }
 
 func mustBindPFlag(key string, flag *pflag.Flag) {
@@ -82,6 +84,17 @@ func root(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+
+	// init the logger
+	if err := logging.Init(cfg.Logging); err != nil {
+		log.Fatalln(err)
+	}
+	defer func() {
+		if err := logging.Close(); err != nil {
+			log.Fatalln(err)
+		}
+	}()
+	logging.Log.Debug().Str("version", version.Version).Msg("starting subrr")
 
 	var (
 		sonarrClient *sonarr.Client
@@ -121,35 +134,15 @@ func root(cmd *cobra.Command, args []string) {
 		radarrClient,
 		lidarrClient,
 	)
+	_ = client
 
-	tui := tui.New(client)
+	/* tui := tui.New(client)
 	if err := tui.Run(); err != nil {
 		log.Fatalln(err)
-	}
-	/*
-		series, err := sonarrClient.GetSeries(cmd.Context())
-		if err != nil {
-			log.Fatalln(err)
-		}
-		for _, serie := range series {
-			fmt.Println(serie.Title, serie.TVDBID)
-		} */
-
-	/* serie, err := sonarrClient.GetSerie(cmd.Context(), 76107)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	fmt.Println(serie.Title, serie.TVDBID)
-	for _, season := range serie.Seasons {
-		fmt.Println(season.SeasonNumber, season.Monitored)
-	}
-
-	episodes, err := sonarrClient.GetEpisodes(cmd.Context(), serie.ID, 1)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	for _, episode := range episodes {
-		x, _ := json.MarshalIndent(episode, "", " ")
-		fmt.Println(string(x))
 	} */
+
+	_, err = sonarrClient.GetSerie(cmd.Context(), 78804)
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
