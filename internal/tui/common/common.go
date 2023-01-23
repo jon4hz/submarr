@@ -1,5 +1,7 @@
 package common
 
+const Ellipsis = "…"
+
 type ErrMsg struct {
 	Err error
 }
