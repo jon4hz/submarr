@@ -68,6 +68,7 @@ func TestRmIfEmptyRm(t *testing.T) {
 	defer os.Remove(logFile.Name())
 
 	assert.NoError(t, rmIfEmpty())
+	assert.NoDirExists(t, logFile.Name())
 }
 
 func TestRmIfEmpty(t *testing.T) {
