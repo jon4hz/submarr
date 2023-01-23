@@ -1,9 +1,9 @@
 package tui
 
 import (
+	"errors"
 	"fmt"
 
-	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -12,7 +12,7 @@ import (
 	"github.com/jon4hz/subrr/internal/tui/common"
 )
 
-var docStyle = lipgloss.NewStyle().Border(lipgloss.RoundedBorder())
+var docStyle = lipgloss.NewStyle().Margin(1)
 
 type State int
 
@@ -24,19 +24,19 @@ const (
 )
 
 type Model struct {
-	client     *core.Client
-	clientList list.Model
-	spinner    spinner.Model
-	state      State
-	err        error
+	client      *core.Client
+	clientslist clientslist.Model
+	spinner     spinner.Model
+	state       State
+	err         error
 }
 
 func New(client *core.Client) *Model {
 	m := &Model{
-		state:      StateLoading,
-		client:     client,
-		spinner:    spinner.New(spinner.WithSpinner(spinner.Points)),
-		clientList: list.New(nil, list.NewDefaultDelegate(), 0, 0),
+		state:       StateLoading,
+		client:      client,
+		spinner:     spinner.New(spinner.WithSpinner(spinner.Points)),
+		clientslist: clientslist.New(client),
 	}
 	return m
 }
@@ -49,7 +49,7 @@ func (m Model) Run() error {
 func (m Model) Init() tea.Cmd {
 	return tea.Batch(
 		m.spinner.Tick,
-		clientslist.FetchClientsListItems(m.client),
+		m.clientslist.Init(),
 	)
 }
 
@@ -71,9 +71,12 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, cmd
 		}
 
-	case clientslist.ItemsMsg:
+	case core.FetchClientsSuccessMsg:
 		m.state = StateReady
-		return m, m.clientList.SetItems(msg.Items)
+
+	case core.FetchClientsErrorMsg:
+		m.state = StateError
+		m.err = errors.New(msg.Description)
 
 	case common.ErrMsg:
 		m.state = StateError
@@ -83,7 +86,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch m.state {
 	case StateReady:
 		var cmd tea.Cmd
-		m.clientList, cmd = m.clientList.Update(msg)
+		m.clientslist, cmd = m.clientslist.Update(msg)
 		return m, cmd
 	}
 
@@ -98,7 +101,7 @@ func (m *Model) setSize(width, height int) {
 	docStyle.Width(width)
 	docStyle.Height(height)
 
-	m.clientList.SetSize(width, height)
+	m.clientslist.SetSize(width-x, height)
 }
 
 func (m Model) View() string {
@@ -108,7 +111,7 @@ func (m Model) View() string {
 	case StateError:
 		return docStyle.Render(fmt.Sprintf("Error: %s", m.err))
 	case StateReady:
-		return docStyle.Render(m.clientList.View())
+		return docStyle.Render(m.clientslist.View())
 	}
 
 	return docStyle.Render("Unknown state")

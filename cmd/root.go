@@ -8,6 +8,7 @@ import (
 	"github.com/jon4hz/subrr/internal/core"
 	"github.com/jon4hz/subrr/internal/httpclient"
 	"github.com/jon4hz/subrr/internal/logging"
+	"github.com/jon4hz/subrr/internal/tui"
 	"github.com/jon4hz/subrr/internal/version"
 	"github.com/jon4hz/subrr/pkg/lidarr"
 	"github.com/jon4hz/subrr/pkg/radarr"
@@ -136,13 +137,13 @@ func root(cmd *cobra.Command, args []string) {
 	)
 	_ = client
 
-	/* tui := tui.New(client)
+	tui := tui.New(client)
 	if err := tui.Run(); err != nil {
 		log.Fatalln(err)
-	} */
+	}
 
-	_, err = sonarrClient.GetSerie(cmd.Context(), 78804)
+	/* _, err = sonarrClient.GetSerie(cmd.Context(), 78804)
 	if err != nil {
 		log.Fatalln(err)
-	}
+	} */
 }

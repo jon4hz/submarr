@@ -1,24 +1,51 @@
 package clientslist
 
 import (
-	"time"
-
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/jon4hz/subrr/internal/core"
 )
 
 type Model struct {
-	client *core.Client
+	client     *core.Client
+	clientList list.Model
+	width      int
 }
 
-type ItemsMsg struct {
-	Items []list.Item
-}
-
-func FetchClientsListItems(c *core.Client) tea.Cmd {
-	return func() tea.Msg {
-		time.Sleep(time.Second * 3)
-		return ItemsMsg{}
+func New(client *core.Client) Model {
+	m := Model{
+		client:     client,
+		clientList: list.New(nil, newClientDelegate(), 0, 0),
 	}
+	m.clientList.SetShowStatusBar(false)
+	m.clientList.Title = "Available Clients"
+	return m
+}
+
+func (m Model) Init() tea.Cmd {
+	return m.client.FetchClients()
+}
+
+func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case core.FetchClientsSuccessMsg:
+		var items []list.Item
+		for _, item := range msg.Items {
+			items = append(items, item)
+		}
+		return m, m.clientList.SetItems(items)
+	}
+
+	var cmd tea.Cmd
+	m.clientList, cmd = m.clientList.Update(msg)
+	return m, cmd
+}
+
+func (m *Model) SetSize(width, height int) {
+	m.width = width
+	m.clientList.SetSize(width, height)
+}
+
+func (m Model) View() string {
+	return m.clientList.View()
 }
