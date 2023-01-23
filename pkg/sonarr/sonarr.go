@@ -55,9 +55,9 @@ func (c *Client) GetSerie(ctx context.Context, tvdbID int) (*SeriesResource, err
 }
 
 // GetQueue returns the current download queue
-func (c *Client) GetQueue(ctx context.Context) (QueueResourcePagingResource, error) {
+func (c *Client) GetQueue(ctx context.Context, opts ...httpclient.RequestOpts) (QueueResourcePagingResource, error) {
 	var res QueueResourcePagingResource
-	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/queue", &res)
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/queue", &res, opts...)
 	if err != nil {
 		return res, err
 	}
