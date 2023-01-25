@@ -10,6 +10,7 @@ import (
 	"github.com/jon4hz/subrr/internal/core"
 	"github.com/jon4hz/subrr/internal/tui/clientslist"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	zone "github.com/lrstanley/bubblezone"
 )
 
 var docStyle = lipgloss.NewStyle().Margin(1)
@@ -42,7 +43,10 @@ func New(client *core.Client) *Model {
 }
 
 func (m Model) Run() error {
-	_, err := tea.NewProgram(m, tea.WithAltScreen()).Run()
+	_, err := tea.NewProgram(m,
+		tea.WithAltScreen(),
+		tea.WithMouseCellMotion(),
+	).Run()
 	return err
 }
 
@@ -111,7 +115,7 @@ func (m Model) View() string {
 	case StateError:
 		return docStyle.Render(fmt.Sprintf("Error: %s", m.err))
 	case StateReady:
-		return docStyle.Render(m.clientslist.View())
+		return zone.Scan(docStyle.Render(m.clientslist.View()))
 	}
 
 	return docStyle.Render("Unknown state")

@@ -6,6 +6,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
 )
 
@@ -48,10 +49,14 @@ func renderItem(item ClientsItem, itemWidth int, isSelected bool) string {
 	}
 
 	title := titleStyle.Foreground(textColor).Render(item.Title() + "\n")
+
 	width := itemWidth - lipgloss.Width(title)
 	if width < 2 {
-		return truncate.StringWithTail(title, uint(itemWidth), common.Ellipsis)
+		return zone.Mark(item.String(),
+			truncate.StringWithTail(title, uint(itemWidth), common.Ellipsis),
+		)
 	}
+	title = zone.Mark(item.String(), title)
 
 	status := "✅ available"
 	if !item.Available() {

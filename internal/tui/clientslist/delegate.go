@@ -28,12 +28,9 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 		Padding(0, 2).
 		Margin(0, 1)
 
-	s.SelectedSonarr = lipgloss.NewStyle().
+	s.SelectedSonarr = s.DefaultClient.Copy().
 		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
-		Border(lipgloss.RoundedBorder(), true).
-		BorderForeground(lipgloss.Color("#00CCFF")).
-		Padding(0, 2).
-		Margin(0, 1)
+		BorderForeground(lipgloss.Color("#00CCFF"))
 
 	return s
 }
