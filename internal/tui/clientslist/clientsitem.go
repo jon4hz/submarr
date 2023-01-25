@@ -27,9 +27,12 @@ var (
 
 	titleStyle = lipgloss.NewStyle().
 			Underline(true)
+
 	statusStyle = lipgloss.NewStyle().
+			Foreground(subtileForeground).
 			Padding(0, 0, 0, 1).
 			Align(lipgloss.Right)
+
 	statsStyle = lipgloss.NewStyle()
 
 	separator = lipgloss.NewStyle().
@@ -57,18 +60,19 @@ func renderItem(item ClientsItem, itemWidth int, isSelected bool) string {
 	status = truncate.StringWithTail(status, uint(width-statusStyle.GetHorizontalPadding()), common.Ellipsis)
 	status = statusStyle.Width(itemWidth - lipgloss.Width(title)).Render(status)
 
-	var stats strings.Builder
+	var statsBuilder strings.Builder
 	for i, stat := range item.Stats() {
-		stats.WriteString(statsStyle.Foreground(textColor).Render(stat))
+		statsBuilder.WriteString(statsStyle.Foreground(textColor).Render(stat))
 		if i < len(item.Stats())-1 {
-			stats.WriteString(separator)
+			statsBuilder.WriteString(separator)
 		}
 	}
+	stats := truncate.StringWithTail(statsBuilder.String(), uint(itemWidth), common.Ellipsis)
 
 	return lipgloss.JoinVertical(lipgloss.Top,
 		lipgloss.JoinHorizontal(lipgloss.Top,
 			title, status,
 		),
-		stats.String(),
+		stats,
 	)
 }
