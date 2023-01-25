@@ -5,7 +5,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/jon4hz/subrr/internal/config"
@@ -13,22 +12,23 @@ import (
 )
 
 var (
-	Log            *zerolog.Logger
-	logFile        *os.File
-	logDir         string
-	initialized    bool
-	initializeOnce sync.Once = sync.Once{}
+	Log         *zerolog.Logger
+	logFile     *os.File
+	initialized bool
 )
 
 // Init initializes the logger
 func Init(cfg *config.LoggingConfig) error {
-	var err error
 	// make sure we only initialize the logger once
-	initializeOnce.Do(func() {
-		err = initLogger(cfg.Folder, strings.ToLower(cfg.Level))
-		initialized = true
-	})
+	if initialized {
+		return nil
+	}
 
+	initialized = true
+	err := initLogger(cfg.Folder, strings.ToLower(cfg.Level))
+	if err != nil {
+		initialized = false
+	}
 	return err
 }
 
@@ -36,7 +36,6 @@ func Init(cfg *config.LoggingConfig) error {
 func Close() error {
 	initialized = false
 	Log = &zerolog.Logger{}
-	initializeOnce = sync.Once{}
 
 	if err := rmIfEmpty(); err != nil {
 		return err
