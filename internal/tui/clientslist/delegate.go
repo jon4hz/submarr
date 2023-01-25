@@ -11,10 +11,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 )
 
-const (
-	ellipsis = "…"
-)
-
 type DefaultItemStyles struct {
 	DefaultClient  lipgloss.Style
 	SelectedSonarr lipgloss.Style

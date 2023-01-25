@@ -2,7 +2,9 @@ package radarr
 
 import (
 	"fmt"
-	"strings"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type ClientItem struct {
@@ -13,7 +15,7 @@ func (i ClientItem) String() string { return "radarr" }
 
 func (i ClientItem) FilterValue() string { return "" }
 
-func (i ClientItem) Title() string { return strings.Title(i.String()) }
+func (i ClientItem) Title() string { return cases.Title(language.AmericanEnglish).String(i.String()) }
 
 func (i ClientItem) Available() bool { return i.c.available }
 
