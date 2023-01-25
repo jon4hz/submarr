@@ -30,7 +30,13 @@ func (c *Client) FetchClients() tea.Cmd {
 			if err := c.Sonarr.Init(); err != nil {
 				return FetchClientsErrorMsg{Description: "Failed to initialize sonarr", Err: err}
 			}
-			items = append(items, c.Sonarr.ListItem(), c.Sonarr.ListItem(), c.Sonarr.ListItem())
+			items = append(items, c.Sonarr.ListItem())
+		}
+		if c.Radarr != nil {
+			if err := c.Radarr.Init(); err != nil {
+				return FetchClientsErrorMsg{Description: "Failed to initialize radarr", Err: err}
+			}
+			items = append(items, c.Radarr.ListItem())
 		}
 
 		return FetchClientsSuccessMsg{items}
