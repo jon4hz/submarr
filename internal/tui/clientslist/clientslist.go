@@ -29,11 +29,7 @@ func (m Model) Init() tea.Cmd {
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case core.FetchClientsSuccessMsg:
-		var items []list.Item
-		for _, item := range msg.Items {
-			items = append(items, item)
-		}
-		return m, m.clientList.SetItems(items)
+		return m, m.clientList.SetItems(msg.Items)
 	}
 
 	var cmd tea.Cmd

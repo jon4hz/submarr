@@ -3,18 +3,19 @@ package core
 import (
 	"fmt"
 
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 type ClientsItem interface {
 	fmt.Stringer
 
-	Render(itemWidth int) string
+	Render(itemWidth int, isSelected bool) string
 	FilterValue() string
 }
 
 type FetchClientsSuccessMsg struct {
-	Items []ClientsItem
+	Items []list.Item
 }
 
 type FetchClientsErrorMsg struct {
@@ -24,12 +25,12 @@ type FetchClientsErrorMsg struct {
 
 func (c *Client) FetchClients() tea.Cmd {
 	return func() tea.Msg {
-		var items []ClientsItem
+		var items []list.Item
 		if c.Sonarr != nil {
 			if err := c.Sonarr.Init(); err != nil {
 				return FetchClientsErrorMsg{Description: "Failed to initialize sonarr", Err: err}
 			}
-			items = append(items, c.Sonarr.ListItem())
+			items = append(items, c.Sonarr.ListItem(), c.Sonarr.ListItem(), c.Sonarr.ListItem())
 		}
 
 		return FetchClientsSuccessMsg{items}

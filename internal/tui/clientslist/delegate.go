@@ -3,12 +3,12 @@ package clientslist
 import (
 	"fmt"
 	"io"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/jon4hz/subrr/internal/core"
 )
 
 const (
@@ -24,11 +24,12 @@ type DefaultItemStyles struct {
 
 func NewDefaultItemStyles() (s DefaultItemStyles) {
 	s.DefaultClient = lipgloss.NewStyle().
-		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
+		Border(lipgloss.RoundedBorder(), true).
 		Padding(0, 2).
 		Margin(0, 1)
 
 	s.SelectedSonarr = lipgloss.NewStyle().
+		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
 		Border(lipgloss.RoundedBorder(), true).
 		BorderForeground(lipgloss.Color("#00CCFF")).
 		Padding(0, 2).
@@ -50,7 +51,7 @@ func newClientDelegate() clientDelegate {
 	}
 }
 
-func (d clientDelegate) Height() int { return 2 }
+func (d clientDelegate) Height() int { return 5 }
 
 func (d clientDelegate) Spacing() int { return 1 }
 
@@ -71,9 +72,9 @@ func (d clientDelegate) Render(w io.Writer, m list.Model, index int, item list.I
 	itemWidth := m.Width() - x
 	width := itemWidth + s.DefaultClient.GetHorizontalPadding()
 
-	i, ok := item.(core.ClientsItem)
+	i, ok := item.(ClientsItem)
 	if ok {
-		client = i.Render(itemWidth)
+		client = renderItem(i, itemWidth, index == m.Index())
 	} else {
 		return
 	}
@@ -84,7 +85,7 @@ func (d clientDelegate) Render(w io.Writer, m list.Model, index int, item list.I
 	}
 
 	if index == m.Index() {
-		switch i.String() {
+		switch strings.ToLower(i.String()) {
 		case "sonarr":
 			client = s.SelectedSonarr.Width(width).Render(client)
 
