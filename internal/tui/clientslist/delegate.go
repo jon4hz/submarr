@@ -32,6 +32,10 @@ func NewDefaultItemStyles() (s DefaultItemStyles) {
 		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
 		BorderForeground(lipgloss.Color("#00CCFF"))
 
+	s.SelectedRadarr = s.DefaultClient.Copy().
+		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
+		BorderForeground(lipgloss.Color("#FFA500"))
+
 	return s
 }
 
@@ -85,6 +89,9 @@ func (d clientDelegate) Render(w io.Writer, m list.Model, index int, item list.I
 		switch strings.ToLower(i.String()) {
 		case "sonarr":
 			client = s.SelectedSonarr.Width(width).Render(client)
+
+		case "radarr":
+			client = s.SelectedRadarr.Width(width).Render(client)
 
 		default:
 			client = s.DefaultClient.Width(width).Render(client)
