@@ -19,7 +19,9 @@ func New(client *core.Client) Model {
 		clientList: list.New(nil, newClientDelegate(), 0, 0),
 	}
 	m.clientList.SetShowStatusBar(false)
+	m.clientList.SetFilteringEnabled(false)
 	m.clientList.Title = "Available Clients"
+
 	return m
 }
 
