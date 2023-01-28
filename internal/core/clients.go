@@ -15,8 +15,9 @@ type ClientsItem interface {
 	FilterValue() string
 }
 
-type FetchClientsSuccessMsg struct {
-	Items []list.Item
+type FetchClientsMsg struct {
+	Items  []list.Item
+	Errors []string
 }
 
 type FetchClientsErrorMsg struct {
@@ -25,22 +26,28 @@ type FetchClientsErrorMsg struct {
 
 func (c *Client) FetchClients() tea.Cmd {
 	return func() tea.Msg {
-		var items []list.Item
+		var (
+			items  []list.Item
+			errors []string
+		)
 		if c.Sonarr != nil {
 			if err := c.Sonarr.Init(); err != nil {
 				logging.Log.Error().Err(err).Msg("Failed to initialize sonarr")
-				return FetchClientsErrorMsg{Description: "Failed to initialize sonarr"}
+				errors = append(errors, "Failed to initialize sonarr")
 			}
 			items = append(items, c.Sonarr.ListItem())
 		}
 		if c.Radarr != nil {
 			if err := c.Radarr.Init(); err != nil {
 				logging.Log.Error().Err(err).Msg("Failed to initialize radarr")
-				return FetchClientsErrorMsg{Description: "Failed to initialize radarr"}
+				errors = append(errors, "Failed to initialize radarr")
 			}
 			items = append(items, c.Radarr.ListItem())
 		}
 
-		return FetchClientsSuccessMsg{items}
+		return FetchClientsMsg{
+			Items:  items,
+			Errors: errors,
+		}
 	}
 }

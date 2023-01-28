@@ -2,6 +2,7 @@ package sonarr
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"github.com/jon4hz/subrr/pkg/sonarr"
@@ -15,7 +16,7 @@ type Client struct {
 
 	// some client stats
 	missing int
-	queued  int
+	queued  int32
 }
 
 func New(sonarr *sonarr.Client) *Client {
@@ -27,10 +28,11 @@ func New(sonarr *sonarr.Client) *Client {
 	}
 }
 
+// Init initializes the client and fetches some stats
 func (c *Client) Init() error {
 	ping, err := c.sonarr.Ping(context.Background())
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to ping sonarr: %w", err)
 	}
 	if strings.ToLower(ping.Status) == "ok" {
 		c.available = true
@@ -40,9 +42,10 @@ func (c *Client) Init() error {
 
 	queue, err := c.sonarr.GetQueue(context.Background())
 	if err != nil {
-		return err
+		c.available = false
+		return fmt.Errorf("failed to get queue: %w", err)
 	}
-	c.queued = int(queue.TotalRecords)
+	c.queued = queue.TotalRecords
 
 	return nil
 }

@@ -1,14 +1,12 @@
 package tui
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core"
 	"github.com/jon4hz/subrr/internal/tui/clientslist"
+	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	zone "github.com/lrstanley/bubblezone"
 )
 
@@ -27,11 +25,14 @@ const (
 )
 
 type Model struct {
+	totalWidth  int
+	totalHeight int
+
 	client      *core.Client
 	clientslist clientslist.Model
 	spinner     spinner.Model
+	statusbar   statusbar.Model
 	state       State
-	err         error
 }
 
 func New(client *core.Client) *Model {
@@ -40,7 +41,13 @@ func New(client *core.Client) *Model {
 		client:      client,
 		spinner:     spinner.New(spinner.WithSpinner(spinner.Points)),
 		clientslist: clientslist.New(client),
+		statusbar:   statusbar.New("Subrr"),
 	}
+
+	// statusbar options
+	m.statusbar.TitleForeground = lipgloss.Color("#39FF14")
+	m.statusbar.TitleBackground = lipgloss.Color("#313041")
+
 	return m
 }
 
@@ -55,16 +62,27 @@ func (m Model) Run() error {
 func (m Model) Init() tea.Cmd {
 	return tea.Batch(
 		m.spinner.Tick,
+		m.statusbar.Init(),
 		m.clientslist.Init(),
 	)
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.Type {
-		case tea.KeyCtrlC:
+		switch msg.String() {
+		case "ctrl+c":
 			return m, tea.Quit
+
+		// handle the statusbar gracefully here.
+		// Because after toggeling the help view, the other views must be resized.
+		case "?":
+			var cmd tea.Cmd
+			m.statusbar, cmd = m.statusbar.Update(msg)
+			cmds = append(cmds, cmd)
+			m.setSize(m.totalWidth, m.totalHeight)
+			return m, tea.Batch(cmds...)
 		}
 
 	case tea.WindowSizeMsg:
@@ -74,49 +92,73 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.state == StateLoading {
 			var cmd tea.Cmd
 			m.spinner, cmd = m.spinner.Update(msg)
-			return m, cmd
+			cmds = append(cmds, cmd)
 		}
 
-	case core.FetchClientsSuccessMsg:
+	case core.FetchClientsMsg:
 		m.state = StateReady
-
-	case core.FetchClientsErrorMsg:
-		m.state = StateError
-		m.err = errors.New(msg.Description)
+		cmds = append(cmds,
+			func() tea.Msg {
+				return statusbar.NewMessageMsg("Welcome to Subrr!", statusbar.WithMessageTimeout(2))
+			},
+			func() tea.Msg {
+				return statusbar.NewHelpMsg(m.clientslist.Help())
+			},
+		)
 	}
+
+	var cmd tea.Cmd
+	m.statusbar, cmd = m.statusbar.Update(msg)
+	cmds = append(cmds, cmd)
 
 	switch m.state {
 	case StateReady:
 		var cmd tea.Cmd
 		m.clientslist, cmd = m.clientslist.Update(msg)
-		return m, cmd
+		cmds = append(cmds, cmd)
 	}
 
-	return m, nil
+	return m, tea.Batch(cmds...)
 }
 
 func (m *Model) setSize(width, height int) {
+	m.totalWidth = width
+	m.totalHeight = height
+
+	m.statusbar.SetWidth(width)
+
+	// this will render the statusbar and return the height.
+	// it is a bit suboptimal, but since setHeight is not called very often, it is ok.
+	statusHeight := m.statusbar.GetHeight()
+
 	x, y := docStyle.GetFrameSize()
 	width = width - x
 	height = height - y
 
+	// deduct the statusbar height
+	height = height - statusHeight
+
 	docStyle.Width(width)
 	docStyle.Height(height)
+	width = width - x
 
-	m.clientslist.SetSize(width-x, height)
+	m.clientslist.SetSize(width, height)
 }
 
 func (m Model) View() string {
 	switch m.state {
 	case StateLoading:
 		return docStyle.Render(m.spinner.View() + "  Loading...")
-	case StateError:
-		return docStyle.Render(
-			errStyle.Render(fmt.Sprintf("Error: %s", m.err)),
-		)
+
 	case StateReady:
-		return zone.Scan(docStyle.Render(m.clientslist.View()))
+		return zone.Scan(
+			lipgloss.JoinVertical(lipgloss.Top,
+				docStyle.Render(m.clientslist.View()),
+				m.statusbar.View(),
+			),
+		)
 	}
 
+	// this should never happen
 	return docStyle.Render("Unknown state")
 }
