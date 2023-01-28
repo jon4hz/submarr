@@ -9,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
 )
 
@@ -107,6 +108,15 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		}
 		return m, nil
 
+	case tea.MouseMsg:
+		switch msg.Type {
+		case tea.MouseLeft:
+			if zone.Get("toggle-help").InBounds(msg) {
+				m.showHelp = !m.showHelp
+			}
+			return m, nil
+		}
+
 	case common.ErrMsg:
 		m.msgQueueMu.Lock()
 		m.msgQueue = append(m.msgQueue, newMsgQueueMsg(msg.Error()+" :(", 5, true))
@@ -176,7 +186,7 @@ func (m Model) IsInitialized() bool { return m.isInitialized }
 func (m Model) View() string {
 	title := titleStyle.Foreground(m.TitleForeground).Background(m.TitleBackground).Render(m.Title)
 
-	help := helpStyle.Render("? Help")
+	help := zone.Mark("toggle-help", helpStyle.Render("? Help"))
 
 	statusWidth := m.width - lipgloss.Width(title) - lipgloss.Width(help)
 

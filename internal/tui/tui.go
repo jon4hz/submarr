@@ -85,6 +85,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 		}
 
+	case tea.MouseMsg:
+		switch msg.Type {
+		case tea.MouseLeft:
+			// handle the statusbar gracefully here.
+			// Because after toggeling the help view, the other views must be resized.
+			if zone.Get("toggle-help").InBounds(msg) {
+				var cmd tea.Cmd
+				m.statusbar, cmd = m.statusbar.Update(msg)
+				cmds = append(cmds, cmd)
+				m.setSize(m.totalWidth, m.totalHeight)
+				return m, tea.Batch(cmds...)
+			}
+		}
+
 	case tea.WindowSizeMsg:
 		m.setSize(msg.Width, msg.Height)
 
