@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core"
 	"github.com/jon4hz/subrr/internal/tui/clientslist"
+	"github.com/jon4hz/subrr/internal/tui/common"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	zone "github.com/lrstanley/bubblezone"
 )
@@ -25,23 +26,37 @@ const (
 )
 
 type Model struct {
+	// totalWidth and totalHeight are the width and height of the entire terminal.
 	totalWidth  int
 	totalHeight int
 
-	client      *core.Client
+	// client is the core client used to fetch data from the API.
+	client *core.Client
+
+	// clientslist is the startview of the application and shows all clients.
 	clientslist clientslist.Model
-	spinner     spinner.Model
-	statusbar   statusbar.Model
-	state       State
+
+	// spinner is the loading spinner.
+	spinner spinner.Model
+
+	// loadingMessage is the message shown while loading.
+	loadingMessage string
+
+	// statusbar is the statusbar of the application.
+	statusbar statusbar.Model
+
+	// state is the current state of the application.
+	state State
 }
 
 func New(client *core.Client) *Model {
 	m := &Model{
-		state:       StateLoading,
-		client:      client,
-		spinner:     spinner.New(spinner.WithSpinner(spinner.Points)),
-		clientslist: clientslist.New(client),
-		statusbar:   statusbar.New("Subrr"),
+		state:          StateLoading,
+		client:         client,
+		spinner:        spinner.New(spinner.WithSpinner(spinner.Points)),
+		clientslist:    clientslist.New(client),
+		statusbar:      statusbar.New("Subrr"),
+		loadingMessage: common.GetRandomLoadingMessage(),
 	}
 
 	// statusbar options
@@ -162,7 +177,7 @@ func (m *Model) setSize(width, height int) {
 func (m Model) View() string {
 	switch m.state {
 	case StateLoading:
-		return docStyle.Render(m.spinner.View() + "  Loading...")
+		return docStyle.Render(m.spinner.View() + "  " + m.loadingMessage)
 
 	case StateReady:
 		return zone.Scan(
