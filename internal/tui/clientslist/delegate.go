@@ -19,15 +19,18 @@ type DefaultItemStyles struct {
 
 var (
 	defaultClient = lipgloss.NewStyle().
-			Border(lipgloss.RoundedBorder(), true).
+			Border(lipgloss.NormalBorder(), true).
 			Padding(0, 2).
 			Margin(0, 1)
 
-	selectedSonarr = defaultClient.Copy().
+	selectedStyle = defaultClient.Copy().
+			BorderStyle(lipgloss.ThickBorder())
+
+	selectedSonarr = selectedStyle.Copy().
 			Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
 			BorderForeground(lipgloss.Color("#00CCFF"))
 
-	selectedRadarr = defaultClient.Copy().
+	selectedRadarr = selectedStyle.Copy().
 			Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
 			BorderForeground(lipgloss.Color("#FFA500"))
 )

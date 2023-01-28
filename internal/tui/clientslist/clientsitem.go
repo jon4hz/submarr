@@ -27,7 +27,8 @@ var (
 	subtileForeground  = lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}
 
 	titleStyle = lipgloss.NewStyle().
-			Underline(true)
+			Underline(true).
+			Bold(true)
 
 	statusStyle = lipgloss.NewStyle().
 			Foreground(subtileForeground).
