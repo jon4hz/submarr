@@ -174,7 +174,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 func (m *Model) SetWidth(width int) {
 	m.width = width
-	m.help.Width = width
+	m.help.Width = width - helpViewStyle.GetHorizontalPadding()
 }
 
 func (m Model) GetHeight() int {
