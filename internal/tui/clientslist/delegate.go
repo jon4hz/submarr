@@ -5,7 +5,6 @@ import (
 	"io"
 	"strings"
 
-	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -18,34 +17,23 @@ type DefaultItemStyles struct {
 	SelectedLidarr lipgloss.Style
 }
 
-func NewDefaultItemStyles() (s DefaultItemStyles) {
-	s.DefaultClient = lipgloss.NewStyle().
-		Border(lipgloss.RoundedBorder(), true).
-		Padding(0, 2).
-		Margin(0, 1)
+var (
+	defaultClient = lipgloss.NewStyle().
+			Border(lipgloss.RoundedBorder(), true).
+			Padding(0, 2).
+			Margin(0, 1)
 
-	s.SelectedSonarr = s.DefaultClient.Copy().
-		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
-		BorderForeground(lipgloss.Color("#00CCFF"))
+	selectedSonarr = defaultClient.Copy().
+			Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
+			BorderForeground(lipgloss.Color("#00CCFF"))
 
-	s.SelectedRadarr = s.DefaultClient.Copy().
-		Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
-		BorderForeground(lipgloss.Color("#FFA500"))
-
-	return s
-}
+	selectedRadarr = defaultClient.Copy().
+			Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
+			BorderForeground(lipgloss.Color("#FFA500"))
+)
 
 type clientDelegate struct {
-	Styles        DefaultItemStyles
-	UpdateFunc    func(tea.Msg, *list.Model) tea.Cmd
-	ShortHelpFunc func() []key.Binding
-	FullHelpFunc  func() [][]key.Binding
-}
-
-func newClientDelegate() clientDelegate {
-	return clientDelegate{
-		Styles: NewDefaultItemStyles(),
-	}
+	Styles DefaultItemStyles
 }
 
 func (d clientDelegate) Height() int { return 5 }
@@ -53,21 +41,15 @@ func (d clientDelegate) Height() int { return 5 }
 func (d clientDelegate) Spacing() int { return 1 }
 
 func (d clientDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
-	if d.UpdateFunc == nil {
-		return nil
-	}
-	return d.UpdateFunc(msg, m)
+	return nil
 }
 
 func (d clientDelegate) Render(w io.Writer, m list.Model, index int, item list.Item) {
-	var (
-		client string
-		s      = &d.Styles
-	)
+	var client string
 
-	x, _ := s.DefaultClient.GetFrameSize()
+	x, _ := defaultClient.GetFrameSize()
 	itemWidth := m.Width() - x
-	width := itemWidth + s.DefaultClient.GetHorizontalPadding()
+	width := itemWidth + defaultClient.GetHorizontalPadding()
 
 	i, ok := item.(ClientsItem)
 	if ok {
@@ -84,31 +66,17 @@ func (d clientDelegate) Render(w io.Writer, m list.Model, index int, item list.I
 	if index == m.Index() {
 		switch strings.ToLower(i.String()) {
 		case "sonarr":
-			client = s.SelectedSonarr.Width(width).Render(client)
+			client = selectedSonarr.Width(width).Render(client)
 
 		case "radarr":
-			client = s.SelectedRadarr.Width(width).Render(client)
+			client = selectedRadarr.Width(width).Render(client)
 
 		default:
-			client = s.DefaultClient.Width(width).Render(client)
+			client = defaultClient.Width(width).Render(client)
 		}
 	} else {
-		client = s.DefaultClient.Width(width).Render(client)
+		client = defaultClient.Width(width).Render(client)
 	}
 
 	fmt.Fprintf(w, "%s", client)
-}
-
-func (d clientDelegate) ShortHelp() []key.Binding {
-	if d.ShortHelpFunc != nil {
-		return d.ShortHelpFunc()
-	}
-	return nil
-}
-
-func (d clientDelegate) FullHelp() [][]key.Binding {
-	if d.FullHelpFunc != nil {
-		return d.FullHelpFunc()
-	}
-	return nil
 }

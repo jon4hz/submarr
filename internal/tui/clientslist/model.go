@@ -19,7 +19,7 @@ type Model struct {
 func New(client *core.Client) Model {
 	m := Model{
 		client:     client,
-		clientList: list.New(nil, newClientDelegate(), 0, 0),
+		clientList: list.New(nil, clientDelegate{}, 0, 0),
 	}
 
 	// list options
@@ -51,17 +51,16 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case tea.MouseMsg:
-		if msg.Type == tea.MouseWheelUp {
+		switch msg.Type {
+		case tea.MouseWheelUp:
 			m.clientList.CursorUp()
 			return m, nil
-		}
 
-		if msg.Type == tea.MouseWheelDown {
+		case tea.MouseWheelDown:
 			m.clientList.CursorDown()
 			return m, nil
-		}
 
-		if msg.Type == tea.MouseLeft {
+		case tea.MouseLeft:
 			for i, listItem := range m.clientList.VisibleItems() {
 				item, _ := listItem.(ClientsItem)
 				// Check each item to see if it's in bounds.
