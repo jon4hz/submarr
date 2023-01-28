@@ -5,6 +5,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/jon4hz/subrr/internal/logging"
 )
 
 type ClientsItem interface {
@@ -20,7 +21,6 @@ type FetchClientsSuccessMsg struct {
 
 type FetchClientsErrorMsg struct {
 	Description string
-	Err         error
 }
 
 func (c *Client) FetchClients() tea.Cmd {
@@ -28,13 +28,15 @@ func (c *Client) FetchClients() tea.Cmd {
 		var items []list.Item
 		if c.Sonarr != nil {
 			if err := c.Sonarr.Init(); err != nil {
-				return FetchClientsErrorMsg{Description: "Failed to initialize sonarr", Err: err}
+				logging.Log.Error().Err(err).Msg("Failed to initialize sonarr")
+				return FetchClientsErrorMsg{Description: "Failed to initialize sonarr"}
 			}
 			items = append(items, c.Sonarr.ListItem())
 		}
 		if c.Radarr != nil {
 			if err := c.Radarr.Init(); err != nil {
-				return FetchClientsErrorMsg{Description: "Failed to initialize radarr", Err: err}
+				logging.Log.Error().Err(err).Msg("Failed to initialize radarr")
+				return FetchClientsErrorMsg{Description: "Failed to initialize radarr"}
 			}
 			items = append(items, c.Radarr.ListItem())
 		}

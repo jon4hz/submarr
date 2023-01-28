@@ -16,6 +16,9 @@ type Client struct {
 }
 
 func New(radarr *radarr.Client) *Client {
+	if radarr == nil {
+		return nil
+	}
 	return &Client{
 		radarr: radarr,
 	}

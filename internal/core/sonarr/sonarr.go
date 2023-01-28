@@ -19,6 +19,9 @@ type Client struct {
 }
 
 func New(sonarr *sonarr.Client) *Client {
+	if sonarr == nil {
+		return nil
+	}
 	return &Client{
 		sonarr: sonarr,
 	}

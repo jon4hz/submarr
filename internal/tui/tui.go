@@ -9,11 +9,13 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core"
 	"github.com/jon4hz/subrr/internal/tui/clientslist"
-	"github.com/jon4hz/subrr/internal/tui/common"
 	zone "github.com/lrstanley/bubblezone"
 )
 
-var docStyle = lipgloss.NewStyle().Margin(1)
+var (
+	docStyle = lipgloss.NewStyle().Margin(1)
+	errStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000"))
+)
 
 type State int
 
@@ -81,10 +83,6 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case core.FetchClientsErrorMsg:
 		m.state = StateError
 		m.err = errors.New(msg.Description)
-
-	case common.ErrMsg:
-		m.state = StateError
-		m.err = msg.Err
 	}
 
 	switch m.state {
@@ -113,7 +111,9 @@ func (m Model) View() string {
 	case StateLoading:
 		return docStyle.Render(m.spinner.View() + "  Loading...")
 	case StateError:
-		return docStyle.Render(fmt.Sprintf("Error: %s", m.err))
+		return docStyle.Render(
+			errStyle.Render(fmt.Sprintf("Error: %s", m.err)),
+		)
 	case StateReady:
 		return zone.Scan(docStyle.Render(m.clientslist.View()))
 	}
