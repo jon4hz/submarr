@@ -21,6 +21,9 @@ type Client struct {
 	// some client stats
 	missing int
 	queued  int32
+
+	// quality profiles by id
+	qualityProfiles map[int32]sonarr.QualityProfileResource
 }
 
 func New(sonarr *sonarr.Client) *Client {
@@ -97,11 +100,15 @@ func (c *Client) FetchSeries() tea.Cmd {
 			profilesByID[p.ID] = p
 		}
 
+		// store the profiles in the client so we can use them later
+		c.qualityProfiles = profilesByID
+
 		// Add the quality profile name to the series
 		for i := range series {
 			series[i].ProfileName = profilesByID[series[i].QualityProfileID].Name
 		}
 
+		// Create a list item for each series
 		var items []list.Item
 		for _, s := range series {
 			items = append(items, SeriesItem{s})
