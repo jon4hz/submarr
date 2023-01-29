@@ -10,6 +10,7 @@ import (
 	"github.com/jon4hz/subrr/internal/tui/common"
 	"github.com/jon4hz/subrr/internal/tui/sonarr/series"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
+	zone "github.com/lrstanley/bubblezone"
 )
 
 type state int
@@ -96,6 +97,35 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 
 			case key.Matches(msg, DefaultKeyMap.Select):
 				if !m.seriesList.SettingFilter() {
+				}
+			}
+		}
+
+	case tea.MouseMsg:
+		switch m.state {
+		case stateSeries:
+			switch msg.Type {
+			case tea.MouseWheelUp:
+				m.seriesList.CursorUp()
+				return m, nil
+
+			case tea.MouseWheelDown:
+				m.seriesList.CursorDown()
+				return m, nil
+
+			case tea.MouseLeft:
+				for i, listItem := range m.seriesList.VisibleItems() {
+					item, _ := listItem.(sonarr.SeriesItem)
+					if zone.Get(item.Series.Title).InBounds(msg) {
+						// if we click on an already selected item, open the details
+						if i == m.seriesList.Index() {
+							// TODO: open series details
+
+						}
+						// else select the item
+						m.seriesList.Select(i)
+						break
+					}
 				}
 			}
 		}

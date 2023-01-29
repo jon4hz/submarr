@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sort"
 	"strings"
+	"unicode"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -104,8 +105,10 @@ func (c *Client) FetchSeries() tea.Cmd {
 		c.qualityProfiles = profilesByID
 
 		// Add the quality profile name to the series
+		// And sanitize the title
 		for i := range series {
 			series[i].ProfileName = profilesByID[series[i].QualityProfileID].Name
+			series[i].Title = sanitizeTitle(series[i].Title)
 		}
 
 		// Create a list item for each series
@@ -115,4 +118,15 @@ func (c *Client) FetchSeries() tea.Cmd {
 		}
 		return FetchSeriesResult{Items: items}
 	}
+}
+
+// sanitizeTitle replaces all unicode whitespace characters with a single space.
+// For some weird reason, some titles contain characters like U+00A0 (NO-BREAK SPACE)
+func sanitizeTitle(s string) string {
+	for _, r := range s {
+		if unicode.IsSpace(r) {
+			s = strings.Replace(s, string(r), " ", -1)
+		}
+	}
+	return s
 }

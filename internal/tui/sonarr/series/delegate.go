@@ -3,8 +3,6 @@ package series
 import (
 	"fmt"
 	"io"
-	"strings"
-	"unicode"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -87,7 +85,7 @@ func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 		textColor = subtileForeground
 	}
 
-	title := titleStyle.Foreground(textColor).Render(sanitizeTitle(item.Series.Title))
+	title := titleStyle.Foreground(textColor).Render(item.Series.Title)
 	title = zone.Mark(item.Series.Title,
 		truncate.StringWithTail(title, uint(itemWidth), common.Ellipsis),
 	)
@@ -143,16 +141,5 @@ func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 		networkStats,
 	)
 
-	return s
-}
-
-// sanitizeTitle replaces all unicode whitespace characters with a single space.
-// For some weird reason, some titles contain characters like U+00A0 (NO-BREAK SPACE)
-func sanitizeTitle(s string) string {
-	for _, r := range s {
-		if unicode.IsSpace(r) {
-			s = strings.Replace(s, string(r), " ", -1)
-		}
-	}
 	return s
 }
