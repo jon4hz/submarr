@@ -17,7 +17,8 @@ type state int
 const (
 	stateUnknown state = iota
 	stateLoading
-	stateReady
+	stateSeries
+	stateSeriesDetails
 )
 
 type Model struct {
@@ -84,7 +85,7 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 
 		// keybindings for specific states
 		switch m.state {
-		case stateReady:
+		case stateSeries:
 			switch {
 			case key.Matches(msg, DefaultKeyMap.Reload):
 				cmds = append(cmds,
@@ -92,13 +93,17 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 					m.seriesList.StartSpinner(),
 					statusbar.NewMessageCmd("Reloading...", statusbar.WithMessageTimeout(2)),
 				)
+
+			case key.Matches(msg, DefaultKeyMap.Select):
+				if !m.seriesList.SettingFilter() {
+				}
 			}
 		}
 
 	case sonarr.FetchSeriesResult:
 		m.seriesList.StopSpinner()
 
-		m.state = stateReady
+		m.state = stateSeries
 		if msg.Error != nil {
 			cmds = append(cmds, statusbar.NewErrCmd("Failed to fetch series"))
 		}
@@ -113,7 +118,7 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 		m.spinner, cmd = m.spinner.Update(msg)
 		cmds = append(cmds, cmd)
 
-	case stateReady:
+	case stateSeries:
 		var cmd tea.Cmd
 		m.seriesList, cmd = m.seriesList.Update(msg)
 		cmds = append(cmds, cmd)
@@ -133,7 +138,7 @@ func (m Model) View() string {
 	switch m.state {
 	case stateLoading:
 		return m.spinner.View() + "  " + m.loadingMessage
-	case stateReady:
+	case stateSeries:
 		return m.seriesList.View()
 	}
 

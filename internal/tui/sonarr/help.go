@@ -1,6 +1,8 @@
 package sonarr
 
-import "github.com/charmbracelet/bubbles/key"
+import (
+	"github.com/charmbracelet/bubbles/key"
+)
 
 type KeyMap struct {
 	CursorUp   key.Binding
@@ -11,6 +13,7 @@ type KeyMap struct {
 	Help       key.Binding
 	Select     key.Binding
 	Reload     key.Binding
+	Filter     key.Binding
 }
 
 var DefaultKeyMap = KeyMap{
@@ -22,12 +25,13 @@ var DefaultKeyMap = KeyMap{
 	Help:       key.NewBinding(key.WithKeys("?"), key.WithHelp("?", "close help")),
 	Select:     key.NewBinding(key.WithKeys("enter"), key.WithHelp("enter", "select client")),
 	Reload:     key.NewBinding(key.WithKeys("r"), key.WithHelp("r", "reload list")),
+	Filter:     key.NewBinding(key.WithKeys("/"), key.WithHelp("/", "filter")),
 }
 
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.CursorUp, k.CursorDown, k.NextPage, k.PrevPage},
-		{k.Select, k.Reload},
+		{k.Filter, k.Select, k.Reload},
 		{k.Help, k.Quit},
 	}
 }
