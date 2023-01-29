@@ -41,9 +41,19 @@ func (m Model) Init() tea.Cmd {
 
 func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	var cmds []tea.Cmd
-
 	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch {
+		case key.Matches(msg, DefaultKeyMap.Refresh):
+			// refresh the clients list and start the spinner
+			cmds = append(cmds,
+				m.client.FetchClients(),
+				m.clientList.StartSpinner(),
+			)
+		}
+
 	case core.FetchClientsMsg:
+		m.clientList.StopSpinner()
 		cmds = append(cmds, m.clientList.SetItems(msg.Items))
 		if len(msg.Errors) > 0 {
 			cmds = append(cmds, common.NewErrCmds(msg.Errors...)...)
@@ -75,7 +85,9 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 
 	var cmd tea.Cmd
 	m.clientList, cmd = m.clientList.Update(msg)
-	return m, cmd
+	cmds = append(cmds, cmd)
+
+	return m, tea.Batch(cmds...)
 }
 
 func (m *Model) SetSize(width, height int) {
@@ -84,7 +96,7 @@ func (m *Model) SetSize(width, height int) {
 }
 
 func (m Model) Help() [][]key.Binding {
-	return m.clientList.FullHelp()
+	return DefaultKeyMap.FullHelp()
 }
 
 func (m Model) View() string {

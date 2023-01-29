@@ -16,13 +16,13 @@ var (
 	errStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000"))
 )
 
-type State int
+type state int
 
 const (
-	StateUnknown State = iota
-	StateLoading
-	StateError
-	StateReady
+	stateUnknown state = iota
+	stateLoading
+	stateError
+	stateReady
 )
 
 type Model struct {
@@ -46,12 +46,12 @@ type Model struct {
 	statusbar statusbar.Model
 
 	// state is the current state of the application.
-	state State
+	state state
 }
 
 func New(client *core.Client) *Model {
 	m := &Model{
-		state:          StateLoading,
+		state:          stateLoading,
 		client:         client,
 		spinner:        spinner.New(spinner.WithSpinner(spinner.Points)),
 		clientslist:    clientslist.New(client),
@@ -118,22 +118,20 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.setSize(msg.Width, msg.Height)
 
 	case spinner.TickMsg:
-		if m.state == StateLoading {
+		if m.state == stateLoading {
 			var cmd tea.Cmd
 			m.spinner, cmd = m.spinner.Update(msg)
 			cmds = append(cmds, cmd)
 		}
 
 	case core.FetchClientsMsg:
-		m.state = StateReady
-		cmds = append(cmds,
-			func() tea.Msg {
-				return statusbar.NewMessageMsg("Welcome to Subrr!", statusbar.WithMessageTimeout(2))
-			},
-			func() tea.Msg {
-				return statusbar.NewHelpMsg(m.clientslist.Help())
-			},
-		)
+		if m.state != stateReady {
+			m.state = stateReady
+			cmds = append(cmds,
+				statusbar.NewMessageCmd("Welcome to Subrr!", statusbar.WithMessageTimeout(2)),
+				statusbar.NewHelpCmd(m.clientslist.Help()),
+			)
+		}
 	}
 
 	var cmd tea.Cmd
@@ -141,7 +139,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	cmds = append(cmds, cmd)
 
 	switch m.state {
-	case StateReady:
+	case stateReady:
 		var cmd tea.Cmd
 		m.clientslist, cmd = m.clientslist.Update(msg)
 		cmds = append(cmds, cmd)
@@ -176,10 +174,10 @@ func (m *Model) setSize(width, height int) {
 
 func (m Model) View() string {
 	switch m.state {
-	case StateLoading:
+	case stateLoading:
 		return docStyle.Render(m.spinner.View() + "  " + m.loadingMessage)
 
-	case StateReady:
+	case stateReady:
 		return zone.Scan(
 			lipgloss.JoinVertical(lipgloss.Top,
 				docStyle.Render(m.clientslist.View()),
