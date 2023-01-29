@@ -44,8 +44,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, DefaultKeyMap.Refresh):
-			// refresh the clients list and start the spinner
+		case key.Matches(msg, DefaultKeyMap.Reload):
+			// reload the clients list and start the spinner
 			cmds = append(cmds,
 				m.client.FetchClients(),
 				m.clientList.StartSpinner(),

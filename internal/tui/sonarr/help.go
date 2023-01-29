@@ -10,7 +10,7 @@ type KeyMap struct {
 	Quit       key.Binding
 	Help       key.Binding
 	Select     key.Binding
-	Refresh    key.Binding
+	Reload     key.Binding
 }
 
 var DefaultKeyMap = KeyMap{
@@ -21,13 +21,13 @@ var DefaultKeyMap = KeyMap{
 	Quit:       key.NewBinding(key.WithKeys("q", "esc"), key.WithHelp("q/esc", "quit")),
 	Help:       key.NewBinding(key.WithKeys("?"), key.WithHelp("?", "close help")),
 	Select:     key.NewBinding(key.WithKeys("enter"), key.WithHelp("enter", "select client")),
-	Refresh:    key.NewBinding(key.WithKeys("r"), key.WithHelp("r", "refresh list")),
+	Reload:     key.NewBinding(key.WithKeys("r"), key.WithHelp("r", "reload list")),
 }
 
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.CursorUp, k.CursorDown, k.NextPage, k.PrevPage},
-		{k.Select, k.Refresh},
+		{k.Select, k.Reload},
 		{k.Help, k.Quit},
 	}
 }

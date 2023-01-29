@@ -86,7 +86,7 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 		switch m.state {
 		case stateReady:
 			switch {
-			case key.Matches(msg, DefaultKeyMap.Refresh):
+			case key.Matches(msg, DefaultKeyMap.Reload):
 				cmds = append(cmds,
 					m.client.FetchSeries(),
 					m.seriesList.StartSpinner(),
