@@ -70,7 +70,7 @@ type Model struct {
 func New(title string) Model {
 	m := Model{
 		Title:       title,
-		placeholder: "Bliblablub Placeholder",
+		placeholder: common.GetRandomPlaceholder(),
 		help:        help.New(),
 	}
 	m.help.ShowAll = true
