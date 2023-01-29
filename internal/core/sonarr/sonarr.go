@@ -3,8 +3,12 @@ package sonarr
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/list"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/jon4hz/subrr/internal/logging"
 	"github.com/jon4hz/subrr/pkg/sonarr"
 )
 
@@ -50,6 +54,40 @@ func (c *Client) Init() error {
 	return nil
 }
 
-func (c *Client) ListItem() ClientItem {
+func (c *Client) ClientListItem() ClientItem {
 	return ClientItem{c}
+}
+
+type FetchSeriesResult struct {
+	Items []list.Item
+	Error error
+}
+
+type SeriesItem struct {
+	Series sonarr.SeriesResource
+}
+
+func (s SeriesItem) FilterValue() string {
+	return s.Series.Title
+}
+
+func (c *Client) FetchSeries() tea.Cmd {
+	return func() tea.Msg {
+		series, err := c.sonarr.GetSeries(context.Background())
+		if err != nil {
+			logging.Log.Error().Err(err).Msg("Failed to fetch series")
+			return FetchSeriesResult{Error: err}
+		}
+
+		// sort series by title
+		sort.Slice(series, func(i, j int) bool {
+			return series[i].SortTitle < series[j].SortTitle
+		})
+
+		var items []list.Item
+		for _, s := range series {
+			items = append(items, SeriesItem{s})
+		}
+		return FetchSeriesResult{Items: items}
+	}
 }

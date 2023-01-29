@@ -35,6 +35,11 @@ type Model struct {
 	totalWidth  int
 	totalHeight int
 
+	// availableWidth and availableHeight are the width and height of the available
+	// space in the terminal after the statusbar has been drawn.
+	availableWidth  int
+	availableHeight int
+
 	// client is the core client used to fetch data from the API.
 	client *core.Client
 
@@ -205,6 +210,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		if m.clientModel.Back() {
 			m.state = stateReady
+			cmds = append(cmds,
+				// reset the title of the statusbar
+				statusbar.NewTitleCmd("Subrr", statusbar.WithTitleForeground(lipgloss.Color("#39FF14"))),
+			)
 		}
 	}
 
@@ -232,6 +241,9 @@ func (m *Model) setSize(width, height int) {
 	docStyle.Height(height)
 	width = width - x
 
+	m.availableWidth = width
+	m.availableHeight = height
+
 	m.clientslist.SetSize(width, height)
 
 	if m.state == stateClient {
@@ -247,7 +259,7 @@ func (m *Model) enterClient(item clientslist.ClientsItem) tea.Cmd {
 	switch strings.ToLower(item.String()) {
 	case "sonarr":
 		m.state = stateClient
-		m.clientModel = sonarr.New(m.client.Sonarr)
+		m.clientModel = sonarr.New(m.client.Sonarr, m.availableWidth, m.availableHeight)
 		return m.clientModel.Init()
 	}
 

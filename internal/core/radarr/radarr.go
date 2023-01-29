@@ -47,6 +47,6 @@ func (c *Client) Init() error {
 	return errors.New("test")
 }
 
-func (c *Client) ListItem() ClientItem {
+func (c *Client) ClientListItem() ClientItem {
 	return ClientItem{c}
 }

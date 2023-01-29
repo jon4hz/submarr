@@ -1,6 +1,10 @@
 package common
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	tea "github.com/charmbracelet/bubbletea"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+)
 
 const Ellipsis = "…"
 
@@ -31,4 +35,8 @@ func NewErrCmds(descriptions ...string) []tea.Cmd {
 		cmds = append(cmds, NewErrCmd(description))
 	}
 	return cmds
+}
+
+func Title(s string) string {
+	return cases.Title(language.English).String(s)
 }

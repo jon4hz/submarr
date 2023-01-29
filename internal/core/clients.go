@@ -1,27 +1,14 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/jon4hz/subrr/internal/logging"
 )
 
-type ClientsItem interface {
-	fmt.Stringer
-
-	Render(itemWidth int, isSelected bool) string
-	FilterValue() string
-}
-
 type FetchClientsMsg struct {
 	Items  []list.Item
 	Errors []string
-}
-
-type FetchClientsErrorMsg struct {
-	Description string
 }
 
 func (c *Client) FetchClients() tea.Cmd {
@@ -35,14 +22,14 @@ func (c *Client) FetchClients() tea.Cmd {
 				logging.Log.Error().Err(err).Msg("Failed to initialize sonarr")
 				errors = append(errors, "Failed to initialize sonarr")
 			}
-			items = append(items, c.Sonarr.ListItem())
+			items = append(items, c.Sonarr.ClientListItem())
 		}
 		if c.Radarr != nil {
 			if err := c.Radarr.Init(); err != nil {
 				logging.Log.Error().Err(err).Msg("Failed to initialize radarr")
 				errors = append(errors, "Failed to initialize radarr")
 			}
-			items = append(items, c.Radarr.ListItem())
+			items = append(items, c.Radarr.ClientListItem())
 		}
 
 		return FetchClientsMsg{

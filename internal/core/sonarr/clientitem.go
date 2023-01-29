@@ -3,8 +3,7 @@ package sonarr
 import (
 	"fmt"
 
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
+	"github.com/jon4hz/subrr/internal/tui/common"
 )
 
 type ClientItem struct {
@@ -15,7 +14,7 @@ func (i ClientItem) String() string { return "sonarr" }
 
 func (i ClientItem) FilterValue() string { return "" }
 
-func (i ClientItem) Title() string { return cases.Title(language.AmericanEnglish).String(i.String()) }
+func (i ClientItem) Title() string { return common.Title(i.String()) }
 
 func (i ClientItem) Available() bool { return i.c.available }
 
