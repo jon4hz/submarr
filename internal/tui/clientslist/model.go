@@ -6,7 +6,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core"
-	"github.com/jon4hz/subrr/internal/tui/common"
+	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	zone "github.com/lrstanley/bubblezone"
 )
 
@@ -56,7 +56,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		m.clientList.StopSpinner()
 		cmds = append(cmds, m.clientList.SetItems(msg.Items))
 		if len(msg.Errors) > 0 {
-			cmds = append(cmds, common.NewErrCmds(msg.Errors...)...)
+			cmds = append(cmds, statusbar.NewErrCmds(msg.Errors...)...)
 		}
 		return m, tea.Batch(cmds...)
 

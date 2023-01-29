@@ -73,7 +73,7 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 	case sonarr.FetchSeriesResult:
 		m.state = stateReady
 		if msg.Error != nil {
-			cmds = append(cmds, common.NewErrCmd("Failed to fetch series"))
+			cmds = append(cmds, statusbar.NewErrCmd("Failed to fetch series"))
 		}
 		cmds = append(cmds, m.seriesList.SetItems(msg.Items))
 

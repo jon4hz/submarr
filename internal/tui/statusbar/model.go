@@ -117,7 +117,7 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			return m, nil
 		}
 
-	case common.ErrMsg:
+	case ErrMsg:
 		m.msgQueueMu.Lock()
 		m.msgQueue = append(m.msgQueue, newMsgQueueMsg(msg.Error()+" :(", 5, true))
 		m.msgQueueMu.Unlock()
