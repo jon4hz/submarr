@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/bubbles/key"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 )
 
@@ -48,6 +49,12 @@ func NewTitleMsg(title string, opts ...SetTitleOpts) SetTitleMsg {
 	return m
 }
 
+func NewTitleCmd(title string, opts ...SetTitleOpts) tea.Cmd {
+	return func() tea.Msg {
+		return NewTitleMsg(title, opts...)
+	}
+}
+
 type SetMessageOpts func(*SetMessageMsg)
 
 func WithMessageTimeout(timeout int) SetMessageOpts {
@@ -67,8 +74,20 @@ func NewMessageMsg(message string, opts ...SetMessageOpts) SetMessageMsg {
 	return m
 }
 
+func NewMessageCmd(message string, opts ...SetMessageOpts) tea.Cmd {
+	return func() tea.Msg {
+		return NewMessageMsg(message, opts...)
+	}
+}
+
 func NewHelpMsg(h [][]key.Binding) SetHelpMsg {
 	return SetHelpMsg(h)
+}
+
+func NewHelpCmd(h [][]key.Binding) tea.Cmd {
+	return func() tea.Msg {
+		return NewHelpMsg(h)
+	}
 }
 
 type msgQueueMsg struct {
