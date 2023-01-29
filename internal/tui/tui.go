@@ -1,12 +1,17 @@
 package tui
 
 import (
+	"strings"
+
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core"
+	"github.com/jon4hz/subrr/internal/logging"
 	"github.com/jon4hz/subrr/internal/tui/clientslist"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	"github.com/jon4hz/subrr/internal/tui/sonarr"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	zone "github.com/lrstanley/bubblezone"
 )
@@ -21,8 +26,8 @@ type state int
 const (
 	stateUnknown state = iota
 	stateLoading
-	stateError
 	stateReady
+	stateClient
 )
 
 type Model struct {
@@ -47,6 +52,9 @@ type Model struct {
 
 	// state is the current state of the application.
 	state state
+
+	// clientModel is the model of the active client.
+	clientModel common.ClientModel
 }
 
 func New(client *core.Client) *Model {
@@ -86,6 +94,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		// handle some special keys here.
+		// these keys are not handled per state.
 		switch msg.String() {
 		case "ctrl+c":
 			return m, tea.Quit
@@ -100,7 +110,26 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 		}
 
+		// handle keys per state
+		switch m.state {
+		case stateReady:
+			switch {
+			case key.Matches(msg, clientslist.DefaultKeyMap.Select):
+				selected := m.clientslist.SelectedItem()
+				if selected != nil {
+					item, ok := selected.(clientslist.ClientsItem)
+					if !ok {
+						logging.Log.Error().Msg("could not convert selected item to clientsitem")
+						return m, nil
+					}
+					cmd := m.enterClient(item)
+					return m, cmd
+				}
+			}
+		}
+
 	case tea.MouseMsg:
+		// handle mouse events for all states
 		switch msg.Type {
 		case tea.MouseLeft:
 			// handle the statusbar gracefully here.
@@ -111,6 +140,27 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				cmds = append(cmds, cmd)
 				m.setSize(m.totalWidth, m.totalHeight)
 				return m, tea.Batch(cmds...)
+			}
+		}
+
+		// handle mouse events per state
+		switch m.state {
+		case stateReady:
+			switch msg.Type {
+			case tea.MouseLeft:
+				for i, listItem := range m.clientslist.VisibleItems() {
+					item, _ := listItem.(clientslist.ClientsItem)
+					// Check each item to see if it's in bounds.
+					if zone.Get(item.String()).InBounds(msg) {
+						// if so, check if it's the selected item.
+						if i == m.clientslist.Index() {
+							// if so, enter the client.
+							cmd := m.enterClient(item)
+							return m, cmd
+						}
+						break
+					}
+				}
 			}
 		}
 
@@ -143,6 +193,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.clientslist, cmd = m.clientslist.Update(msg)
 		cmds = append(cmds, cmd)
+
+	case stateClient:
+		var cmd tea.Cmd
+		m.clientModel, cmd = m.clientModel.Update(msg)
+		cmds = append(cmds, cmd)
+
+		if m.clientModel.Quit() {
+			return m, tea.Quit
+		}
+
+		if m.clientModel.Back() {
+			m.state = stateReady
+		}
 	}
 
 	return m, tea.Batch(cmds...)
@@ -170,6 +233,25 @@ func (m *Model) setSize(width, height int) {
 	width = width - x
 
 	m.clientslist.SetSize(width, height)
+
+	if m.state == stateClient {
+		m.clientModel.SetSize(width, height)
+	}
+}
+
+func (m *Model) enterClient(item clientslist.ClientsItem) tea.Cmd {
+	if !item.Available() {
+		return nil
+	}
+
+	switch strings.ToLower(item.String()) {
+	case "sonarr":
+		m.state = stateClient
+		m.clientModel = sonarr.New(m.client.Sonarr)
+		return m.clientModel.Init()
+	}
+
+	return nil
 }
 
 func (m Model) View() string {
@@ -181,6 +263,14 @@ func (m Model) View() string {
 		return zone.Scan(
 			lipgloss.JoinVertical(lipgloss.Top,
 				docStyle.Render(m.clientslist.View()),
+				m.statusbar.View(),
+			),
+		)
+
+	case stateClient:
+		return zone.Scan(
+			lipgloss.JoinVertical(lipgloss.Top,
+				docStyle.Render(m.clientModel.View()),
 				m.statusbar.View(),
 			),
 		)

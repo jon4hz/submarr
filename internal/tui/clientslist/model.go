@@ -99,6 +99,18 @@ func (m Model) Help() [][]key.Binding {
 	return DefaultKeyMap.FullHelp()
 }
 
+func (m Model) SelectedItem() list.Item {
+	return m.clientList.SelectedItem()
+}
+
+func (m Model) VisibleItems() []list.Item {
+	return m.clientList.VisibleItems()
+}
+
+func (m Model) Index() int {
+	return m.clientList.Index()
+}
+
 func (m Model) View() string {
 	return m.clientList.View()
 }
