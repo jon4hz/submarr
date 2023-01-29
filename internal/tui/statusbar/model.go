@@ -1,7 +1,6 @@
 package statusbar
 
 import (
-	"sync"
 	"time"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -60,8 +59,6 @@ type Model struct {
 	TitleForeground lipgloss.TerminalColor
 	TitleBackground lipgloss.TerminalColor
 
-	msgQueue     []msgQueueMsg
-	msgQueueMu   *sync.Mutex
 	message      *msgQueueMsg
 	messageTimer *time.Timer
 	placeholder  string
@@ -74,8 +71,6 @@ func New(title string) Model {
 	m := Model{
 		Title:       title,
 		placeholder: "Bliblablub Placeholder",
-		msgQueue:    make([]msgQueueMsg, 0),
-		msgQueueMu:  &sync.Mutex{},
 		help:        help.New(),
 	}
 	m.help.ShowAll = true
@@ -117,33 +112,35 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 			return m, nil
 		}
 
-	case ErrMsg:
-		m.msgQueueMu.Lock()
-		m.msgQueue = append(m.msgQueue, newMsgQueueMsg(msg.Error()+" :(", 5, true))
-		m.msgQueueMu.Unlock()
+	case SetErrMsg:
+		m.message = newMsgQueueMsg(msg.Error()+" :(", 5, true)
+		if m.messageTimer != nil {
+			m.messageTimer.Stop()
+		}
+		m.messageTimer = time.NewTimer(m.message.timeout)
 
-	case SetMessageMsg:
-		m.msgQueueMu.Lock()
-		m.msgQueue = append(m.msgQueue, newMsgQueueMsg(msg.message, msg.timeout, false))
-		m.msgQueueMu.Unlock()
-
-	case dispatchMsgQueueMsg:
-		m.msgQueueMu.Lock()
-		defer m.msgQueueMu.Unlock()
-
-		// if the queue is empty, we set the message to nil and return
-		if len(m.msgQueue) == 0 {
-			m.message = nil
-			return m, nil
+		return m, func() tea.Msg {
+			<-m.messageTimer.C
+			return messageTimeoutMsg{}
 		}
 
-		// get the next message from the queue and set it as the current message
-		im := m.msgQueue[0]
-		m.message = &im
-		// remove the message from the queue
-		m.msgQueue = m.msgQueue[1:]
-		// start a timer to remove the message after the timeout and dispatch a new message
-		return m, tea.Tick(im.timeout, func(t time.Time) tea.Msg { return dispatchMsgQueueMsg{} })
+	case SetMessageMsg:
+		m.message = newMsgQueueMsg(msg.message, msg.timeout, false)
+		if m.messageTimer != nil {
+			m.messageTimer.Stop()
+		}
+		m.messageTimer = time.NewTimer(m.message.timeout)
+
+		return m, func() tea.Msg {
+			<-m.messageTimer.C
+			return messageTimeoutMsg{}
+		}
+
+	case messageTimeoutMsg:
+		m.message = nil
+		if m.messageTimer != nil {
+			m.messageTimer.Stop()
+		}
 
 	case SetTitleMsg:
 		m.Title = msg.title
@@ -158,15 +155,6 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 	case SetHelpMsg:
 		m.helpKeys = msg
 		return m, nil
-	}
-
-	m.msgQueueMu.Lock()
-	defer m.msgQueueMu.Unlock()
-	// if the queue has only one message and no message is currently displayed, we trigger a new dispatcher
-	if len(m.msgQueue) == 1 && m.message == nil {
-		return m, func() tea.Msg {
-			return dispatchMsgQueueMsg{}
-		}
 	}
 
 	return m, nil

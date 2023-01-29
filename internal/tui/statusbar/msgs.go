@@ -20,6 +20,10 @@ type (
 		timeout int
 	}
 
+	SetErrMsg struct {
+		Description string
+	}
+
 	SetHelpMsg [][]key.Binding
 )
 
@@ -90,16 +94,12 @@ func NewHelpCmd(h [][]key.Binding) tea.Cmd {
 	}
 }
 
-type ErrMsg struct {
-	Description string
-}
-
-func (e ErrMsg) Error() string {
+func (e SetErrMsg) Error() string {
 	return e.Description
 }
 
-func NewErrMsg(description string) ErrMsg {
-	return ErrMsg{Description: description}
+func NewErrMsg(description string) SetErrMsg {
+	return SetErrMsg{Description: description}
 }
 
 func NewErrCmd(description string) tea.Cmd {
@@ -125,12 +125,12 @@ type msgQueueMsg struct {
 	timeout time.Duration
 }
 
-type dispatchMsgQueueMsg struct{}
-
-func newMsgQueueMsg(msg string, timeout int, isError bool) msgQueueMsg {
-	return msgQueueMsg{
+func newMsgQueueMsg(msg string, timeout int, isError bool) *msgQueueMsg {
+	return &msgQueueMsg{
 		Message: msg,
 		isError: isError,
 		timeout: time.Second * time.Duration(timeout),
 	}
 }
+
+type messageTimeoutMsg struct{}
