@@ -1,8 +1,6 @@
 package radarr
 
 import (
-	"errors"
-
 	"github.com/jon4hz/subrr/pkg/radarr"
 )
 
@@ -43,8 +41,8 @@ func (c *Client) Init() error {
 	}
 	c.queued = int(queue.TotalRecords) */
 
-	//return nil
-	return errors.New("test")
+	return nil
+	//return errors.New("test")
 }
 
 func (c *Client) ClientListItem() ClientItem {

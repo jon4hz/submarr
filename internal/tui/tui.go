@@ -187,6 +187,14 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				statusbar.NewHelpCmd(m.clientslist.Help()),
 			)
 		}
+
+	// also hijack the statusbar.SetHelpMsg because that can have an impact on the layout
+	case statusbar.SetHelpMsg:
+		var cmd tea.Cmd
+		m.statusbar, cmd = m.statusbar.Update(msg)
+		cmds = append(cmds, cmd)
+		m.setSize(m.totalWidth, m.totalHeight)
+		return m, tea.Batch(cmds...)
 	}
 
 	var cmd tea.Cmd
@@ -213,6 +221,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			cmds = append(cmds,
 				// reset the title of the statusbar
 				statusbar.NewTitleCmd("Subrr", statusbar.WithTitleForeground(lipgloss.Color("#39FF14"))),
+				// reset the help of the statusbar
+				statusbar.NewHelpCmd(m.clientslist.Help()),
 			)
 		}
 	}

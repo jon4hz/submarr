@@ -1,6 +1,7 @@
 package sonarr
 
 import (
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -45,7 +46,12 @@ func New(c *sonarr.Client, width, height int) *Model {
 
 	m.seriesList.DisableQuitKeybindings()
 	m.seriesList.Title = "Series"
+	m.seriesList.Styles.Title = m.seriesList.Styles.Title.Copy().
+		Background(lipgloss.Color("#7B61FF"))
 	m.seriesList.SetShowHelp(false)
+
+	m.seriesList.FilterInput.Prompt = "Search: "
+	m.seriesList.FilterInput.CursorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#00CCFF"))
 
 	return &m
 }
@@ -53,6 +59,7 @@ func New(c *sonarr.Client, width, height int) *Model {
 func (m Model) Init() tea.Cmd {
 	return tea.Batch(
 		statusbar.NewTitleCmd("Sonarr", statusbar.WithTitleForeground(lipgloss.Color("#00CCFF"))),
+		statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
 		m.spinner.Tick,
 		m.client.FetchSeries(),
 	)
@@ -62,15 +69,35 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
+		// general keybindings for all states
 		switch msg.String() {
 		case "esc":
-			m.IsBack = true
+			if !m.seriesList.SettingFilter() && !m.seriesList.IsFiltered() {
+				m.IsBack = true
+			}
 
 		case "q":
-			m.IsQuit = true
+			if !m.seriesList.SettingFilter() {
+				m.IsQuit = true
+			}
+		}
+
+		// keybindings for specific states
+		switch m.state {
+		case stateReady:
+			switch {
+			case key.Matches(msg, DefaultKeyMap.Refresh):
+				cmds = append(cmds,
+					m.client.FetchSeries(),
+					m.seriesList.StartSpinner(),
+					statusbar.NewMessageCmd("Reloading...", statusbar.WithMessageTimeout(2)),
+				)
+			}
 		}
 
 	case sonarr.FetchSeriesResult:
+		m.seriesList.StopSpinner()
+
 		m.state = stateReady
 		if msg.Error != nil {
 			cmds = append(cmds, statusbar.NewErrCmd("Failed to fetch series"))
