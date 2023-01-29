@@ -84,6 +84,24 @@ func (c *Client) FetchSeries() tea.Cmd {
 			return series[i].SortTitle < series[j].SortTitle
 		})
 
+		// Fetch all quality profiles
+		profiles, err := c.sonarr.GetQualityProfiles(context.Background())
+		if err != nil {
+			logging.Log.Error().Err(err).Msg("Failed to fetch quality profiles")
+			return FetchSeriesResult{Error: err}
+		}
+
+		// Group profiles by ID
+		profilesByID := make(map[int32]sonarr.QualityProfileResource)
+		for _, p := range profiles {
+			profilesByID[p.ID] = p
+		}
+
+		// Add the quality profile name to the series
+		for i := range series {
+			series[i].ProfileName = profilesByID[series[i].QualityProfileID].Name
+		}
+
 		var items []list.Item
 		for _, s := range series {
 			items = append(items, SeriesItem{s})

@@ -109,8 +109,7 @@ func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 	}
 
 	seriesType := common.Title(string(item.Series.SeriesType))
-	//profile := common.Title(item.Series.ProfileName)
-	profile := "TODO"
+	profile := item.Series.ProfileName
 	profileStats := lipgloss.JoinHorizontal(lipgloss.Top,
 		lipgloss.NewStyle().Foreground(textColor).Render(seriesType),
 		separator,
@@ -118,7 +117,7 @@ func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 	)
 	profileStats = truncate.StringWithTail(profileStats, uint(itemWidth), common.Ellipsis)
 
-	network := common.Title(item.Series.Network)
+	network := item.Series.Network
 	var seriesStatus string
 	switch item.Series.Status {
 	case sonarrAPI.Continuing:

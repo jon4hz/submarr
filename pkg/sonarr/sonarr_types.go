@@ -433,3 +433,29 @@ const (
 	Usenet                  DownloadProtocol = "usenet"
 	Torrent                 DownloadProtocol = "torrent"
 )
+
+type QualityProfileResource struct {
+	ID                int32  `json:"id"`
+	Name              string `json:"name"`
+	UpgradeAllowed    bool   `json:"upgradeAllowed"`
+	Cutoff            int32
+	Items             []QualityProfileQualityItemResource `json:"items"`
+	MinFormatScore    int32                               `json:"minFormatScore"`
+	CutoffFormatScore int32                               `json:"cutoffFormatScore"`
+	FormatItems       []ProfileFormatItemResource         `json:"formatItems"`
+}
+
+type QualityProfileQualityItemResource struct {
+	ID      int32   `json:"id"`
+	Name    string  `json:"name"`
+	Quality Quality `json:"quality"`
+	Items   []any   `json:"items"`
+	Allowed bool    `json:"allowed"`
+}
+
+type ProfileFormatItemResource struct {
+	ID     int32  `json:"id"`
+	Format int32  `json:"format"`
+	Name   string `json:"name"`
+	Score  int32  `json:"score"`
+}

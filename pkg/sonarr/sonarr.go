@@ -2,6 +2,7 @@ package sonarr
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 
 	"github.com/jon4hz/subrr/internal/config"
@@ -93,4 +94,24 @@ func (c *Client) GetAllEpisodes(ctx context.Context, seriesID int32) ([]EpisodeR
 		return nil, err
 	}
 	return res, nil
+}
+
+// GetQualityProfiles returns a list of all quality profiles
+func (c *Client) GetQualityProfiles(ctx context.Context) ([]QualityProfileResource, error) {
+	var res []QualityProfileResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/qualityprofile", &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// GetQualityProfile returns a quality profile by its ID
+func (c *Client) GetQualityProfile(ctx context.Context, id int) (*QualityProfileResource, error) {
+	var res QualityProfileResource
+	_, err := c.http.Get(ctx, c.cfg.Host, fmt.Sprintf("/api/v3/qualityprofile/%d", id), &res)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
