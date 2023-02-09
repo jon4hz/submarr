@@ -30,7 +30,7 @@ var (
 
 func (d Delegate) Height() int { return 6 }
 
-func (d Delegate) Spacing() int { return 1 }
+func (d Delegate) Spacing() int { return 0 }
 
 func (d Delegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
 	return nil

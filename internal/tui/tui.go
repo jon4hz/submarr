@@ -59,7 +59,7 @@ type Model struct {
 	state state
 
 	// clientModel is the model of the active client.
-	clientModel common.ClientModel
+	clientModel common.SubModel
 }
 
 func New(client *core.Client) *Model {

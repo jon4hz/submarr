@@ -2,10 +2,10 @@ package common
 
 import tea "github.com/charmbracelet/bubbletea"
 
-type ClientModel interface {
+type SubModel interface {
 	// some bubbleteaish Model methods
 	Init() tea.Cmd
-	Update(msg tea.Msg) (ClientModel, tea.Cmd)
+	Update(msg tea.Msg) (SubModel, tea.Cmd)
 	View() string
 
 	// some custom methods

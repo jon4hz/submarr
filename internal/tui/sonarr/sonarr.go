@@ -8,8 +8,10 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core/sonarr"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	"github.com/jon4hz/subrr/internal/tui/sonarr/serie"
 	"github.com/jon4hz/subrr/internal/tui/sonarr/series"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
+	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
 	zone "github.com/lrstanley/bubblezone"
 )
 
@@ -28,6 +30,8 @@ type Model struct {
 	client *sonarr.Client
 
 	seriesList list.Model
+
+	seriesDetails common.SubModel
 
 	spinner        spinner.Model
 	loadingMessage string
@@ -67,36 +71,47 @@ func (m Model) Init() tea.Cmd {
 	)
 }
 
-func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
+func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		// general keybindings for all states
-		switch msg.String() {
-		case "esc":
-			if !m.seriesList.SettingFilter() && !m.seriesList.IsFiltered() {
+		// handle keybindings per state
+		switch m.state {
+		case stateLoading:
+			switch {
+			case key.Matches(msg, DefaultKeyMap.Back):
 				m.IsBack = true
-			}
 
-		case "q":
-			if !m.seriesList.SettingFilter() {
+			case key.Matches(msg, DefaultKeyMap.Quit):
 				m.IsQuit = true
 			}
-		}
 
-		// keybindings for specific states
-		switch m.state {
 		case stateSeries:
 			switch {
+			case key.Matches(msg, DefaultKeyMap.Back):
+				if !m.seriesList.SettingFilter() && !m.seriesList.IsFiltered() {
+					m.IsBack = true
+				}
+
+			case key.Matches(msg, DefaultKeyMap.Quit):
+				if !m.seriesList.SettingFilter() {
+					m.IsQuit = true
+				}
+
 			case key.Matches(msg, DefaultKeyMap.Reload):
-				cmds = append(cmds,
-					m.client.FetchSeries(),
-					m.seriesList.StartSpinner(),
-					statusbar.NewMessageCmd("Reloading...", statusbar.WithMessageTimeout(2)),
-				)
+				if !m.seriesList.SettingFilter() {
+					cmds = append(cmds,
+						m.client.FetchSeries(),
+						m.seriesList.StartSpinner(),
+						statusbar.NewMessageCmd("Reloading...", statusbar.WithMessageTimeout(2)),
+					)
+				}
 
 			case key.Matches(msg, DefaultKeyMap.Select):
+				item, _ := m.seriesList.SelectedItem().(sonarr.SeriesItem)
 				if !m.seriesList.SettingFilter() {
+					cmd := m.selectSeries(&item.Series)
+					return m, cmd
 				}
 			}
 		}
@@ -119,8 +134,8 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 					if zone.Get(item.Series.Title).InBounds(msg) {
 						// if we click on an already selected item, open the details
 						if i == m.seriesList.Index() {
-							// TODO: open series details
-
+							cmd := m.selectSeries(&item.Series)
+							return m, cmd
 						}
 						// else select the item
 						m.seriesList.Select(i)
@@ -131,15 +146,20 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 		}
 
 	case sonarr.FetchSeriesResult:
-		m.seriesList.StopSpinner()
+		switch m.state {
+		case stateSeriesDetails:
+			break
+		default:
+			m.seriesList.StopSpinner()
 
-		m.state = stateSeries
-		if msg.Error != nil {
-			cmds = append(cmds, statusbar.NewErrCmd("Failed to fetch series"))
+			m.state = stateSeries
+			if msg.Error != nil {
+				cmds = append(cmds, statusbar.NewErrCmd("Failed to fetch series"))
+			}
+			cmds = append(cmds, m.seriesList.SetItems(msg.Items))
+
+			return m, tea.Batch(cmds...)
 		}
-		cmds = append(cmds, m.seriesList.SetItems(msg.Items))
-
-		return m, tea.Batch(cmds...)
 	}
 
 	switch m.state {
@@ -152,9 +172,33 @@ func (m *Model) Update(msg tea.Msg) (common.ClientModel, tea.Cmd) {
 		var cmd tea.Cmd
 		m.seriesList, cmd = m.seriesList.Update(msg)
 		cmds = append(cmds, cmd)
+
+	case stateSeriesDetails:
+		var cmd tea.Cmd
+		m.seriesDetails, cmd = m.seriesDetails.Update(msg)
+		cmds = append(cmds, cmd)
+
+		if m.seriesDetails.Quit() {
+			return m, tea.Quit
+		}
+
+		if m.seriesDetails.Back() {
+			m.state = stateSeries
+			cmds = append(cmds,
+				// reset the help of the statusbar
+				statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
+			)
+		}
 	}
 
 	return m, tea.Batch(cmds...)
+}
+
+func (m *Model) selectSeries(series *sonarrAPI.SeriesResource) tea.Cmd {
+	m.state = stateSeriesDetails
+	m.seriesDetails = serie.New(m.client, series, m.Width, m.Height)
+
+	return m.seriesDetails.Init()
 }
 
 func (m *Model) SetSize(width, height int) {
@@ -162,14 +206,22 @@ func (m *Model) SetSize(width, height int) {
 	m.Height = height
 
 	m.seriesList.SetSize(width, height)
+
+	if m.state == stateSeriesDetails {
+		m.seriesDetails.SetSize(width, height)
+	}
 }
 
 func (m Model) View() string {
 	switch m.state {
 	case stateLoading:
 		return m.spinner.View() + "  " + m.loadingMessage
+
 	case stateSeries:
 		return m.seriesList.View()
+
+	case stateSeriesDetails:
+		return m.seriesDetails.View()
 	}
 
 	return "unknown state"
