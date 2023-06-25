@@ -73,3 +73,10 @@ func (c *Client) SetSerie(serie *sonarr.SeriesResource) {
 func (c *Client) GetSerie() *sonarr.SeriesResource {
 	return c.serie
 }
+
+func (c *Client) GetSerieQualityProfile() *sonarr.QualityProfileResource {
+	if c.qualityProfiles == nil {
+		return nil
+	}
+	return c.qualityProfiles[c.serie.QualityProfileID]
+}

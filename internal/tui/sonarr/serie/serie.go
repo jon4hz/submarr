@@ -3,6 +3,7 @@ package serie
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -42,10 +43,10 @@ type Model struct {
 	selectedCell cell
 
 	client *sonarr.Client
-	serie  *sonarrAPI.SeriesResource
 
-	infoViewport viewport.Model
-	seasonsList  list.Model
+	infoViewport  viewport.Model
+	statsViewport viewport.Model
+	seasonsList   list.Model
 }
 
 var (
@@ -65,12 +66,12 @@ var (
 
 func New(sonarr *sonarr.Client, width, heigth int) *Model {
 	m := Model{
-		flexBox:      flexbox.NewHorizontal(width, heigth),
-		client:       sonarr,
-		serie:        sonarr.GetSerie(),
-		infoViewport: viewport.New(0, 0),
-		selectedCell: seasonsCell,
-		seasonsList:  list.New(newSeasonsItems(sonarr.GetSerie()), seasons.Delegate{}, 0, 0),
+		flexBox:       flexbox.NewHorizontal(width, heigth),
+		client:        sonarr,
+		infoViewport:  viewport.New(0, 0),
+		statsViewport: viewport.New(0, 0),
+		selectedCell:  seasonsCell,
+		seasonsList:   list.New(newSeasonsItems(sonarr.GetSerie()), seasons.Delegate{}, 0, 0),
 	}
 
 	m.Width = width
@@ -99,6 +100,7 @@ func New(sonarr *sonarr.Client, width, heigth int) *Model {
 	m.SetSize(width, heigth)
 	m.updateFocus()
 	m.redraw()
+	m.updateStatsViewport()
 
 	return &m
 }
@@ -170,6 +172,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		if msg.Error != nil {
 			return m, statusbar.NewMessageCmd(msg.Error.Error(), statusbar.WithMessageTimeout(2))
 		}
+		m.updateStatsViewport()
 		return m, m.seasonsList.SetItems(newSeasonsItems(msg.Serie))
 
 	case tea.MouseMsg:
@@ -209,7 +212,9 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		return m, cmd
 
 	case statsCell:
-		return m, nil
+		var cmd tea.Cmd
+		m.statsViewport, cmd = m.statsViewport.Update(msg)
+		return m, cmd
 
 	case seasonsCell:
 		var cmd tea.Cmd
@@ -231,6 +236,9 @@ func (m *Model) SetSize(width, height int) {
 
 	m.infoViewport.Height = max(m.cellmap[infoCell].GetContentHeight()-infoCellStyle.GetVerticalPadding(), 0) // make sure we dont get a negative value
 	m.infoViewport.Width = max(m.cellmap[infoCell].GetContentWidth()-infoCellStyle.GetHorizontalPadding(), 0) // make sure we dont get a negative value
+
+	m.statsViewport.Height = max(m.cellmap[statsCell].GetContentHeight()-statsCellStyle.GetVerticalPadding(), 0)
+	m.statsViewport.Width = max(m.cellmap[statsCell].GetContentWidth()-statsCellStyle.GetHorizontalPadding(), 0)
 
 	seasonListHeight := max(m.cellmap[seasonsCell].GetContentHeight()-seasonsCellStyle.GetVerticalPadding(), 0)
 	seasonListWidth := max(m.cellmap[seasonsCell].GetContentWidth()-seasonsCellStyle.GetHorizontalPadding(), 0)
@@ -282,6 +290,106 @@ func (m *Model) updateFocus() {
 	m.cellmap[seasonsCell].SetStyle(seasonS)
 }
 
+func (m *Model) updateStatsViewport() {
+	serie := m.client.GetSerie()
+	if serie == nil {
+		return
+	}
+	var (
+		s            strings.Builder
+		contentWidth = m.statsViewport.Width - 1
+	)
+
+	s.WriteString("Monitoring: ")
+	if serie.Monitored {
+		s.WriteString("Yes")
+	} else {
+		s.WriteString("No")
+	}
+	s.WriteByte('\n')
+
+	s.WriteString("Type: ")
+	s.WriteString(common.Title(string(serie.SeriesType)))
+	s.WriteByte('\n')
+
+	s.WriteString("Path: ")
+	s.WriteString(fmt.Sprintf("%q", serie.Path))
+	s.WriteByte('\n')
+
+	s.WriteString("Quality: ")
+
+	qp := m.client.GetSerieQualityProfile()
+	if qp != nil {
+		s.WriteString(qp.Name)
+	} else {
+		s.WriteString("Unknown")
+	}
+	s.WriteByte('\n')
+
+	s.WriteString("Language: ")
+	if serie.OriginalLanguage != nil {
+		s.WriteString(serie.OriginalLanguage.Name)
+	} else {
+		s.WriteString("Unknown")
+	}
+	s.WriteByte('\n')
+
+	s.WriteByte('\n')
+
+	s.WriteString("Status: ")
+	s.WriteString(common.Title(string(serie.Status)))
+	s.WriteByte('\n')
+
+	s.WriteString("Next Airing: ")
+	if serie.Status == "continuing" {
+		s.WriteString(serie.NextAiring.String())
+	} else {
+		s.WriteString("Series Ended")
+	}
+	s.WriteByte('\n')
+
+	s.WriteString("Added on: ")
+	s.WriteString(serie.Added.String())
+	s.WriteByte('\n')
+
+	s.WriteByte('\n')
+
+	s.WriteString("Year: ")
+	s.WriteString(strconv.FormatInt(int64(serie.Year), 10))
+	s.WriteByte('\n')
+
+	s.WriteString("Network: ")
+	s.WriteString(common.Title(serie.Network))
+	s.WriteByte('\n')
+
+	s.WriteString("Runtime: ")
+	s.WriteString(strconv.FormatInt(int64(serie.Runtime), 10) + "m")
+	s.WriteByte('\n')
+
+	s.WriteString("Rating: ")
+	s.WriteString(serie.Certification)
+	s.WriteByte('\n')
+
+	s.WriteString("Genres: ")
+	for i, genre := range serie.Genres {
+		s.WriteString(genre)
+		if i < len(serie.Genres)-1 {
+			s.WriteString(", ")
+		}
+	}
+	s.WriteByte('\n')
+
+	s.WriteString("Alternate Titles: ")
+	for i, title := range serie.AlternateTitles {
+		s.WriteString(title.Title)
+		if i < len(serie.AlternateTitles)-1 {
+			s.WriteString(", ")
+		}
+	}
+
+	m.statsViewport.SetContent(lipgloss.PlaceHorizontal(contentWidth, lipgloss.Center, s.String()))
+}
+
 func (m *Model) redraw() {
 	m.cellmap[infoCell].SetContent(m.renderInfoCell())
 	m.cellmap[statsCell].SetContent(m.renderStatsCell())
@@ -305,9 +413,9 @@ func (m *Model) renderInfoCell() string {
 		contentWidth = m.infoViewport.Width - 1
 	)
 
-	s.WriteString(titleStyle.Width(contentWidth).Render(m.serie.Title))
+	s.WriteString(titleStyle.Width(contentWidth).Render(m.client.GetSerie().Title))
 	s.WriteByte('\n')
-	s.WriteString(descStyle.Width(contentWidth).Render(m.serie.Overview))
+	s.WriteString(descStyle.Width(contentWidth).Render(m.client.GetSerie().Overview))
 
 	m.infoViewport.SetContent(s.String())
 
@@ -319,7 +427,7 @@ func (m Model) renderSeasonsCell() string {
 }
 
 func (m Model) renderStatsCell() string {
-	return ""
+	return m.statsViewport.View()
 }
 
 func (m Model) View() string {
