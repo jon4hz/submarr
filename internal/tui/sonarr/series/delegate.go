@@ -94,7 +94,7 @@ func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 	if item.Series.Statistics != nil {
 		episodeCount := fmt.Sprintf("%d/%d (%.0f%%)", item.Series.Statistics.EpisodeFileCount, item.Series.Statistics.EpisodeCount, item.Series.Statistics.PercentOfEpisodes)
 		seasonCount := fmt.Sprintf("%d Seasons", item.Series.Statistics.SeasonCount)
-		diskSize := fmt.Sprintf("%s", humanize.Bytes(uint64(item.Series.Statistics.SizeOnDisk)))
+		diskSize := fmt.Sprintf("%s", humanize.IBytes(uint64(item.Series.Statistics.SizeOnDisk)))
 
 		episodeStats = lipgloss.JoinHorizontal(lipgloss.Top,
 			lipgloss.NewStyle().Foreground(textColor).Render(episodeCount),
