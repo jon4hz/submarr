@@ -339,14 +339,18 @@ func (m *Model) updateStatsViewport() {
 
 	s.WriteString("Next Airing: ")
 	if serie.Status == "continuing" {
-		s.WriteString(serie.NextAiring.String())
+		if serie.NextAiring.IsZero() {
+			s.WriteString("Unknown")
+		} else {
+			s.WriteString(serie.NextAiring.Local().Format("January 2, 2006 - 15:04"))
+		}
 	} else {
 		s.WriteString("Series Ended")
 	}
 	s.WriteByte('\n')
 
 	s.WriteString("Added on: ")
-	s.WriteString(serie.Added.String())
+	s.WriteString(serie.Added.Local().Format("January 2, 2006"))
 	s.WriteByte('\n')
 
 	s.WriteByte('\n')
@@ -356,7 +360,7 @@ func (m *Model) updateStatsViewport() {
 	s.WriteByte('\n')
 
 	s.WriteString("Network: ")
-	s.WriteString(common.Title(serie.Network))
+	s.WriteString(serie.Network)
 	s.WriteByte('\n')
 
 	s.WriteString("Runtime: ")
