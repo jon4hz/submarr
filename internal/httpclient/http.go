@@ -108,8 +108,7 @@ func (c *client) doRequest(ctx context.Context, base, endpoint, method string, e
 		return 0, err
 	}
 
-	switch resp.StatusCode {
-	case 200:
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		if expRes != nil {
 			err = json.Unmarshal(body, expRes)
 			if err != nil {
@@ -117,13 +116,13 @@ func (c *client) doRequest(ctx context.Context, base, endpoint, method string, e
 			}
 		}
 		return resp.StatusCode, nil
+	}
 
+	switch resp.StatusCode {
 	case 401:
 		return resp.StatusCode, ErrUnauthorized
-
 	case 404:
 		return resp.StatusCode, ErrNotFound
-
 	default:
 		return resp.StatusCode, fmt.Errorf("%s", body)
 	}
