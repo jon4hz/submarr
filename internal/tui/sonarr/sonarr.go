@@ -55,6 +55,7 @@ func New(c *sonarr.Client, width, height int) *Model {
 	m.seriesList.Styles.Title = m.seriesList.Styles.Title.Copy().
 		Background(lipgloss.Color("#7B61FF"))
 	m.seriesList.SetShowHelp(false)
+	m.seriesList.InfiniteScrolling = true
 
 	m.seriesList.FilterInput.Prompt = "Search: "
 	m.seriesList.FilterInput.CursorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#00CCFF"))
