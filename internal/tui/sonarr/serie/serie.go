@@ -28,9 +28,8 @@ type cell int
 
 const (
 	infoCell cell = iota
-	//statsCell
 	seasonsCell
-	historyCell
+	statsCell
 )
 
 var cellMap = map[cell]*flexbox.Cell{}
@@ -58,41 +57,37 @@ var (
 			MarginLeft(2).
 			Padding(0, 2, 1, 2)
 
-	historyCellStyle = cellStyle.Copy().
-				MarginLeft(2)
-
-	statsCellStyle = cellStyle.Copy()
+	statsCellStyle = cellStyle.Copy().
+			MarginLeft(2)
 
 	seasonsCellStyle = cellStyle.Copy()
 )
 
-func New(sonarr *sonarr.Client, serie *sonarrAPI.SeriesResource, width, heigth int) *Model {
+func New(sonarr *sonarr.Client, width, heigth int) *Model {
 	m := Model{
 		flexBox:      flexbox.NewHorizontal(width, heigth),
 		client:       sonarr,
-		serie:        serie,
+		serie:        sonarr.GetSerie(),
 		infoViewport: viewport.New(0, 0),
-		selectedCell: infoCell,
-		seasonsList:  list.New(newSeasonsItems(serie), seasons.Delegate{}, 0, 0),
+		selectedCell: seasonsCell,
+		seasonsList:  list.New(newSeasonsItems(sonarr.GetSerie()), seasons.Delegate{}, 0, 0),
 	}
 
 	m.Width = width
 	m.Height = heigth
 
 	m.cellmap = map[cell]*flexbox.Cell{
-		infoCell: flexbox.NewCell(1, 1).SetStyle(infoCellStyle).SetID("info"),
-		//statsCell:   flexbox.NewCell(1, 1).SetStyle(statsCellStyle).SetID("stats"),
-		historyCell: flexbox.NewCell(1, 1).SetStyle(historyCellStyle).SetID("history").SetContent("History"),
+		infoCell:    flexbox.NewCell(1, 2).SetStyle(infoCellStyle).SetID("info"),
+		statsCell:   flexbox.NewCell(1, 5).SetStyle(statsCellStyle).SetID("stats"),
 		seasonsCell: flexbox.NewCell(1, 1).SetStyle(seasonsCellStyle).SetID("Seasons"),
 	}
 
 	columns := []*flexbox.Column{
 		m.flexBox.NewColumn().AddCells(
 			m.cellmap[infoCell],
-			m.cellmap[historyCell],
+			m.cellmap[statsCell],
 		),
 		m.flexBox.NewColumn().AddCells(
-			//m.cellmap[statsCell],
 			m.cellmap[seasonsCell],
 		),
 	}
@@ -128,21 +123,54 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, DefaultKeyMap.Back):
-			m.IsBack = true
-			return m, nil
+			if !m.seasonsList.SettingFilter() {
+				m.IsBack = true
+				return m, nil
+			}
 
 		case key.Matches(msg, DefaultKeyMap.Quit):
-			m.IsQuit = true
-			return m, nil
+			if !m.seasonsList.SettingFilter() {
+				m.IsQuit = true
+				return m, nil
+			}
 
 		case key.Matches(msg, DefaultKeyMap.Tab):
-			m.focusNext()
-			return m, nil
+			if !m.seasonsList.SettingFilter() {
+				m.focusNext()
+				return m, nil
+			}
 
 		case key.Matches(msg, DefaultKeyMap.ShiftTab):
-			m.focusPrev()
-			return m, nil
+			if !m.seasonsList.SettingFilter() {
+				m.focusPrev()
+				return m, nil
+			}
+
+		case key.Matches(msg, DefaultKeyMap.Reload):
+			if !m.seasonsList.SettingFilter() {
+				return m, tea.Batch(
+					m.client.ReloadSerie(),
+					m.seasonsList.StartSpinner(),
+					statusbar.NewMessageCmd("Reloading serie...", statusbar.WithMessageTimeout(2)),
+				)
+			}
+
+		case key.Matches(msg, DefaultKeyMap.ToggleMonitor):
+			if !m.seasonsList.SettingFilter() {
+				return m, tea.Batch(
+					m.client.ToggleMonitorSeason(m.seasonsList.Index()),
+					m.seasonsList.StartSpinner(),
+					statusbar.NewMessageCmd("Toggling season monitor...", statusbar.WithMessageTimeout(2)),
+				)
+			}
 		}
+
+	case sonarr.FetchSerieResult:
+		m.seasonsList.StopSpinner()
+		if msg.Error != nil {
+			return m, statusbar.NewMessageCmd(msg.Error.Error(), statusbar.WithMessageTimeout(2))
+		}
+		return m, m.seasonsList.SetItems(newSeasonsItems(msg.Serie))
 
 	case tea.MouseMsg:
 		switch m.selectedCell {
@@ -179,10 +207,10 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		var cmd tea.Cmd
 		m.infoViewport, cmd = m.infoViewport.Update(msg)
 		return m, cmd
-	/* case statsCell:
-	return m, nil */
-	case historyCell:
+
+	case statsCell:
 		return m, nil
+
 	case seasonsCell:
 		var cmd tea.Cmd
 		m.seasonsList, cmd = m.seasonsList.Update(msg)
@@ -235,33 +263,28 @@ func (m *Model) focusPrev() {
 
 func (m *Model) updateFocus() {
 	var (
-		infoS = infoCellStyle.Copy()
-		//statsS   = statsCellStyle.Copy()
-		historyS = historyCellStyle.Copy()
-		seasonS  = seasonsCellStyle.Copy()
+		infoS   = infoCellStyle.Copy()
+		statsS  = statsCellStyle.Copy()
+		seasonS = seasonsCellStyle.Copy()
 	)
 
 	switch m.selectedCell {
 	case infoCell:
 		infoS = infoS.Copy().BorderForeground(selectedColor)
-	/* case statsCell:
-	statsS = statsS.Copy().BorderForeground(selectedColor) */
-	case historyCell:
-		historyS = historyS.Copy().BorderForeground(selectedColor)
+	case statsCell:
+		statsS = statsS.Copy().BorderForeground(selectedColor)
 	case seasonsCell:
 		seasonS = seasonS.Copy().BorderForeground(selectedColor)
 	}
 
 	m.cellmap[infoCell].SetStyle(infoS)
-	//m.cellmap[statsCell].SetStyle(statsS)
-	m.cellmap[historyCell].SetStyle(historyS)
+	m.cellmap[statsCell].SetStyle(statsS)
 	m.cellmap[seasonsCell].SetStyle(seasonS)
 }
 
 func (m *Model) redraw() {
 	m.cellmap[infoCell].SetContent(m.renderInfoCell())
-	//m.cellmap[statsCell].     // .SetContent(m.renderStatsCell())
-	//m.cellmap[historyCell].// .SetContent(m.renderHistoryCell())
+	m.cellmap[statsCell].SetContent(m.renderStatsCell())
 	m.cellmap[seasonsCell].SetContent(m.renderSeasonsCell())
 }
 
@@ -291,8 +314,12 @@ func (m *Model) renderInfoCell() string {
 	return m.infoViewport.View()
 }
 
-func (m *Model) renderSeasonsCell() string {
+func (m Model) renderSeasonsCell() string {
 	return m.seasonsList.View()
+}
+
+func (m Model) renderStatsCell() string {
+	return ""
 }
 
 func (m Model) View() string {

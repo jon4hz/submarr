@@ -59,9 +59,9 @@ func renderItem(item ClientsItem, itemWidth int, isSelected bool) string {
 	}
 	title = zone.Mark(item.String(), title)
 
-	status := "available ✅"
+	status := "available " + common.Available
 	if !item.Available() {
-		status = "unavailable ❌"
+		status = "unavailable " + common.Unavailable
 	}
 	status = truncate.StringWithTail(status, uint(width-statusStyle.GetHorizontalPadding()), common.Ellipsis)
 	status = statusStyle.Width(itemWidth - lipgloss.Width(title)).Render(status)

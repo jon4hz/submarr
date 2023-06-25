@@ -54,6 +54,7 @@ type SeriesResource struct {
 	AddOptions        *AddSeriesOptions          `json:"addOptions"`
 	Statistics        *SeriesStatisticsResource  `json:"statistics"`
 	EpisodesChanged   bool                       `json:"episodesChanged"`
+	LanguageProfileID int32                      `json:"languageProfileId,omitempty"` // deprecated
 }
 
 type AlternativeTitleResource struct {
@@ -165,7 +166,7 @@ type QueueResourcePagingResource struct {
 	SortDirection httpclient.SortDirection `json:"sortDirection"`
 	Filters       []PagingResourceFilter   `json:"filters"`
 	TotalRecords  int32                    `json:"totalRecords"`
-	Records       []QueueResource          `json:"records"`
+	Records       []*QueueResource         `json:"records"`
 }
 
 type PagingResourceFilter struct {
@@ -458,4 +459,9 @@ type ProfileFormatItemResource struct {
 	Format int32  `json:"format"`
 	Name   string `json:"name"`
 	Score  int32  `json:"score"`
+}
+
+type EpisodesMonitoredResource struct {
+	EpisodeIDs []int32 `json:"episodeIds"`
+	Monitored  bool    `json:"monitored"`
 }

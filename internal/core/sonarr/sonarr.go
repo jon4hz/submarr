@@ -19,7 +19,16 @@ type Client struct {
 	queued  int32
 
 	// quality profiles by id
-	qualityProfiles map[int32]sonarr.QualityProfileResource
+	qualityProfiles map[int32]*sonarr.QualityProfileResource
+
+	// all available series
+	series []*sonarr.SeriesResource
+
+	// currently selected serie
+	serie *sonarr.SeriesResource
+
+	// all available episodes
+	episodes []*sonarr.EpisodeResource
 }
 
 func New(sonarr *sonarr.Client) *Client {
@@ -55,4 +64,12 @@ func (c *Client) Init() error {
 
 func (c *Client) ClientListItem() ClientItem {
 	return ClientItem{c}
+}
+
+func (c *Client) SetSerie(serie *sonarr.SeriesResource) {
+	c.serie = serie
+}
+
+func (c *Client) GetSerie() *sonarr.SeriesResource {
+	return c.serie
 }

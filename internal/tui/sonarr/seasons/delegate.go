@@ -84,7 +84,11 @@ var (
 )
 
 func renderItem(item SeasonItem, itemWidth int) string {
-	seasonTitle := fmt.Sprintf("Season %d", item.Season.SeasonNumber)
+	symbol := common.Unselected
+	if item.Season.Monitored {
+		symbol = common.Selected
+	}
+	seasonTitle := fmt.Sprintf("%s Season %d", symbol, item.Season.SeasonNumber)
 
 	title := zone.Mark(seasonTitle,
 		truncate.StringWithTail(seasonTitle, uint(itemWidth), common.Ellipsis),

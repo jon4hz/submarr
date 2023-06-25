@@ -18,7 +18,7 @@ type FetchSeriesResult struct {
 }
 
 type SeriesItem struct {
-	Series sonarr.SeriesResource
+	Series *sonarr.SeriesResource
 }
 
 func (s SeriesItem) FilterValue() string {
@@ -27,47 +27,56 @@ func (s SeriesItem) FilterValue() string {
 
 func (c *Client) FetchSeries() tea.Cmd {
 	return func() tea.Msg {
-		series, err := c.sonarr.GetSeries(context.Background())
-		if err != nil {
-			logging.Log.Error().Err(err).Msg("Failed to fetch series")
+		if err := c.fetchSeries(); err != nil {
 			return FetchSeriesResult{Error: err}
-		}
-
-		// sort series by title
-		sort.Slice(series, func(i, j int) bool {
-			return series[i].SortTitle < series[j].SortTitle
-		})
-
-		// Fetch all quality profiles
-		profiles, err := c.sonarr.GetQualityProfiles(context.Background())
-		if err != nil {
-			logging.Log.Error().Err(err).Msg("Failed to fetch quality profiles")
-			return FetchSeriesResult{Error: err}
-		}
-
-		// Group profiles by ID
-		profilesByID := make(map[int32]sonarr.QualityProfileResource)
-		for _, p := range profiles {
-			profilesByID[p.ID] = p
-		}
-
-		// store the profiles in the client so we can use them later
-		c.qualityProfiles = profilesByID
-
-		// Add the quality profile name to the series
-		// And sanitize the title
-		for i := range series {
-			series[i].ProfileName = profilesByID[series[i].QualityProfileID].Name
-			series[i].Title = sanitizeTitle(series[i].Title)
 		}
 
 		// Create a list item for each series
 		var items []list.Item
-		for _, s := range series {
+		for _, s := range c.series {
 			items = append(items, SeriesItem{s})
 		}
 		return FetchSeriesResult{Items: items}
 	}
+}
+
+func (c *Client) fetchSeries() error {
+	series, err := c.sonarr.GetSeries(context.Background())
+	if err != nil {
+		logging.Log.Error().Err(err).Msg("Failed to fetch series")
+		return err
+	}
+
+	// sort series by title
+	sort.Slice(series, func(i, j int) bool {
+		return series[i].SortTitle < series[j].SortTitle
+	})
+
+	// Fetch all quality profiles
+	profiles, err := c.sonarr.GetQualityProfiles(context.Background())
+	if err != nil {
+		logging.Log.Error().Err(err).Msg("Failed to fetch quality profiles")
+		return err
+	}
+
+	// Group profiles by ID
+	profilesByID := make(map[int32]*sonarr.QualityProfileResource)
+	for _, p := range profiles {
+		profilesByID[p.ID] = p
+	}
+
+	// store the profiles in the client so we can use them later
+	c.qualityProfiles = profilesByID
+
+	// Add the quality profile name to the series
+	// And sanitize the title
+	for i := range series {
+		series[i].ProfileName = profilesByID[series[i].QualityProfileID].Name
+		series[i].Title = sanitizeTitle(series[i].Title)
+	}
+
+	c.series = series
+	return nil
 }
 
 // sanitizeTitle replaces all unicode whitespace characters with a single space.

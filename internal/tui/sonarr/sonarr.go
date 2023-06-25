@@ -110,7 +110,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			case key.Matches(msg, DefaultKeyMap.Select):
 				item, _ := m.seriesList.SelectedItem().(sonarr.SeriesItem)
 				if !m.seriesList.SettingFilter() {
-					cmd := m.selectSeries(&item.Series)
+					cmd := m.selectSeries(item.Series)
 					return m, cmd
 				}
 			}
@@ -134,7 +134,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					if zone.Get(item.Series.Title).InBounds(msg) {
 						// if we click on an already selected item, open the details
 						if i == m.seriesList.Index() {
-							cmd := m.selectSeries(&item.Series)
+							cmd := m.selectSeries(item.Series)
 							return m, cmd
 						}
 						// else select the item
@@ -196,7 +196,8 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 
 func (m *Model) selectSeries(series *sonarrAPI.SeriesResource) tea.Cmd {
 	m.state = stateSeriesDetails
-	m.seriesDetails = serie.New(m.client, series, m.Width, m.Height)
+	m.client.SetSerie(series)
+	m.seriesDetails = serie.New(m.client, m.Width, m.Height)
 
 	return m.seriesDetails.Init()
 }
