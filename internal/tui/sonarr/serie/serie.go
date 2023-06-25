@@ -295,10 +295,7 @@ func (m *Model) updateStatsViewport() {
 	if serie == nil {
 		return
 	}
-	var (
-		s            strings.Builder
-		contentWidth = m.statsViewport.Width - 1
-	)
+	var s strings.Builder
 
 	s.WriteString("Monitoring: ")
 	if serie.Monitored {
@@ -387,7 +384,7 @@ func (m *Model) updateStatsViewport() {
 		}
 	}
 
-	m.statsViewport.SetContent(lipgloss.PlaceHorizontal(contentWidth, lipgloss.Center, s.String()))
+	m.statsViewport.SetContent(s.String())
 }
 
 func (m *Model) redraw() {
