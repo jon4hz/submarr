@@ -8,7 +8,6 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core/sonarr"
 	"github.com/jon4hz/subrr/internal/tui/common"
-	"github.com/jon4hz/subrr/internal/tui/sonarr/serie"
 	"github.com/jon4hz/subrr/internal/tui/sonarr/series"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
@@ -195,10 +194,10 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m *Model) selectSeries(series *sonarrAPI.SeriesResource) tea.Cmd {
+func (m *Model) selectSeries(seriesResource *sonarrAPI.SeriesResource) tea.Cmd {
 	m.state = stateSeriesDetails
-	m.client.SetSerie(series)
-	m.seriesDetails = serie.New(m.client, m.Width, m.Height)
+	m.client.SetSerie(seriesResource)
+	m.seriesDetails = series.New(m.client, m.Width, m.Height)
 
 	return m.seriesDetails.Init()
 }

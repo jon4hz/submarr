@@ -1,4 +1,4 @@
-package serie
+package series
 
 import (
 	"github.com/charmbracelet/bubbles/key"

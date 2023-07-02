@@ -1,4 +1,4 @@
-package serie
+package series
 
 import (
 	"fmt"
@@ -398,10 +398,10 @@ func (m *Model) redraw() {
 }
 
 var (
-	titleStyle = lipgloss.NewStyle().
-			Bold(true).
-			Border(lipgloss.NormalBorder(), false, false, true, false). // top, right, bottom, left
-			BorderForeground(subtleColor).
+	seriesTitleStyle = lipgloss.NewStyle().
+				Bold(true).
+				Border(lipgloss.NormalBorder(), false, false, true, false). // top, right, bottom, left
+				BorderForeground(subtleColor).
 		//Margin(0, 2).
 		Align(lipgloss.Center)
 
@@ -414,7 +414,7 @@ func (m *Model) renderInfoCell() string {
 		contentWidth = m.infoViewport.Width - 1
 	)
 
-	s.WriteString(titleStyle.Width(contentWidth).Render(m.client.GetSerie().Title))
+	s.WriteString(seriesTitleStyle.Width(contentWidth).Render(m.client.GetSerie().Title))
 	s.WriteByte('\n')
 	s.WriteString(descStyle.Width(contentWidth).Render(m.client.GetSerie().Overview))
 
