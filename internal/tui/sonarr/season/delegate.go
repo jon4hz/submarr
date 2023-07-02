@@ -72,6 +72,9 @@ var (
 	downloadedMonitoredStyle = lipgloss.NewStyle().
 					Foreground(lipgloss.AdaptiveColor{Light: "#4ECCA3", Dark: "#4ECCA3"})
 
+	downloadingMonitoredStyle = lipgloss.NewStyle().
+					Foreground(lipgloss.AdaptiveColor{Light: "#7B8499", Dark: "#7B8499"})
+
 	unmetCutoffMonitoredStyle = lipgloss.NewStyle().
 					Foreground(lipgloss.AdaptiveColor{Light: "#FF9000", Dark: "#FF9000"})
 
@@ -80,6 +83,9 @@ var (
 
 	downloadedUnmonitoredStyle = lipgloss.NewStyle().
 					Foreground(lipgloss.AdaptiveColor{Light: "#36665E", Dark: "#36665E"})
+
+	downloadingUnmonitoredStyle = lipgloss.NewStyle().
+					Foreground(lipgloss.AdaptiveColor{Light: "#54626E", Dark: "#54626E"})
 
 	unmetCutoffUnmonitoredStyle = lipgloss.NewStyle().
 					Foreground(lipgloss.AdaptiveColor{Light: "#945C1A", Dark: "#945C1A"})
@@ -111,13 +117,23 @@ func renderItem(item EpisodeItem, itemWidth int) string {
 	}
 	episodeStats = truncate.StringWithTail(episodeStats, uint(itemWidth), common.Ellipsis)
 
+	downloadStatus := downloadInQueue(item)
+
 	if item.episode.Monitored {
-		return renderMonitored(item, title, airDate, episodeStats)
+		return renderMonitored(item, title, airDate, episodeStats, downloadStatus)
 	}
-	return renderUnmonitored(item, title, airDate, episodeStats)
+	return renderUnmonitored(item, title, airDate, episodeStats, downloadStatus)
 }
 
-func renderMonitored(item EpisodeItem, title, airDate, episodeStats string) string {
+func downloadInQueue(item EpisodeItem) string {
+	if item.queue == nil {
+		return ""
+	}
+	percentage := (item.queue.Size - item.queue.Sizeleft) / item.queue.Size * 100
+	return fmt.Sprintf("%d%% --- Downloading", int(percentage))
+}
+
+func renderMonitored(item EpisodeItem, title, airDate, episodeStats string, downloadStatus string) string {
 	textColor := selectedForeground
 	title = titleStyle.Foreground(textColor).Render(title)
 
@@ -131,6 +147,10 @@ func renderMonitored(item EpisodeItem, title, airDate, episodeStats string) stri
 	}
 	episodeStats = style.Render(episodeStats)
 
+	if downloadStatus != "" {
+		episodeStats = downloadingMonitoredStyle.Render(downloadStatus)
+	}
+
 	return lipgloss.JoinVertical(lipgloss.Top,
 		title,
 		airDate,
@@ -138,12 +158,13 @@ func renderMonitored(item EpisodeItem, title, airDate, episodeStats string) stri
 	)
 }
 
-func renderUnmonitored(item EpisodeItem, title, airDate, episodeStats string) string {
+func renderUnmonitored(item EpisodeItem, title, airDate, episodeStats string, downloadStatus string) string {
 	textColor := subtileForeground
 	title = titleStyle.Foreground(textColor).Render(title)
 	airDate = lipgloss.NewStyle().Foreground(textColor).Render(airDate)
 
 	style := missingUnmonitoredStyle
+
 	if item.episode.HasFile {
 		if item.episode.EpisodeFile.QualityCutoffNotMet {
 			style = unmetCutoffUnmonitoredStyle
@@ -151,7 +172,12 @@ func renderUnmonitored(item EpisodeItem, title, airDate, episodeStats string) st
 			style = downloadedUnmonitoredStyle
 		}
 	}
+
 	episodeStats = style.Render(episodeStats)
+
+	if downloadStatus != "" {
+		episodeStats = downloadingUnmonitoredStyle.Render(downloadStatus)
+	}
 
 	return lipgloss.JoinVertical(lipgloss.Top,
 		title,

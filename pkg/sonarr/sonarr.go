@@ -151,3 +151,13 @@ func (c *Client) PostCommand(ctx context.Context, params *CommandRequest) (*Comm
 	}
 	return &res, nil
 }
+
+// GetQueueDetails returns the queue for a certain series
+func (c *Client) GetQueueDetails(ctx context.Context, seriesID int32) ([]*QueueResource, error) {
+	var res []*QueueResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/queue/details", &res, httpclient.WithParams(map[string]string{"seriesId": fmt.Sprint(seriesID)}))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

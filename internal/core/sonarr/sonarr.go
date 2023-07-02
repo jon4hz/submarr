@@ -32,6 +32,9 @@ type Client struct {
 
 	// episodes of the currently selected season
 	seasonEpisodes []*sonarr.EpisodeResource
+
+	// queue of the currently selected serie
+	seriesQueue []*sonarr.QueueResource
 }
 
 func New(sonarr *sonarr.Client) *Client {
@@ -94,4 +97,8 @@ func (c *Client) GetSeason() *sonarr.SeasonResource {
 
 func (c *Client) GetSeasonEpisodes() []*sonarr.EpisodeResource {
 	return c.seasonEpisodes
+}
+
+func (c *Client) GetSeriesQueue() []*sonarr.QueueResource {
+	return c.seriesQueue
 }

@@ -102,8 +102,11 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		return m, cmd
 
 	case sonarr.FetchSeasonEpisodesResult:
+		if msg.Error != nil {
+			return m, statusbar.NewMessageCmd("Error while fetching episodes!")
+		}
 		m.state = stateShowEpisodes
-		return m, m.episodesList.SetItems(episodeToItems(msg.Episodes))
+		return m, m.episodesList.SetItems(episodeToItems(msg.Episodes, m.client.GetSeriesQueue()))
 	}
 
 	switch m.state {

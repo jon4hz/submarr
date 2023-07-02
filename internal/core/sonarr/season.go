@@ -65,6 +65,12 @@ func (c *Client) FetchSeasonEpisodes(season int32) tea.Cmd {
 		if err := c.getSeasonEpisodes(season); err != nil {
 			return FetchSeasonEpisodesResult{Error: err}
 		}
+
+		// refresh queue for current serie
+		if err := c.getSeriesQueue(); err != nil {
+			return FetchSeasonEpisodesResult{Error: err}
+		}
+
 		return FetchSeasonEpisodesResult{Episodes: c.seasonEpisodes}
 	}
 }
@@ -91,5 +97,18 @@ func (c *Client) getSeasonEpisodes(season int32) error {
 		}
 	}
 
+	return nil
+}
+
+func (c *Client) getSeriesQueue() error {
+	if c.serie == nil {
+		return ErrNoSerieSelected
+	}
+	queue, err := c.sonarr.GetQueueDetails(context.Background(), c.serie.ID)
+	if err != nil {
+		logging.Log.Error().Err(err).Msg("Failed to get queue")
+		return err
+	}
+	c.seriesQueue = queue
 	return nil
 }
