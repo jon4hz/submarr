@@ -155,7 +155,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 				return m, tea.Batch(
 					m.client.ReloadSerie(),
 					m.seasonsList.StartSpinner(),
-					statusbar.NewMessageCmd("Reloading serie...", statusbar.WithMessageTimeout(2)),
+					statusbar.NewMessageCmd("Reloading series...", statusbar.WithMessageTimeout(2)),
 				)
 			}
 
@@ -174,6 +174,12 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 				return m, func() tea.Msg { return SelectSeasonMsg(item.Index) }
 			}
 
+		case key.Matches(msg, DefaultKeyMap.Refresh):
+			return m, tea.Batch(
+				m.client.RefreshSeries(),
+				statusbar.NewMessageCmd("Refreshing series...", statusbar.WithMessageTimeout(2)),
+			)
+
 		case key.Matches(msg, DefaultKeyMap.AutomaticSearch):
 			if !m.seasonsList.SettingFilter() {
 				season := m.seasonsList.SelectedItem().(seasons.SeasonItem)
@@ -182,6 +188,12 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					statusbar.NewMessageCmd(fmt.Sprintf("Searching for season %d...", season.Season.SeasonNumber), statusbar.WithMessageTimeout(2)),
 				)
 			}
+
+		case key.Matches(msg, DefaultKeyMap.AutomaticSearchAll):
+			return m, tea.Batch(
+				m.client.AutomaticSearchSeries(),
+				statusbar.NewMessageCmd("Searching for all seasons...", statusbar.WithMessageTimeout(2)),
+			)
 		}
 
 	case sonarr.FetchSerieResult:
