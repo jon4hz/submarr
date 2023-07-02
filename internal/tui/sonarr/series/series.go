@@ -168,6 +168,15 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 				)
 			}
 
+		case key.Matches(msg, DefaultKeyMap.ToggleMonitorSeries):
+			if !m.seasonsList.SettingFilter() {
+				return m, tea.Batch(
+					m.client.ToggleMonitorSeries(),
+					m.seasonsList.StartSpinner(),
+					statusbar.NewMessageCmd("Toggling series monitor...", statusbar.WithMessageTimeout(2)),
+				)
+			}
+
 		case key.Matches(msg, DefaultKeyMap.Select):
 			if !m.seasonsList.SettingFilter() {
 				item := m.seasonsList.SelectedItem().(seasons.SeasonItem)

@@ -55,6 +55,23 @@ func (c *Client) ToggleMonitorSeason(id int) tea.Cmd {
 	}
 }
 
+func (c *Client) ToggleMonitorSeries() tea.Cmd {
+	return func() tea.Msg {
+		if c.serie == nil {
+			return FetchSerieResult{Error: ErrNoSerieSelected}
+		}
+
+		c.serie.Monitored = !c.serie.Monitored
+		serie, err := c.sonarr.PutSerie(context.Background(), c.serie)
+		if err != nil {
+			logging.Log.Error().Err(err).Msg("Failed to toggle serie monitored state")
+			return FetchSerieResult{Serie: c.serie, Error: fmt.Errorf("Failed to toggle serie monitored state")}
+		}
+		c.serie = serie
+		return FetchSerieResult{Serie: serie}
+	}
+}
+
 type FetchSeasonEpisodesResult struct {
 	Episodes []*sonarr.EpisodeResource
 	Error    error
