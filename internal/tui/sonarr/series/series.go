@@ -20,6 +20,8 @@ import (
 	zone "github.com/lrstanley/bubblezone"
 )
 
+type SelectSeasonMsg int
+
 var (
 	subtleColor   = lipgloss.AdaptiveColor{Light: "#9B9B9B", Dark: "#5C5C5C"}
 	selectedColor = lipgloss.Color("#00CCFF")
@@ -64,9 +66,9 @@ var (
 	seasonsCellStyle = cellStyle.Copy()
 )
 
-func New(sonarr *sonarr.Client, width, heigth int) *Model {
+func New(sonarr *sonarr.Client, width, height int) *Model {
 	m := Model{
-		flexBox:       flexbox.NewHorizontal(width, heigth),
+		flexBox:       flexbox.NewHorizontal(width, height),
 		client:        sonarr,
 		infoViewport:  viewport.New(0, 0),
 		statsViewport: viewport.New(0, 0),
@@ -75,7 +77,7 @@ func New(sonarr *sonarr.Client, width, heigth int) *Model {
 	}
 
 	m.Width = width
-	m.Height = heigth
+	m.Height = height
 
 	m.cellmap = map[cell]*flexbox.Cell{
 		infoCell:    flexbox.NewCell(1, 2).SetStyle(infoCellStyle).SetID("info"),
@@ -97,7 +99,7 @@ func New(sonarr *sonarr.Client, width, heigth int) *Model {
 	m.seasonsList.SetShowHelp(false)
 
 	// initial render
-	m.SetSize(width, heigth)
+	m.SetSize(width, height)
 	m.updateFocus()
 	m.redraw()
 	m.updateStatsViewport()
@@ -111,7 +113,7 @@ func newSeasonsItems(serie *sonarrAPI.SeriesResource) []list.Item {
 	})
 	items := make([]list.Item, len(serie.Seasons))
 	for i, season := range serie.Seasons {
-		items[i] = seasons.NewItem(season)
+		items[i] = seasons.NewItem(i, season)
 	}
 	return items
 }
@@ -165,6 +167,12 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					statusbar.NewMessageCmd("Toggling season monitor...", statusbar.WithMessageTimeout(2)),
 				)
 			}
+
+		case key.Matches(msg, DefaultKeyMap.Select):
+			if !m.seasonsList.SettingFilter() {
+				item := m.seasonsList.SelectedItem().(seasons.SeasonItem)
+				return m, func() tea.Msg { return SelectSeasonMsg(item.Index) }
+			}
 		}
 
 	case sonarr.FetchSerieResult:
@@ -193,8 +201,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					if zone.Get(fmt.Sprintf("Season %d", item.Season.SeasonNumber)).InBounds(msg) {
 						// if we click on an already selected item, open the details
 						if i == m.seasonsList.Index() {
-							/* cmd := m.selectSeries(&item.Series)
-							return m, cmd */
+							return m, func() tea.Msg { return SelectSeasonMsg(item.Index) }
 						}
 						// else select the item
 						m.seasonsList.Select(i)

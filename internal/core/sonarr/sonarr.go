@@ -27,8 +27,11 @@ type Client struct {
 	// currently selected serie
 	serie *sonarr.SeriesResource
 
-	// all available episodes
-	episodes []*sonarr.EpisodeResource
+	// currently selected season
+	season *sonarr.SeasonResource
+
+	// episodes of the currently selected season
+	seasonEpisodes []*sonarr.EpisodeResource
 }
 
 func New(sonarr *sonarr.Client) *Client {
@@ -79,4 +82,16 @@ func (c *Client) GetSerieQualityProfile() *sonarr.QualityProfileResource {
 		return nil
 	}
 	return c.qualityProfiles[c.serie.QualityProfileID]
+}
+
+func (c *Client) SetSeason(season *sonarr.SeasonResource) {
+	c.season = season
+}
+
+func (c *Client) GetSeason() *sonarr.SeasonResource {
+	return c.season
+}
+
+func (c *Client) GetSeasonEpisodes() []*sonarr.EpisodeResource {
+	return c.seasonEpisodes
 }

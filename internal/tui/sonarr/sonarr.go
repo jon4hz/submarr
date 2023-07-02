@@ -3,11 +3,11 @@ package sonarr
 import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
-	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core/sonarr"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	"github.com/jon4hz/subrr/internal/tui/sonarr/season"
 	"github.com/jon4hz/subrr/internal/tui/sonarr/series"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
@@ -21,6 +21,7 @@ const (
 	stateLoading
 	stateSeries
 	stateSeriesDetails
+	stateSeason
 )
 
 type Model struct {
@@ -30,21 +31,19 @@ type Model struct {
 
 	seriesList list.Model
 
-	seriesDetails common.SubModel
+	submodel common.SubModel
 
-	spinner        spinner.Model
-	loadingMessage string
+	spinner common.Spinner
 
 	state state
 }
 
 func New(c *sonarr.Client, width, height int) *Model {
 	m := Model{
-		state:          stateLoading,
-		client:         c,
-		seriesList:     list.NewModel(nil, series.Delegate{}, width, height),
-		spinner:        spinner.New(spinner.WithSpinner(spinner.Points)),
-		loadingMessage: common.GetRandomLoadingMessage(),
+		state:      stateLoading,
+		client:     c,
+		seriesList: list.NewModel(nil, series.Delegate{}, width, height),
+		spinner:    common.NewSpinner(),
 	}
 	m.Width = width
 	m.Height = height
@@ -160,12 +159,15 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 
 			return m, tea.Batch(cmds...)
 		}
+
+	case series.SelectSeasonMsg:
+		return m, m.selectSeason(m.client.GetSerie().Seasons[msg])
 	}
 
 	switch m.state {
 	case stateLoading:
 		var cmd tea.Cmd
-		m.spinner, cmd = m.spinner.Update(msg)
+		m.spinner.Model, cmd = m.spinner.Update(msg)
 		cmds = append(cmds, cmd)
 
 	case stateSeries:
@@ -173,21 +175,29 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		m.seriesList, cmd = m.seriesList.Update(msg)
 		cmds = append(cmds, cmd)
 
-	case stateSeriesDetails:
+	default:
 		var cmd tea.Cmd
-		m.seriesDetails, cmd = m.seriesDetails.Update(msg)
+		m.submodel, cmd = m.submodel.Update(msg)
 		cmds = append(cmds, cmd)
 
-		if m.seriesDetails.Quit() {
+		if m.submodel.Quit() {
 			return m, tea.Quit
 		}
 
-		if m.seriesDetails.Back() {
-			m.state = stateSeries
-			cmds = append(cmds,
-				// reset the help of the statusbar
-				statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
-			)
+		if m.submodel.Back() {
+			switch m.state {
+			case stateSeriesDetails:
+				m.state = stateSeries
+				cmds = append(cmds,
+					// reset the help of the statusbar
+					statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
+				)
+
+			case stateSeason:
+				cmds = append(cmds,
+					m.selectSeries(m.client.GetSerie()),
+				)
+			}
 		}
 	}
 
@@ -197,9 +207,17 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 func (m *Model) selectSeries(seriesResource *sonarrAPI.SeriesResource) tea.Cmd {
 	m.state = stateSeriesDetails
 	m.client.SetSerie(seriesResource)
-	m.seriesDetails = series.New(m.client, m.Width, m.Height)
+	m.submodel = series.New(m.client, m.Width, m.Height)
 
-	return m.seriesDetails.Init()
+	return m.submodel.Init()
+}
+
+func (m *Model) selectSeason(seasonResource *sonarrAPI.SeasonResource) tea.Cmd {
+	m.state = stateSeason
+	m.client.SetSeason(seasonResource)
+	m.submodel = season.New(m.client, m.Width, m.Height)
+
+	return m.submodel.Init()
 }
 
 func (m *Model) SetSize(width, height int) {
@@ -208,21 +226,22 @@ func (m *Model) SetSize(width, height int) {
 
 	m.seriesList.SetSize(width, height)
 
-	if m.state == stateSeriesDetails {
-		m.seriesDetails.SetSize(width, height)
+	switch m.state {
+	case stateSeriesDetails, stateSeason:
+		m.submodel.SetSize(width, height)
 	}
 }
 
 func (m Model) View() string {
 	switch m.state {
 	case stateLoading:
-		return m.spinner.View() + "  " + m.loadingMessage
+		return m.spinner.View()
 
 	case stateSeries:
 		return m.seriesList.View()
 
-	case stateSeriesDetails:
-		return m.seriesDetails.View()
+	case stateSeriesDetails, stateSeason:
+		return m.submodel.View()
 	}
 
 	return "unknown state"

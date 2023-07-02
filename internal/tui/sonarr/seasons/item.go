@@ -7,13 +7,14 @@ import (
 )
 
 type SeasonItem struct {
-	Season sonarrAPI.SeasonResource
+	Index  int
+	Season *sonarrAPI.SeasonResource
 }
 
 func (s SeasonItem) FilterValue() string {
 	return fmt.Sprintf("Season %d", s.Season.SeasonNumber)
 }
 
-func NewItem(season sonarrAPI.SeasonResource) SeasonItem {
-	return SeasonItem{season}
+func NewItem(index int, season *sonarrAPI.SeasonResource) SeasonItem {
+	return SeasonItem{index, season}
 }

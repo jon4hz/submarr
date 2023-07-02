@@ -91,6 +91,16 @@ func (c *Client) GetEpisodes(ctx context.Context, seriesID, seasonNumber int32) 
 	return res, nil
 }
 
+// GetEpisode returns an episode by its ID
+func (c *Client) GetEpisode(ctx context.Context, episodeID int32) (*EpisodeResource, error) {
+	var res EpisodeResource
+	_, err := c.http.Get(ctx, c.cfg.Host, fmt.Sprintf("/api/v3/episode/%d", episodeID), &res)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
 // GetAllEpisodes returns a list of all episodes for a given series
 func (c *Client) GetAllEpisodes(ctx context.Context, seriesID int32) ([]*EpisodeResource, error) {
 	params := map[string]string{

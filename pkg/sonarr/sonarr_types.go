@@ -29,7 +29,7 @@ type SeriesResource struct {
 	Images            []MediaCover               `json:"images"`
 	OriginalLanguage  *Language                  `json:"originalLanguage"`
 	RemotePoster      string                     `json:"remotePoster"`
-	Seasons           []SeasonResource           `json:"seasons"`
+	Seasons           []*SeasonResource          `json:"seasons"`
 	Year              int32                      `json:"year"`
 	Path              string                     `json:"path"`
 	QualityProfileID  int32                      `json:"qualityProfileId"`

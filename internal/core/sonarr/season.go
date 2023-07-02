@@ -55,16 +55,41 @@ func (c *Client) ToggleMonitorSeason(id int) tea.Cmd {
 	}
 }
 
+type FetchSeasonEpisodesResult struct {
+	Episodes []*sonarr.EpisodeResource
+	Error    error
+}
+
+func (c *Client) FetchSeasonEpisodes(season int32) tea.Cmd {
+	return func() tea.Msg {
+		if err := c.getSeasonEpisodes(season); err != nil {
+			return FetchSeasonEpisodesResult{Error: err}
+		}
+		return FetchSeasonEpisodesResult{Episodes: c.seasonEpisodes}
+	}
+}
+
 func (c *Client) getSeasonEpisodes(season int32) error {
 	if c.serie == nil {
 		return ErrNoSerieSelected
 	}
 
+	// Fetch all episodes of the selected season, without details
 	var err error
-	c.episodes, err = c.sonarr.GetEpisodes(context.Background(), c.serie.ID, season)
+	c.seasonEpisodes, err = c.sonarr.GetEpisodes(context.Background(), c.serie.ID, season)
 	if err != nil {
 		logging.Log.Error().Err(err).Msg("Failed to get episodes")
 		return err
 	}
+
+	// Fetch all episodes of the selected season, with details
+	for i, episode := range c.seasonEpisodes {
+		c.seasonEpisodes[i], err = c.sonarr.GetEpisode(context.Background(), episode.ID)
+		if err != nil {
+			logging.Log.Error().Err(err).Msg("Failed to get episode")
+			continue
+		}
+	}
+
 	return nil
 }

@@ -90,7 +90,7 @@ func renderItem(item SeasonItem, itemWidth int) string {
 	}
 	seasonTitle := fmt.Sprintf("%s Season %d", symbol, item.Season.SeasonNumber)
 
-	title := zone.Mark(seasonTitle,
+	title := zone.Mark(fmt.Sprintf("Season %d", item.Season.SeasonNumber),
 		truncate.StringWithTail(seasonTitle, uint(itemWidth), common.Ellipsis),
 	)
 
