@@ -138,7 +138,7 @@ func renderMonitored(item EpisodeItem, title, airDate, episodeStats string, down
 	title = titleStyle.Foreground(textColor).Render(title)
 
 	style := missingMonitoredStyle
-	if item.episode.HasFile {
+	if item.episode.EpisodeFile != nil {
 		if item.episode.EpisodeFile.QualityCutoffNotMet {
 			style = unmetCutoffMonitoredStyle
 		} else {
@@ -165,7 +165,7 @@ func renderUnmonitored(item EpisodeItem, title, airDate, episodeStats string, do
 
 	style := missingUnmonitoredStyle
 
-	if item.episode.HasFile {
+	if item.episode.EpisodeFile != nil {
 		if item.episode.EpisodeFile.QualityCutoffNotMet {
 			style = unmetCutoffUnmonitoredStyle
 		} else {

@@ -2,6 +2,7 @@ package season
 
 import (
 	"fmt"
+	"sync"
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
@@ -27,6 +28,10 @@ type Model struct {
 	state        state
 	episodesList list.Model
 	spinner      common.Spinner
+
+	// make sure we only reload once at a time
+	reloading bool
+	mu        *sync.Mutex
 }
 
 func New(sonarr *sonarr.Client, width, height int) *Model {
@@ -35,6 +40,7 @@ func New(sonarr *sonarr.Client, width, height int) *Model {
 		state:        stateFetchEpisodes,
 		spinner:      common.NewSpinner(),
 		episodesList: list.NewModel(nil, Delegate{}, width, height),
+		mu:           &sync.Mutex{},
 	}
 	m.Width = width
 	m.Height = height
@@ -67,6 +73,16 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			if !m.episodesList.SettingFilter() {
 				m.IsQuit = true
 				return m, nil
+			}
+
+		case key.Matches(msg, DefaultKeyMap.Reload):
+			if !m.episodesList.SettingFilter() && !m.GetReloading() {
+				m.SetReloading(true)
+				return m, tea.Batch(
+					m.episodesList.StartSpinner(),
+					m.client.FetchSeasonEpisodes(m.client.GetSeason().SeasonNumber),
+					statusbar.NewMessageCmd("Reloading episodes...", statusbar.WithMessageTimeout(2)),
+				)
 			}
 		}
 
@@ -102,6 +118,8 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		return m, cmd
 
 	case sonarr.FetchSeasonEpisodesResult:
+		m.episodesList.StopSpinner()
+		m.SetReloading(false)
 		if msg.Error != nil {
 			return m, statusbar.NewMessageCmd("Error while fetching episodes!")
 		}
@@ -117,6 +135,18 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	}
 
 	return m, nil
+}
+
+func (m *Model) GetReloading() bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.reloading
+}
+
+func (m *Model) SetReloading(reloading bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.reloading = reloading
 }
 
 func (m *Model) SetSize(width, height int) {

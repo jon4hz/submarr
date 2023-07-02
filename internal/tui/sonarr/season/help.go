@@ -11,6 +11,7 @@ type KeyMap struct {
 	Back       key.Binding
 	Help       key.Binding
 	Select     key.Binding
+	Reload     key.Binding
 }
 
 var DefaultKeyMap = KeyMap{
@@ -20,11 +21,13 @@ var DefaultKeyMap = KeyMap{
 	Back:       key.NewBinding(key.WithKeys("esc"), key.WithHelp("esc", "back")),
 	Help:       key.NewBinding(key.WithKeys("?"), key.WithHelp("?", "close help")),
 	Select:     key.NewBinding(key.WithKeys("enter"), key.WithHelp("enter", "select")),
+	Reload:     key.NewBinding(key.WithKeys("r"), key.WithHelp("r", "reload")),
 }
 
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.CursorUp, k.CursorDown, k.Select},
+		{k.Reload},
 		{k.Help, k.Back, k.Quit},
 	}
 }
