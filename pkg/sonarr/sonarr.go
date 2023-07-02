@@ -141,3 +141,13 @@ func (c *Client) SetEpisodesMonitored(ctx context.Context, params *EpisodesMonit
 	_, err := c.http.Put(ctx, c.cfg.Host, "/api/v3/episode/monitor", nil, params)
 	return err
 }
+
+// PostCommand sends a command to sonarr
+func (c *Client) PostCommand(ctx context.Context, params *CommandRequest) (*CommandResource, error) {
+	var res CommandResource
+	_, err := c.http.Post(ctx, c.cfg.Host, "/api/v3/command", &res, params)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}

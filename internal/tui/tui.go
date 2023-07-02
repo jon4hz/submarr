@@ -195,6 +195,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		cmds = append(cmds, cmd)
 		m.setSize(m.totalWidth, m.totalHeight)
 		return m, tea.Batch(cmds...)
+
+	case error:
+		// if any error is sent as msg, we relay it to the statusbar
+		cmds = append(cmds, statusbar.NewMessageCmd(msg.Error(), statusbar.WithMessageTimeout(3)))
 	}
 
 	var cmd tea.Cmd

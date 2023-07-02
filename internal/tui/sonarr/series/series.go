@@ -173,6 +173,15 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 				item := m.seasonsList.SelectedItem().(seasons.SeasonItem)
 				return m, func() tea.Msg { return SelectSeasonMsg(item.Index) }
 			}
+
+		case key.Matches(msg, DefaultKeyMap.AutomaticSearch):
+			if !m.seasonsList.SettingFilter() {
+				season := m.seasonsList.SelectedItem().(seasons.SeasonItem)
+				return m, tea.Batch(
+					m.client.AutomaticSearchSeason(season.Season.SeasonNumber),
+					statusbar.NewMessageCmd(fmt.Sprintf("Searching for season %d...", season.Season.SeasonNumber), statusbar.WithMessageTimeout(2)),
+				)
+			}
 		}
 
 	case sonarr.FetchSerieResult:

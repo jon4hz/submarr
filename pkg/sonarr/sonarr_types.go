@@ -465,3 +465,78 @@ type EpisodesMonitoredResource struct {
 	EpisodeIDs []int32 `json:"episodeIds"`
 	Monitored  bool    `json:"monitored"`
 }
+
+type CommandResource struct {
+	ID                  int32           `json:"id"`
+	Name                string          `json:"name"`
+	CommandName         string          `json:"commandName"`
+	Message             string          `json:"message"`
+	Body                *Command        `json:"body"`
+	Priority            CommandPriority `json:"priority"`
+	Status              CommandStatus   `json:"status"`
+	Result              CommandResult   `json:"result"`
+	Queued              time.Time       `json:"queued"`
+	Started             time.Time       `json:"started"`
+	Ended               time.Time       `json:"ended"`
+	Duration            time.Duration   `json:"duration"`
+	Exception           string          `json:"exception"`
+	Trigger             CommandTrigger  `json:"trigger"`
+	ClientUserAgent     string          `json:"clientUserAgent"`
+	StateChangeTime     time.Time       `json:"stateChangeTime"`
+	SendUpdatesToClient bool            `json:"sendUpdatesToClient"`
+	UpdateScheduledTask bool            `json:"updateScheduledTask"`
+	LastExecutionTime   time.Time       `json:"lastExecutionTime"`
+}
+
+type Command struct {
+	SendUpdatesToClient bool           `json:"sendUpdatesToClient"`
+	LastExecutionTime   time.Time      `json:"lastExecutionTime"`
+	LastStartTime       time.Time      `json:"lastStartTime"`
+	Trigger             CommandTrigger `json:"trigger"`
+	SuppressMessages    bool           `json:"suppressMessages"`
+	ClientUserAgent     string         `json:"clientUserAgent"`
+}
+
+type CommandTrigger string
+
+const (
+	CommandTriggerUnspecified CommandTrigger = "unspecified"
+	CommandTriggerManual      CommandTrigger = "manual"
+	CommandTriggerScheduled   CommandTrigger = "scheduled"
+)
+
+type CommandPriority string
+
+const (
+	CommandPriorityNormal CommandPriority = "normal"
+	CommandPriorityHigh   CommandPriority = "high"
+	CommandPriorityLow    CommandPriority = "low"
+)
+
+type CommandStatus string
+
+const (
+	CommandStatusQueued    CommandStatus = "queued"
+	CommandStatusStarted   CommandStatus = "started"
+	CommandStatusCompleted CommandStatus = "completed"
+	CommandStatusFailed    CommandStatus = "failed"
+	CommandStatusAborted   CommandStatus = "aborted"
+	CommandStatusCancelled CommandStatus = "cancelled"
+	CommandStatusOrphaned  CommandStatus = "orphaned"
+)
+
+type CommandResult string
+
+const (
+	CommandResultUnknown     CommandResult = "unknown"
+	CommandResultSuccessful  CommandResult = "successful"
+	CommandResultUnsucessful CommandResult = "unsucessful"
+)
+
+// CommandRequest is the request body for a command
+// This struct isn't acording to the API docs, but it's what the API actually expects
+type CommandRequest struct {
+	Name         string `json:"name"`
+	SeasonNumber int32  `json:"seasonNumber,omitempty"`
+	SeriesID     int32  `json:"seriesId,omitempty"`
+}
