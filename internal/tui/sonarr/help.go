@@ -26,7 +26,7 @@ var DefaultKeyMap = KeyMap{
 	Back:       key.NewBinding(key.WithKeys("esc"), key.WithHelp("esc", "back")),
 	Help:       key.NewBinding(key.WithKeys("?"), key.WithHelp("?", "close help")),
 	Select:     key.NewBinding(key.WithKeys("enter"), key.WithHelp("enter", "select client")),
-	Reload:     key.NewBinding(key.WithKeys("r"), key.WithHelp("r", "reload list")),
+	Reload:     key.NewBinding(key.WithKeys("r", "f5"), key.WithHelp("r", "reload list")),
 	Filter:     key.NewBinding(key.WithKeys("/"), key.WithHelp("/", "filter")),
 }
 
