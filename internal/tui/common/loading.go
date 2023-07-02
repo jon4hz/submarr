@@ -32,6 +32,9 @@ var loadingMessages = [...]string{
 	"Don't forget to tip your waitress",
 	"Apply directly to the forehead",
 	"Loading Battlestation",
+	"Searching use case for web3",
+	"Inventing web4...",
+	"What happend to IPv5?",
 }
 
 // GetRandomLoadingMessage returns a random loading message.
