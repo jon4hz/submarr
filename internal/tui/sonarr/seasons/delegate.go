@@ -94,7 +94,10 @@ func renderItem(item SeasonItem, itemWidth int) string {
 		truncate.StringWithTail(seasonTitle, uint(itemWidth), common.Ellipsis),
 	)
 
-	prevAiring := item.Season.Statistics.PreviousAiring.Local().Format("02.01.2006 @ 15:04")
+	prevAiring := "---"
+	if !item.Season.Statistics.PreviousAiring.IsZero() {
+		prevAiring = item.Season.Statistics.PreviousAiring.Local().Format("02.01.2006 @ 15:04")
+	}
 	prevAiring = truncate.StringWithTail(prevAiring, uint(itemWidth), common.Ellipsis)
 
 	diskSize := fmt.Sprintf("%s", humanize.Bytes(uint64(item.Season.Statistics.SizeOnDisk)))
