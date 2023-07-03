@@ -38,3 +38,13 @@ func WithAPIKey(apiKey string) ClientOpts {
 		c.apiKey = apiKey
 	}
 }
+
+// WithBasicAuth adds basic authentication headers to the http requests
+func WithBasicAuth(username, password string) ClientOpts {
+	return func (c *client)  {
+		c.basicAuth = &basicAuth{
+			username: username,
+			password: password,
+		}
+	}
+}

@@ -17,32 +17,41 @@ type Config struct {
 
 // SonarrConfig represents the sonarr config
 type SonarrConfig struct {
-	Host      string `mapstructure:"host"`
-	APIKey    string `mapstructure:"api_key"`
-	IgnoreTLS bool   `mapstructure:"ignore_tls"`
-	Timeout   int    `mapstructure:"timeout"`
+	Host      string           `mapstructure:"host"`
+	APIKey    string           `mapstructure:"api_key"`
+	IgnoreTLS bool             `mapstructure:"ignore_tls"`
+	Timeout   int              `mapstructure:"timeout"`
+	BasicAuth *BasicAuthConfig `mapstructure:"basic_auth"`
 }
 
 // RadarrConfig represents the radarr config
 type RadarrConfig struct {
-	Host      string `mapstructure:"host"`
-	APIKey    string `mapstructure:"api_key"`
-	IgnoreTLS bool   `mapstructure:"ignore_tls"`
-	Timeout   int    `mapstructure:"timeout"`
+	Host      string           `mapstructure:"host"`
+	APIKey    string           `mapstructure:"api_key"`
+	IgnoreTLS bool             `mapstructure:"ignore_tls"`
+	Timeout   int              `mapstructure:"timeout"`
+	BasicAuth *BasicAuthConfig `mapstructure:"basic_auth"`
 }
 
 // LidarrConfig represents the lidarr config
 type LidarrConfig struct {
-	Host      string `mapstructure:"host"`
-	APIKey    string `mapstructure:"api_key"`
-	IgnoreTLS bool   `mapstructure:"ignore_tls"`
-	Timeout   int    `mapstructure:"timeout"`
+	Host      string           `mapstructure:"host"`
+	APIKey    string           `mapstructure:"api_key"`
+	IgnoreTLS bool             `mapstructure:"ignore_tls"`
+	Timeout   int              `mapstructure:"timeout"`
+	BasicAuth *BasicAuthConfig `mapstructure:"basic_auth"`
 }
 
 // LoggingConfig represents the logging config
 type LoggingConfig struct {
 	Level  string `mapstructure:"level"`
 	Folder string `mapstructure:"folder"`
+}
+
+// BasicAuthConfig represents the config for basic authentication
+type BasicAuthConfig struct {
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
 }
 
 // Load loads the config file.

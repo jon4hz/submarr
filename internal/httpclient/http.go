@@ -32,8 +32,14 @@ type Client interface {
 
 // client is the actual http client.
 type client struct {
-	http   *http.Client
-	apiKey string
+	http      *http.Client
+	apiKey    string
+	basicAuth *basicAuth
+}
+
+type basicAuth struct {
+	username string
+	password string
 }
 
 // New creates a new http client.
@@ -95,6 +101,11 @@ func (c *client) doRequest(ctx context.Context, base, endpoint, method string, e
 	// set the API key
 	if c.apiKey != "" {
 		req.Header.Add("X-Api-Key", c.apiKey)
+	}
+
+	// set basic auth
+	if c.basicAuth != nil {
+		req.SetBasicAuth(c.basicAuth.username, c.basicAuth.password)
 	}
 
 	resp, err := c.http.Do(req)
