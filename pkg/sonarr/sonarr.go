@@ -163,12 +163,11 @@ func (c *Client) GetQueueDetails(ctx context.Context, seriesID int32) ([]*QueueR
 }
 
 // GetMissings returns all the missing episodes
-func (c *Client) GetMissings(ctx context.Context) ([]*EpisodeResourcePagingResource, error) {
-	var res []*EpisodeResourcePagingResource
+func (c *Client) GetMissings(ctx context.Context) (*EpisodeResourcePagingResource, error) {
+	var res EpisodeResourcePagingResource
 	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/wanted/missing", &res)
 	if err != nil {
 		return nil, err
 	}
-	return res, nil
+	return &res, nil
 }
-

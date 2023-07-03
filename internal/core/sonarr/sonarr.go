@@ -15,7 +15,7 @@ type Client struct {
 	available bool
 
 	// some client stats
-	missing int
+	missing int32
 	queued  int32
 
 	// quality profiles by id
@@ -70,7 +70,9 @@ func (c *Client) Init() error {
 		c.available = false
 		return fmt.Errorf("failed to get missing episodes: %w", err)
 	}
-	c.missing = len(missings)
+	if missings != nil {
+		c.missing = missings.TotalRecords
+	}
 
 	return nil
 }
