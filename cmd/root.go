@@ -4,6 +4,7 @@ import (
 	"log"
 	"time"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/jon4hz/subrr/internal/config"
 	"github.com/jon4hz/subrr/internal/core"
 	"github.com/jon4hz/subrr/internal/httpclient"
@@ -70,6 +71,9 @@ func init() {
 	rootCmd.Flags().String("logging-folder", "", "log folder")
 	mustBindPFlag("logging.level", rootCmd.Flags().Lookup("logging-level"))
 	mustBindPFlag("logging.folder", rootCmd.Flags().Lookup("logging-folder"))
+
+	rootCmd.Flags().Bool("no-mouse", false, "disable mouse support")
+	mustBindPFlag("no_mouse", rootCmd.Flags().Lookup("no-mouse"))
 }
 
 func mustBindPFlag(key string, flag *pflag.Flag) {
@@ -158,7 +162,13 @@ func root(cmd *cobra.Command, args []string) {
 	)
 
 	tui := tui.New(client)
-	if err := tui.Run(); err != nil {
+	opts := []tea.ProgramOption{
+		tea.WithAltScreen(),
+	}
+	if !cfg.NoMouse {
+		opts = append(opts, tea.WithMouseCellMotion())
+	}
+	if err := tui.Run(opts...); err != nil {
 		log.Fatalln(err)
 	}
 }

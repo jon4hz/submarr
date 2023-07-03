@@ -79,11 +79,8 @@ func New(client *core.Client) *Model {
 	return m
 }
 
-func (m Model) Run() error {
-	_, err := tea.NewProgram(m,
-		tea.WithAltScreen(),
-		tea.WithMouseCellMotion(),
-	).Run()
+func (m Model) Run(opts ...tea.ProgramOption) error {
+	_, err := tea.NewProgram(m, opts...).Run()
 	return err
 }
 

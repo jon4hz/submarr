@@ -13,6 +13,7 @@ type Config struct {
 	Radarr  *RadarrConfig  `mapstructure:"radarr"`
 	Lidarr  *LidarrConfig  `mapstructure:"lidarr"`
 	Logging *LoggingConfig `mapstructure:"logging"`
+	NoMouse bool           `mapstructure:"no_mouse"`
 }
 
 // SonarrConfig represents the sonarr config
