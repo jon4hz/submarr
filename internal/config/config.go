@@ -17,29 +17,32 @@ type Config struct {
 
 // SonarrConfig represents the sonarr config
 type SonarrConfig struct {
-	Host      string           `mapstructure:"host"`
-	APIKey    string           `mapstructure:"api_key"`
-	IgnoreTLS bool             `mapstructure:"ignore_tls"`
-	Timeout   int              `mapstructure:"timeout"`
-	BasicAuth *BasicAuthConfig `mapstructure:"basic_auth"`
+	Host          string           `mapstructure:"host"`
+	APIKey        string           `mapstructure:"api_key"`
+	IgnoreTLS     bool             `mapstructure:"ignore_tls"`
+	Timeout       int              `mapstructure:"timeout"`
+	BasicAuth     *BasicAuthConfig `mapstructure:"basic_auth"`
+	HeaderConfigs []HeaderConfig   `mapstructure:"headers"`
 }
 
 // RadarrConfig represents the radarr config
 type RadarrConfig struct {
-	Host      string           `mapstructure:"host"`
-	APIKey    string           `mapstructure:"api_key"`
-	IgnoreTLS bool             `mapstructure:"ignore_tls"`
-	Timeout   int              `mapstructure:"timeout"`
-	BasicAuth *BasicAuthConfig `mapstructure:"basic_auth"`
+	Host          string           `mapstructure:"host"`
+	APIKey        string           `mapstructure:"api_key"`
+	IgnoreTLS     bool             `mapstructure:"ignore_tls"`
+	Timeout       int              `mapstructure:"timeout"`
+	BasicAuth     *BasicAuthConfig `mapstructure:"basic_auth"`
+	HeaderConfigs []HeaderConfig   `mapstructure:"headers"`
 }
 
 // LidarrConfig represents the lidarr config
 type LidarrConfig struct {
-	Host      string           `mapstructure:"host"`
-	APIKey    string           `mapstructure:"api_key"`
-	IgnoreTLS bool             `mapstructure:"ignore_tls"`
-	Timeout   int              `mapstructure:"timeout"`
-	BasicAuth *BasicAuthConfig `mapstructure:"basic_auth"`
+	Host          string           `mapstructure:"host"`
+	APIKey        string           `mapstructure:"api_key"`
+	IgnoreTLS     bool             `mapstructure:"ignore_tls"`
+	Timeout       int              `mapstructure:"timeout"`
+	BasicAuth     *BasicAuthConfig `mapstructure:"basic_auth"`
+	HeaderConfigs []HeaderConfig   `mapstructure:"headers"`
 }
 
 // LoggingConfig represents the logging config
@@ -52,6 +55,12 @@ type LoggingConfig struct {
 type BasicAuthConfig struct {
 	Username string `mapstructure:"username"`
 	Password string `mapstructure:"password"`
+}
+
+// HeaderConfig represents an abitrary http header
+type HeaderConfig struct {
+	Key   string `mapstructure:"key"`
+	Value string `mapstructure:"value"`
 }
 
 // Load loads the config file.

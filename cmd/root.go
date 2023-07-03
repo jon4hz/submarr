@@ -104,29 +104,50 @@ func root(cmd *cobra.Command, args []string) {
 	)
 
 	if cfg.Sonarr.Host != "" {
-		sonarrHTTP := httpclient.New(
+		opts := []httpclient.ClientOpts{
 			httpclient.WithAPIKey(cfg.Sonarr.APIKey),
 			httpclient.WithoutTLSVerfiy(cfg.Sonarr.IgnoreTLS),
-			httpclient.WithTimeout(time.Duration(cfg.Sonarr.Timeout*int(time.Second))),
-		)
+			httpclient.WithTimeout(time.Duration(cfg.Sonarr.Timeout * int(time.Second))),
+		}
+		if cfg.Sonarr.BasicAuth != nil {
+			opts = append(opts, httpclient.WithBasicAuth(cfg.Sonarr.BasicAuth.Username, cfg.Sonarr.BasicAuth.Password))
+		}
+		for _, v := range cfg.Sonarr.HeaderConfigs {
+			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
+		}
+		sonarrHTTP := httpclient.New(opts...)
 		sonarrClient = sonarr.New(sonarrHTTP, cfg.Sonarr)
 	}
 
 	if cfg.Radarr.Host != "" {
-		radarrHTTP := httpclient.New(
+		opts := []httpclient.ClientOpts{
 			httpclient.WithAPIKey(cfg.Radarr.APIKey),
 			httpclient.WithoutTLSVerfiy(cfg.Radarr.IgnoreTLS),
-			httpclient.WithTimeout(time.Duration(cfg.Radarr.Timeout*int(time.Second))),
-		)
+			httpclient.WithTimeout(time.Duration(cfg.Radarr.Timeout * int(time.Second))),
+		}
+		if cfg.Radarr.BasicAuth != nil {
+			opts = append(opts, httpclient.WithBasicAuth(cfg.Radarr.BasicAuth.Username, cfg.Radarr.BasicAuth.Password))
+		}
+		for _, v := range cfg.Radarr.HeaderConfigs {
+			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
+		}
+		radarrHTTP := httpclient.New(opts...)
 		radarrClient = radarr.New(radarrHTTP, cfg.Radarr)
 	}
 
 	if cfg.Lidarr.Host != "" {
-		lidarrHTTP := httpclient.New(
+		opts := []httpclient.ClientOpts{
 			httpclient.WithAPIKey(cfg.Lidarr.APIKey),
 			httpclient.WithoutTLSVerfiy(cfg.Lidarr.IgnoreTLS),
-			httpclient.WithTimeout(time.Duration(cfg.Lidarr.Timeout*int(time.Second))),
-		)
+			httpclient.WithTimeout(time.Duration(cfg.Lidarr.Timeout * int(time.Second))),
+		}
+		if cfg.Lidarr.BasicAuth != nil {
+			opts = append(opts, httpclient.WithBasicAuth(cfg.Lidarr.BasicAuth.Username, cfg.Lidarr.BasicAuth.Password))
+		}
+		for _, v := range cfg.Lidarr.HeaderConfigs {
+			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
+		}
+		lidarrHTTP := httpclient.New(opts...)
 		lidarrClient = lidarr.New(lidarrHTTP, cfg.Lidarr)
 	}
 
@@ -135,15 +156,9 @@ func root(cmd *cobra.Command, args []string) {
 		radarrClient,
 		lidarrClient,
 	)
-	_ = client
 
 	tui := tui.New(client)
 	if err := tui.Run(); err != nil {
 		log.Fatalln(err)
 	}
-
-	/* _, err = sonarrClient.GetSerie(cmd.Context(), 78804)
-	if err != nil {
-		log.Fatalln(err)
-	} */
 }

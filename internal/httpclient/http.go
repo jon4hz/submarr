@@ -35,11 +35,17 @@ type client struct {
 	http      *http.Client
 	apiKey    string
 	basicAuth *basicAuth
+	headers   []header
 }
 
 type basicAuth struct {
 	username string
 	password string
+}
+
+type header struct {
+	key   string
+	value string
 }
 
 // New creates a new http client.
