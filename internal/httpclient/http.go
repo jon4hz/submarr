@@ -53,7 +53,7 @@ func New(opts ...ClientOpts) Client {
 	c := &client{
 		http: &http.Client{},
 	}
-	c.http.Timeout = 30 * time.Second
+	c.http.Timeout = 90 * time.Second
 	for _, o := range opts {
 		o(c)
 	}
