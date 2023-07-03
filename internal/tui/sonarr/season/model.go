@@ -113,9 +113,11 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		}
 
 	case spinner.TickMsg:
-		var cmd tea.Cmd
-		m.spinner.Model, cmd = m.spinner.Update(msg)
-		return m, cmd
+		if m.state == stateFetchEpisodes {
+			var cmd tea.Cmd
+			m.spinner.Model, cmd = m.spinner.Update(msg)
+			return m, cmd
+		}
 
 	case sonarr.FetchSeasonEpisodesResult:
 		m.episodesList.StopSpinner()
