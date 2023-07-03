@@ -546,7 +546,48 @@ type EpisodeResourcePagingResource struct {
 	PageSize      int32                    `json:"pageSize"`
 	SortKey       string                   `json:"sortKey"`
 	SortDirection httpclient.SortDirection `json:"sortDirection"`
-	Filters       []*PagingResourceFilter  `json:"filters"`
+	Filters       []PagingResourceFilter   `json:"filters"`
 	TotalRecords  int32                    `json:"totalRecords"`
 	Records       []*EpisodeResource       `json:"records"`
 }
+
+type HistoryResourcePagingResource struct {
+	Page          int32                    `json:"page"`
+	PageSize      int32                    `json:"pageSize"`
+	SortKey       string                   `json:"sortKey"`
+	SortDirection httpclient.SortDirection `json:"sortDirection"`
+	Filters       []PagingResourceFilter   `json:"filters"`
+	TotalRecords  int32                    `json:"totalRecords"`
+	Records       []*HistoryResource       `json:"records"`
+}
+
+type HistoryResource struct {
+	ID                  int32                   `json:"id"`
+	EpisodeID           int32                   `json:"episodeId"`
+	SeriesID            int32                   `json:"seriesId"`
+	SourceTitle         string                  `json:"sourceTitle"`
+	Languages           []Language              `json:"languages"`
+	Quality             *QualityModel           `json:"quality"`
+	CustomFormat        []CustomFormatResource  `json:"customFormats"`
+	CustomFormatScore   int32                   `json:"customFormatScore"`
+	QualityCutoffNotMet bool                    `json:"qualityCutoffNotMet"`
+	Date                time.Time               `json:"date"`
+	DownloadID          string                  `json:"downloadId"`
+	EventType           EpisodeHistoryEventType `json:"eventType"`
+	Data                map[any]string          `json:"data"`
+	Episode             *EpisodeResource        `json:"episode"`
+	Series              *SeriesResource         `json:"series"`
+}
+
+type EpisodeHistoryEventType string
+
+const (
+	EpisodeHistoryEventTypeUnknown                EpisodeHistoryEventType = "unknown"
+	EpisodeHistoryEventTypeGrabbed                EpisodeHistoryEventType = "grabbed"
+	EpisodeHistoryEventTypeSeriesFolderImported   EpisodeHistoryEventType = "seriesFolderImported"
+	EpisodeHistoryEventTypeDownloadFolderImported EpisodeHistoryEventType = "downloadFolderImported"
+	EpisodeHistoryEventTypeDownloadFailed         EpisodeHistoryEventType = "downloadFailed"
+	EpisodeHistoryEventTypeEpisodeFileDeleted     EpisodeHistoryEventType = "episodeFileDeleted"
+	EpisodeHistoryEventTypeEpisodeFileRenamed     EpisodeHistoryEventType = "episodeFileRenamed"
+	EpisodeHistoryEventTypeDownloadIgnored        EpisodeHistoryEventType = "downloadIgnored"
+)
