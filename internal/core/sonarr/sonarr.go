@@ -65,6 +65,13 @@ func (c *Client) Init() error {
 	}
 	c.queued = queue.TotalRecords
 
+	missings, err := c.sonarr.GetMissings(context.Background())
+	if err != nil {
+		c.available = false
+		return fmt.Errorf("failed to get missing episodes: %w", err)
+	}
+	c.missing = len(missings)
+
 	return nil
 }
 
