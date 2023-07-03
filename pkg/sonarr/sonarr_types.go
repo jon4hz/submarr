@@ -540,3 +540,18 @@ type CommandRequest struct {
 	SeasonNumber int32  `json:"seasonNumber,omitempty"`
 	SeriesID     int32  `json:"seriesId,omitempty"`
 }
+
+type EpisodeResourcePagingResource struct {
+	Page          int32                    `json:"page"`
+	PageSize      int32                    `json:"page"`
+	SortKey       string                   `json:"page"`
+	SortDirection httpclient.SortDirection `json:"page"`
+	Filters       []*PagingResourceFilter  `json:"page"`
+	TotalRecords  int32                    `json:"totalRecords"`
+	Records       []*EpisodeResource       `json:"records"`
+}
+
+type PagingResourceFilter struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
