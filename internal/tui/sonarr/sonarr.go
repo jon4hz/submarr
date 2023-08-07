@@ -56,8 +56,7 @@ func New(c *sonarr.Client, width, height int) *Model {
 	m.seriesList.InfiniteScrolling = true
 
 	m.seriesList.FilterInput.Prompt = "Search: "
-	m.seriesList.FilterInput.CursorStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#00CCFF"))
-
+	m.seriesList.FilterInput.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#00CCFF"))
 	return &m
 }
 
@@ -226,8 +225,7 @@ func (m *Model) SetSize(width, height int) {
 
 	m.seriesList.SetSize(width, height)
 
-	switch m.state {
-	case stateSeriesDetails, stateSeason:
+	if m.submodel != nil {
 		m.submodel.SetSize(width, height)
 	}
 }
