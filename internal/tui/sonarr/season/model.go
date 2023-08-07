@@ -84,6 +84,18 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					statusbar.NewMessageCmd("Reloading episodes...", statusbar.WithMessageTimeout(2)),
 				)
 			}
+
+		case key.Matches(msg, DefaultKeyMap.AutomaticSearch):
+			if !m.episodesList.SettingFilter() {
+				item, _ := m.episodesList.SelectedItem().(EpisodeItem)
+				if item.episode == nil {
+					return m, nil
+				}
+				return m, tea.Batch(
+					m.client.AutomaticSearchEpisode(item.episode.ID),
+					statusbar.NewMessageCmd(fmt.Sprintf("Searching for episode %d...", item.episode.EpisodeNumber), statusbar.WithMessageTimeout(2)),
+				)
+			}
 		}
 
 	case tea.MouseMsg:
@@ -123,7 +135,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		m.episodesList.StopSpinner()
 		m.SetReloading(false)
 		if msg.Error != nil {
-			return m, statusbar.NewMessageCmd("Error while fetching episodes!")
+			return m, statusbar.NewErrCmd("Error while fetching episodes!")
 		}
 		m.state = stateShowEpisodes
 		return m, m.episodesList.SetItems(episodeToItems(msg.Episodes, m.client.GetSeriesQueue()))

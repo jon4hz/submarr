@@ -2,11 +2,37 @@ package sonarr
 
 import (
 	"context"
+	"errors"
 
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/jon4hz/subrr/internal/logging"
 	"github.com/jon4hz/subrr/pkg/sonarr"
 )
+
+var ErrNoEpisodes = errors.New("no episodes provided")
+
+func (c *Client) doCommandRequest(req *sonarr.CommandRequest) (*sonarr.CommandResource, error) { // nolint:unparam
+	res, err := c.sonarr.PostCommand(context.Background(), req)
+	if err != nil {
+		logging.Log.Err(err).Msg("failed to send command")
+		return nil, err
+	}
+	return res, nil
+}
+
+func (c *Client) AutomaticSearchEpisode(epiodeIDs ...int32) tea.Cmd {
+	return func() tea.Msg {
+		if len(epiodeIDs) == 0 {
+			return ErrNoEpisodes
+		}
+		req := sonarr.CommandRequest{
+			Name:       "EpisodeSearch",
+			EpisodeIDs: epiodeIDs,
+		}
+		_, err := c.doCommandRequest(&req)
+		return err
+	}
+}
 
 func (c *Client) AutomaticSearchSeries() tea.Cmd {
 	return func() tea.Msg {
@@ -18,12 +44,8 @@ func (c *Client) AutomaticSearchSeries() tea.Cmd {
 			Name:     "SeriesSearch",
 			SeriesID: c.serie.ID,
 		}
-		_, err := c.sonarr.PostCommand(context.Background(), &req)
-		if err != nil {
-			logging.Log.Err(err).Msg("failed to send command")
-			return err
-		}
-		return nil
+		_, err := c.doCommandRequest(&req)
+		return err
 	}
 }
 
@@ -38,12 +60,8 @@ func (c *Client) AutomaticSearchSeason(seasonNumber int32) tea.Cmd {
 			SeasonNumber: seasonNumber,
 			SeriesID:     c.serie.ID,
 		}
-		_, err := c.sonarr.PostCommand(context.Background(), &req)
-		if err != nil {
-			logging.Log.Err(err).Msg("failed to send command")
-			return err
-		}
-		return nil
+		_, err := c.doCommandRequest(&req)
+		return err
 	}
 }
 
@@ -57,11 +75,7 @@ func (c *Client) RefreshSeries() tea.Cmd {
 			Name:     "RefreshSeries",
 			SeriesID: c.serie.ID,
 		}
-		_, err := c.sonarr.PostCommand(context.Background(), &req)
-		if err != nil {
-			logging.Log.Err(err).Msg("failed to send command")
-			return err
-		}
-		return nil
+		_, err := c.doCommandRequest(&req)
+		return err
 	}
 }

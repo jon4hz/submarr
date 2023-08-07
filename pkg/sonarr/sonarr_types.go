@@ -536,9 +536,10 @@ const (
 // CommandRequest is the request body for a command
 // This struct isn't acording to the API docs, but it's what the API actually expects
 type CommandRequest struct {
-	Name         string `json:"name"`
-	SeasonNumber int32  `json:"seasonNumber,omitempty"`
-	SeriesID     int32  `json:"seriesId,omitempty"`
+	Name         string  `json:"name"`
+	SeasonNumber int32   `json:"seasonNumber,omitempty"`
+	SeriesID     int32   `json:"seriesId,omitempty"`
+	EpisodeIDs   []int32 `json:"episodeIds,omitempty"`
 }
 
 type EpisodeResourcePagingResource struct {
