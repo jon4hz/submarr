@@ -1,9 +1,11 @@
 package version
 
+import "time"
+
 var (
 	Development = "devel"
 	Version     = Development
 	Commit      = "none"
-	Date        = "unknown"
+	Date        = time.Now().String()
 	BuiltBy     = "unknown"
 )
