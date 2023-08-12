@@ -9,41 +9,35 @@ import (
 
 // Config represents the config
 type Config struct {
-	Sonarr  *SonarrConfig  `mapstructure:"sonarr"`
-	Radarr  *RadarrConfig  `mapstructure:"radarr"`
-	Lidarr  *LidarrConfig  `mapstructure:"lidarr"`
+	Sonarr  SonarrConfig   `mapstructure:"sonarr"`
+	Radarr  RadarrConfig   `mapstructure:"radarr"`
+	Lidarr  LidarrConfig   `mapstructure:"lidarr"`
 	Logging *LoggingConfig `mapstructure:"logging"`
 	NoMouse bool           `mapstructure:"no_mouse"`
 }
 
-// SonarrConfig represents the sonarr config
-type SonarrConfig struct {
+type ClientConfig struct {
 	Host          string           `mapstructure:"host"`
 	APIKey        string           `mapstructure:"api_key"`
 	IgnoreTLS     bool             `mapstructure:"ignore_tls"`
 	Timeout       int              `mapstructure:"timeout"`
 	BasicAuth     *BasicAuthConfig `mapstructure:"basic_auth"`
 	HeaderConfigs []HeaderConfig   `mapstructure:"headers"`
+}
+
+// SonarrConfig represents the sonarr config
+type SonarrConfig struct {
+	ClientConfig `mapstructure:",squash"`
 }
 
 // RadarrConfig represents the radarr config
 type RadarrConfig struct {
-	Host          string           `mapstructure:"host"`
-	APIKey        string           `mapstructure:"api_key"`
-	IgnoreTLS     bool             `mapstructure:"ignore_tls"`
-	Timeout       int              `mapstructure:"timeout"`
-	BasicAuth     *BasicAuthConfig `mapstructure:"basic_auth"`
-	HeaderConfigs []HeaderConfig   `mapstructure:"headers"`
+	ClientConfig `mapstructure:",squash"`
 }
 
 // LidarrConfig represents the lidarr config
 type LidarrConfig struct {
-	Host          string           `mapstructure:"host"`
-	APIKey        string           `mapstructure:"api_key"`
-	IgnoreTLS     bool             `mapstructure:"ignore_tls"`
-	Timeout       int              `mapstructure:"timeout"`
-	BasicAuth     *BasicAuthConfig `mapstructure:"basic_auth"`
-	HeaderConfigs []HeaderConfig   `mapstructure:"headers"`
+	ClientConfig `mapstructure:",squash"`
 }
 
 // LoggingConfig represents the logging config

@@ -40,32 +40,9 @@ func init() {
 
 	rootCmd.Flags().StringVarP(&rootCmdFlags.configFile, "config", "c", "", "path to the config file")
 
-	rootCmd.Flags().String("sonarr-host", "", "sonarr host")
-	rootCmd.Flags().String("sonarr-api-key", "", "sonarr api key")
-	rootCmd.Flags().Bool("sonarr-ignore-tls", false, "ignore tls verification")
-	rootCmd.Flags().Int("sonarr-timeout", 30, "timeout in seconds")
-	mustBindPFlag("sonarr.host", rootCmd.Flags().Lookup("sonarr-host"))
-	mustBindPFlag("sonarr.api_key", rootCmd.Flags().Lookup("sonarr-api-key"))
-	mustBindPFlag("sonarr.ignore_tls", rootCmd.Flags().Lookup("sonarr-ignore-tls"))
-	mustBindPFlag("sonarr.timeout", rootCmd.Flags().Lookup("sonarr-timeout"))
-
-	rootCmd.Flags().String("radarr-host", "", "radarr host")
-	rootCmd.Flags().String("radarr-api-key", "", "radarr api key")
-	rootCmd.Flags().Bool("radarr-ignore-tls", false, "ignore tls verification")
-	rootCmd.Flags().Int("radarr-timeout", 30, "timeout in seconds")
-	mustBindPFlag("radarr.host", rootCmd.Flags().Lookup("radarr-host"))
-	mustBindPFlag("radarr.api_key", rootCmd.Flags().Lookup("radarr-api-key"))
-	mustBindPFlag("radarr.ignore_tls", rootCmd.Flags().Lookup("radarr-ignore-tls"))
-	mustBindPFlag("radarr.timeout", rootCmd.Flags().Lookup("radarr-timeout"))
-
-	rootCmd.Flags().String("lidarr-host", "", "lidarr host")
-	rootCmd.Flags().String("lidarr-api-key", "", "lidarr api key")
-	rootCmd.Flags().Bool("lidarr-ignore-tls", false, "ignore tls verification")
-	rootCmd.Flags().Int("lidarr-timeout", 30, "timeout in seconds")
-	mustBindPFlag("lidarr.host", rootCmd.Flags().Lookup("lidarr-host"))
-	mustBindPFlag("lidarr.api_key", rootCmd.Flags().Lookup("lidarr-api-key"))
-	mustBindPFlag("lidarr.ignore_tls", rootCmd.Flags().Lookup("lidarr-ignore-tls"))
-	mustBindPFlag("lidarr.timeout", rootCmd.Flags().Lookup("lidarr-timeout"))
+	for _, v := range []string{"sonarr", "radarr", "lidarr"} {
+		bindClientFlags(rootCmd, v)
+	}
 
 	rootCmd.Flags().String("logging-level", "info", "log level")
 	rootCmd.Flags().String("logging-folder", "", "log folder")
@@ -74,6 +51,17 @@ func init() {
 
 	rootCmd.Flags().Bool("no-mouse", false, "disable mouse support")
 	mustBindPFlag("no_mouse", rootCmd.Flags().Lookup("no-mouse"))
+}
+
+func bindClientFlags(cmd *cobra.Command, client string) {
+	cmd.Flags().String(client+"-host", "", client+" host")
+	cmd.Flags().String(client+"-api-key", "", client+" api key")
+	cmd.Flags().Bool(client+"-ignore-tls", false, "ignore tls verification")
+	cmd.Flags().Int(client+"-timeout", 30, "timeout in seconds")
+	mustBindPFlag(client+".host", cmd.Flags().Lookup(client+"-host"))
+	mustBindPFlag(client+".api_key", cmd.Flags().Lookup(client+"-api-key"))
+	mustBindPFlag(client+".ignore_tls", cmd.Flags().Lookup(client+"-ignore-tls"))
+	mustBindPFlag(client+".timeout", cmd.Flags().Lookup(client+"-timeout"))
 }
 
 func mustBindPFlag(key string, flag *pflag.Flag) {
@@ -120,7 +108,7 @@ func root(cmd *cobra.Command, args []string) {
 			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
 		}
 		sonarrHTTP := httpclient.New(opts...)
-		sonarrClient = sonarr.New(sonarrHTTP, cfg.Sonarr)
+		sonarrClient = sonarr.New(sonarrHTTP, &cfg.Sonarr)
 	}
 
 	if cfg.Radarr.Host != "" {
@@ -136,7 +124,7 @@ func root(cmd *cobra.Command, args []string) {
 			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
 		}
 		radarrHTTP := httpclient.New(opts...)
-		radarrClient = radarr.New(radarrHTTP, cfg.Radarr)
+		radarrClient = radarr.New(radarrHTTP, &cfg.Radarr)
 	}
 
 	if cfg.Lidarr.Host != "" {
@@ -152,7 +140,7 @@ func root(cmd *cobra.Command, args []string) {
 			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
 		}
 		lidarrHTTP := httpclient.New(opts...)
-		lidarrClient = lidarr.New(lidarrHTTP, cfg.Lidarr)
+		lidarrClient = lidarr.New(lidarrHTTP, &cfg.Lidarr)
 	}
 
 	client := core.New(
