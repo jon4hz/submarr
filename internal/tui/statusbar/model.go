@@ -1,6 +1,7 @@
 package statusbar
 
 import (
+	"sync"
 	"time"
 
 	"github.com/charmbracelet/bubbles/help"
@@ -50,8 +51,8 @@ var (
 type Model struct {
 	isInitialized bool
 
-	width  int
-	height int
+	width int
+	//height int
 
 	showHelp bool
 
@@ -65,13 +66,18 @@ type Model struct {
 
 	help     help.Model
 	helpKeys [][]key.Binding
+
+	mu           *sync.Mutex
+	activeStatus bool
 }
 
 func New(title string) Model {
 	m := Model{
-		Title:       title,
-		placeholder: common.GetRandomPlaceholder(),
-		help:        help.New(),
+		Title:        title,
+		placeholder:  common.GetRandomPlaceholder(),
+		help:         help.New(),
+		mu:           &sync.Mutex{},
+		activeStatus: true,
 	}
 	m.help.ShowAll = true
 	m.help.FullSeparator = "      "
@@ -220,4 +226,16 @@ func (m Model) FullHelp() [][]key.Binding {
 
 func (m Model) ShortHelp() []key.Binding {
 	return nil
+}
+
+func (m *Model) SetActive(active bool) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	m.activeStatus = active
+}
+
+func (m *Model) IsActive() bool {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	return m.activeStatus
 }

@@ -105,6 +105,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// handle the statusbar gracefully here.
 		// Because after toggeling the help view, the other views must be resized.
 		case "?":
+			if !m.statusbar.IsActive() {
+				break
+			}
 			var cmd tea.Cmd
 			m.statusbar, cmd = m.statusbar.Update(msg)
 			cmds = append(cmds, cmd)
