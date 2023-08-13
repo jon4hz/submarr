@@ -592,3 +592,31 @@ const (
 	EpisodeHistoryEventTypeEpisodeFileRenamed     EpisodeHistoryEventType = "episodeFileRenamed"
 	EpisodeHistoryEventTypeDownloadIgnored        EpisodeHistoryEventType = "downloadIgnored"
 )
+
+type RootFolderResource struct {
+	ID              int32            `json:"id"`
+	Path            string           `json:"path"`
+	Accessible      bool             `json:"accessible"`
+	FreeSpace       int64            `json:"freeSpace"`
+	UnmappedFolders []UnmappedFolder `json:"unmappedFolders"`
+}
+
+type UnmappedFolder struct {
+	Name         string `json:"name"`
+	Path         string `json:"path"`
+	RelativePath string `json:"relativePath"`
+}
+
+type LanguageProfileResource struct {
+	ID          int32                         `json:"id"`
+	Name        string                        `json:"name"`
+	Upgradeable bool                          `json:"upgradeable"`
+	Cutoff      Language                      `json:"cutoff"`
+	Languages   []LanguageProfileItemResource `json:"languages"`
+}
+
+type LanguageProfileItemResource struct {
+	ID       int32    `json:"id"`
+	Language Language `json:"language"`
+	Allowed  bool     `json:"allowed"`
+}

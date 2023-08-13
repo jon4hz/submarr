@@ -18,12 +18,12 @@ import (
 type Delegate struct{}
 
 var (
-	defaultStyle = lipgloss.NewStyle().
+	DefaultStyle = lipgloss.NewStyle().
 			Border(lipgloss.NormalBorder(), true).
 			Padding(0, 2).
 			Margin(0, 1)
 
-	selectedStyle = defaultStyle.Copy().
+	SelectedStyle = DefaultStyle.Copy().
 			BorderStyle(lipgloss.ThickBorder()).
 			BorderForeground(lipgloss.Color("#00CCFF"))
 )
@@ -39,9 +39,9 @@ func (d Delegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
 func (d Delegate) Render(w io.Writer, m list.Model, index int, item list.Item) {
 	var serie string
 
-	x, _ := defaultStyle.GetFrameSize()
+	x, _ := DefaultStyle.GetFrameSize()
 	itemWidth := m.Width() - x
-	width := itemWidth + defaultStyle.GetHorizontalPadding()
+	width := itemWidth + DefaultStyle.GetHorizontalPadding()
 
 	i, ok := item.(sonarr.SeriesItem)
 	if ok {
@@ -56,36 +56,35 @@ func (d Delegate) Render(w io.Writer, m list.Model, index int, item list.Item) {
 	}
 
 	if index == m.Index() {
-		serie = selectedStyle.Width(width).Render(serie)
+		serie = SelectedStyle.Width(width).Render(serie)
 	} else {
-		serie = defaultStyle.Width(width).Render(serie)
+		serie = DefaultStyle.Width(width).Render(serie)
 	}
 
 	fmt.Fprintf(w, "%s", serie)
 }
 
 var (
-	selectedForeground = lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}
-	subtileForeground  = lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}
+	SelectedForeground = lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}
 
-	titleStyle = lipgloss.NewStyle().
+	TitleStyle = lipgloss.NewStyle().
 			Underline(true).
 			Bold(true).
 			MaxHeight(1)
 
-	separator = lipgloss.NewStyle().
+	Separator = lipgloss.NewStyle().
 			Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}).
 			Padding(0, 1).
 			Render("•")
 )
 
 func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
-	textColor := selectedForeground
+	textColor := SelectedForeground
 	if !isSelected {
-		textColor = subtileForeground
+		textColor = common.SubtileColor
 	}
 
-	title := titleStyle.Foreground(textColor).Render(item.Series.Title)
+	title := TitleStyle.Foreground(textColor).Render(item.Series.Title)
 	title = zone.Mark(item.Series.Title,
 		truncate.StringWithTail(title, uint(itemWidth), common.Ellipsis),
 	)
@@ -98,9 +97,9 @@ func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 
 		episodeStats = lipgloss.JoinHorizontal(lipgloss.Top,
 			lipgloss.NewStyle().Foreground(textColor).Render(episodeCount),
-			separator,
+			Separator,
 			lipgloss.NewStyle().Foreground(textColor).Render(seasonCount),
-			separator,
+			Separator,
 			lipgloss.NewStyle().Foreground(textColor).Render(diskSize),
 		)
 		episodeStats = truncate.StringWithTail(episodeStats, uint(itemWidth), common.Ellipsis)
@@ -110,7 +109,7 @@ func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 	profile := item.Series.ProfileName
 	profileStats := lipgloss.JoinHorizontal(lipgloss.Top,
 		lipgloss.NewStyle().Foreground(textColor).Render(seriesType),
-		separator,
+		Separator,
 		lipgloss.NewStyle().Foreground(textColor).Render(profile),
 	)
 	profileStats = truncate.StringWithTail(profileStats, uint(itemWidth), common.Ellipsis)
@@ -129,7 +128,7 @@ func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 	}
 	networkStats := lipgloss.JoinHorizontal(lipgloss.Top,
 		lipgloss.NewStyle().Foreground(textColor).Render(network),
-		separator,
+		Separator,
 		lipgloss.NewStyle().Foreground(textColor).Render(seriesStatus),
 	)
 	networkStats = truncate.StringWithTail(networkStats, uint(itemWidth), common.Ellipsis)

@@ -7,6 +7,8 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core/sonarr"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	sonarr_list "github.com/jon4hz/subrr/internal/tui/sonarr/list"
+	"github.com/jon4hz/subrr/internal/tui/sonarr/search"
 	"github.com/jon4hz/subrr/internal/tui/sonarr/season"
 	"github.com/jon4hz/subrr/internal/tui/sonarr/series"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
@@ -22,6 +24,7 @@ const (
 	stateSeries
 	stateSeriesDetails
 	stateSeason
+	stateSearch
 )
 
 type Model struct {
@@ -42,21 +45,16 @@ func New(c *sonarr.Client, width, height int) *Model {
 	m := Model{
 		state:      stateLoading,
 		client:     c,
-		seriesList: list.NewModel(nil, series.Delegate{}, width, height),
+		seriesList: sonarr_list.New("Series", nil, series.Delegate{}, width, height),
 		spinner:    common.NewSpinner(),
 	}
+
 	m.Width = width
 	m.Height = height
 
-	m.seriesList.DisableQuitKeybindings()
-	m.seriesList.Title = "Series"
-	m.seriesList.Styles.Title = m.seriesList.Styles.Title.Copy().
-		Background(lipgloss.Color("#7B61FF"))
-	m.seriesList.SetShowHelp(false)
 	m.seriesList.InfiniteScrolling = true
-
 	m.seriesList.FilterInput.Prompt = "Search: "
-	m.seriesList.FilterInput.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#00CCFF"))
+
 	return &m
 }
 
@@ -111,6 +109,9 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					cmd := m.selectSeries(item.Series)
 					return m, cmd
 				}
+
+			case key.Matches(msg, DefaultKeyMap.AddNew):
+				return m, m.addNewSeries()
 			}
 		}
 
@@ -185,7 +186,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 
 		if m.submodel.Back() {
 			switch m.state {
-			case stateSeriesDetails:
+			case stateSeriesDetails, stateSearch:
 				m.state = stateSeries
 				cmds = append(cmds,
 					// reset the help of the statusbar
@@ -219,6 +220,13 @@ func (m *Model) selectSeason(seasonResource *sonarrAPI.SeasonResource) tea.Cmd {
 	return m.submodel.Init()
 }
 
+func (m *Model) addNewSeries() tea.Cmd {
+	m.state = stateSearch
+	m.submodel = search.New(m.client, m.Width, m.Height)
+
+	return m.submodel.Init()
+}
+
 func (m *Model) SetSize(width, height int) {
 	m.Width = width
 	m.Height = height
@@ -238,9 +246,10 @@ func (m Model) View() string {
 	case stateSeries:
 		return m.seriesList.View()
 
-	case stateSeriesDetails, stateSeason:
-		return m.submodel.View()
+	default:
+		if m.submodel != nil {
+			return m.submodel.View()
+		}
+		return "unknown state"
 	}
-
-	return "unknown state"
 }

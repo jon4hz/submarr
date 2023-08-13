@@ -171,3 +171,35 @@ func (c *Client) GetMissings(ctx context.Context) (*EpisodeResourcePagingResourc
 	}
 	return &res, nil
 }
+
+// GetSeriesLookup returns a list of series matching the given query
+func (c *Client) GetSeriesLookup(ctx context.Context, query string) ([]*SeriesResource, error) {
+	var res []*SeriesResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/series/lookup", &res, httpclient.WithParams(map[string]string{"term": query}))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// GetRootFolders returns all root folders
+func (c *Client) GetRootFolders(ctx context.Context) ([]*RootFolderResource, error) {
+	var res []*RootFolderResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/rootfolder", &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// GetLanguageProfiles returns all language profiles
+//
+// Deprecated: Will be obsolete in Sonarr v4
+func (c *Client) GetLanguageProfiles(ctx context.Context) ([]*LanguageProfileResource, error) {
+	var res []*LanguageProfileResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/languageprofile", &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}

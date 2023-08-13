@@ -2,6 +2,7 @@ package sonarr
 
 import (
 	"context"
+	"regexp"
 	"sort"
 	"strings"
 	"unicode"
@@ -52,31 +53,26 @@ func (c *Client) fetchSeries() error {
 		return series[i].SortTitle < series[j].SortTitle
 	})
 
-	// Fetch all quality profiles
-	profiles, err := c.sonarr.GetQualityProfiles(context.Background())
-	if err != nil {
-		logging.Log.Error().Err(err).Msg("Failed to fetch quality profiles")
-		return err
-	}
-
-	// Group profiles by ID
-	profilesByID := make(map[int32]*sonarr.QualityProfileResource)
-	for _, p := range profiles {
-		profilesByID[p.ID] = p
-	}
-
-	// store the profiles in the client so we can use them later
-	c.qualityProfiles = profilesByID
-
 	// Add the quality profile name to the series
-	// And sanitize the title
 	for i := range series {
-		series[i].ProfileName = profilesByID[series[i].QualityProfileID].Name
-		series[i].Title = sanitizeTitle(series[i].Title)
+		qp := c.GetQualityProfileByID(series[i].QualityProfileID)
+		if qp != nil {
+			series[i].ProfileName = qp.Name
+		}
 	}
+
+	// Sanitize series
+	sanitizeSeriesResources(series)
 
 	c.series = series
 	return nil
+}
+
+func sanitizeSeriesResources(series []*sonarr.SeriesResource) {
+	for i := range series {
+		series[i].Title = sanitizeTitle(series[i].Title)
+		series[i].Overview = sanitizeOverview(series[i].Overview)
+	}
 }
 
 // sanitizeTitle replaces all unicode whitespace characters with a single space.
@@ -88,4 +84,16 @@ func sanitizeTitle(s string) string {
 		}
 	}
 	return s
+}
+
+var punctuationRe = regexp.MustCompile(`([,.:])(\S)`)
+
+// sanitizeOverview removes all newline and tab characters from the overview.
+func sanitizeOverview(s string) string {
+	s = strings.ReplaceAll(s, "\n", "")
+	s = strings.ReplaceAll(s, "\t", " ")
+	s = strings.ReplaceAll(s, "\r", "")
+
+	res := punctuationRe.ReplaceAllString(s, "$1 $2")
+	return strings.TrimSpace(res)
 }

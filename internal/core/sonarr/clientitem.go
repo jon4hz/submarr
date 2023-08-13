@@ -20,7 +20,7 @@ func (i ClientItem) Available() bool { return i.c.available }
 
 func (i ClientItem) Stats() []string {
 	return []string{
-		fmt.Sprintf("%d queued", i.c.queued),
-		fmt.Sprintf("%d missing", i.c.missing),
+		fmt.Sprintf("%d queued", i.c.totalQueued),
+		fmt.Sprintf("%d missing", i.c.totalMissing),
 	}
 }
