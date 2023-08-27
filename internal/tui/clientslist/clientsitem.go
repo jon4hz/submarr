@@ -24,14 +24,13 @@ type ClientsItem interface {
 
 var (
 	selectedForeground = lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}
-	subtileForeground  = lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}
 
 	titleStyle = lipgloss.NewStyle().
 			Underline(true).
 			Bold(true)
 
 	statusStyle = lipgloss.NewStyle().
-			Foreground(subtileForeground).
+			Foreground(common.SubtileColor).
 			Padding(0, 0, 0, 1).
 			Align(lipgloss.Right)
 
@@ -46,7 +45,7 @@ var (
 func renderItem(item ClientsItem, itemWidth int, isSelected bool) string {
 	textColor := selectedForeground
 	if !isSelected {
-		textColor = subtileForeground
+		textColor = common.SubtileColor
 	}
 
 	title := titleStyle.Foreground(textColor).Render(item.Title() + "\n")

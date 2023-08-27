@@ -1,12 +1,16 @@
 package sonarr
 
 import (
+	"fmt"
+
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/subrr/internal/core/sonarr"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	sonarr_list "github.com/jon4hz/subrr/internal/tui/sonarr/list"
+	"github.com/jon4hz/subrr/internal/tui/sonarr/search"
 	"github.com/jon4hz/subrr/internal/tui/sonarr/season"
 	"github.com/jon4hz/subrr/internal/tui/sonarr/series"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
@@ -20,8 +24,10 @@ const (
 	stateUnknown state = iota
 	stateLoading
 	stateSeries
+	stateSeriesLoading
 	stateSeriesDetails
 	stateSeason
+	stateSearch
 )
 
 type Model struct {
@@ -42,21 +48,16 @@ func New(c *sonarr.Client, width, height int) *Model {
 	m := Model{
 		state:      stateLoading,
 		client:     c,
-		seriesList: list.NewModel(nil, series.Delegate{}, width, height),
+		seriesList: sonarr_list.New("Series", nil, series.Delegate{}, width, height),
 		spinner:    common.NewSpinner(),
 	}
+
 	m.Width = width
 	m.Height = height
 
-	m.seriesList.DisableQuitKeybindings()
-	m.seriesList.Title = "Series"
-	m.seriesList.Styles.Title = m.seriesList.Styles.Title.Copy().
-		Background(lipgloss.Color("#7B61FF"))
-	m.seriesList.SetShowHelp(false)
 	m.seriesList.InfiniteScrolling = true
-
 	m.seriesList.FilterInput.Prompt = "Search: "
-	m.seriesList.FilterInput.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#00CCFF"))
+
 	return &m
 }
 
@@ -108,10 +109,27 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			case key.Matches(msg, DefaultKeyMap.Select):
 				item, _ := m.seriesList.SelectedItem().(sonarr.SeriesItem)
 				if !m.seriesList.SettingFilter() {
-					cmd := m.selectSeries(item.Series)
+					cmd := m.loadSeries(item.Series)
 					return m, cmd
 				}
+
+			case key.Matches(msg, DefaultKeyMap.AddNew):
+				return m, m.addNewSeries()
 			}
+
+		case stateSeriesLoading:
+			switch {
+			case key.Matches(msg, DefaultKeyMap.Back):
+				m.state = stateSeries
+				return m, nil
+
+			case key.Matches(msg, DefaultKeyMap.Quit):
+				if !m.seriesList.SettingFilter() {
+					m.IsQuit = true
+				}
+				return m, nil
+			}
+
 		}
 
 	case tea.MouseMsg:
@@ -132,7 +150,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					if zone.Get(item.Series.Title).InBounds(msg) {
 						// if we click on an already selected item, open the details
 						if i == m.seriesList.Index() {
-							cmd := m.selectSeries(item.Series)
+							cmd := m.loadSeries(item.Series)
 							return m, cmd
 						}
 						// else select the item
@@ -141,6 +159,19 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					}
 				}
 			}
+		}
+
+	case sonarr.FetchSerieResult:
+		switch m.state {
+		case stateSeriesLoading:
+			if msg.Error != nil {
+				return m, statusbar.NewErrCmd("Failed to fetch series")
+			}
+			m.state = stateSeriesDetails
+			m.client.SetSerie(msg.Serie)
+			m.submodel = series.New(m.client, m.Width, m.Height)
+
+			return m, m.submodel.Init()
 		}
 
 	case sonarr.FetchSeriesResult:
@@ -153,9 +184,33 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			m.state = stateSeries
 			if msg.Error != nil {
 				cmds = append(cmds, statusbar.NewErrCmd("Failed to fetch series"))
+			} else {
+				cmds = append(cmds, m.seriesList.SetItems(msg.Items))
 			}
-			cmds = append(cmds, m.seriesList.SetItems(msg.Items))
+			cmds = append(cmds, statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()))
 
+			return m, tea.Batch(cmds...)
+		}
+
+	case search.SeriesAlreadyAddedMsg:
+		switch m.state {
+		case stateSearch:
+			return m, m.loadSeries(msg.Series)
+		}
+
+	case sonarr.AddSeriesResult:
+		switch m.state {
+		case stateSearch:
+			m.state = stateSeries
+			if msg.Error != nil {
+				cmds = append(cmds, statusbar.NewErrCmd("Failed to add series"))
+			} else {
+				cmds = append(cmds,
+					m.seriesList.SetItems(msg.Items),
+					statusbar.NewMessageCmd(fmt.Sprintf("Added Series: %s", msg.AddedTitle)),
+					statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
+				)
+			}
 			return m, tea.Batch(cmds...)
 		}
 
@@ -174,6 +229,11 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		m.seriesList, cmd = m.seriesList.Update(msg)
 		cmds = append(cmds, cmd)
 
+	case stateSeriesLoading:
+		var cmd tea.Cmd
+		m.spinner.Model, cmd = m.spinner.Update(msg)
+		cmds = append(cmds, cmd)
+
 	default:
 		var cmd tea.Cmd
 		m.submodel, cmd = m.submodel.Update(msg)
@@ -185,7 +245,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 
 		if m.submodel.Back() {
 			switch m.state {
-			case stateSeriesDetails:
+			case stateSeriesLoading, stateSeriesDetails, stateSearch:
 				m.state = stateSeries
 				cmds = append(cmds,
 					// reset the help of the statusbar
@@ -194,7 +254,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 
 			case stateSeason:
 				cmds = append(cmds,
-					m.selectSeries(m.client.GetSerie()),
+					m.loadSeries(m.client.GetSerie()),
 				)
 			}
 		}
@@ -203,18 +263,27 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m *Model) selectSeries(seriesResource *sonarrAPI.SeriesResource) tea.Cmd {
-	m.state = stateSeriesDetails
+func (m *Model) loadSeries(seriesResource *sonarrAPI.SeriesResource) tea.Cmd {
+	m.state = stateSeriesLoading
+	m.spinner.Message = common.GetRandomLoadingMessage()
 	m.client.SetSerie(seriesResource)
-	m.submodel = series.New(m.client, m.Width, m.Height)
-
-	return m.submodel.Init()
+	return tea.Batch(
+		m.client.ReloadSerie(),
+		m.spinner.Tick,
+	)
 }
 
 func (m *Model) selectSeason(seasonResource *sonarrAPI.SeasonResource) tea.Cmd {
 	m.state = stateSeason
 	m.client.SetSeason(seasonResource)
 	m.submodel = season.New(m.client, m.Width, m.Height)
+
+	return m.submodel.Init()
+}
+
+func (m *Model) addNewSeries() tea.Cmd {
+	m.state = stateSearch
+	m.submodel = search.New(m.client, m.Width, m.Height)
 
 	return m.submodel.Init()
 }
@@ -232,15 +301,16 @@ func (m *Model) SetSize(width, height int) {
 
 func (m Model) View() string {
 	switch m.state {
-	case stateLoading:
+	case stateLoading, stateSeriesLoading:
 		return m.spinner.View()
 
 	case stateSeries:
 		return m.seriesList.View()
 
-	case stateSeriesDetails, stateSeason:
-		return m.submodel.View()
+	default:
+		if m.submodel != nil {
+			return m.submodel.View()
+		}
+		return "unknown state"
 	}
-
-	return "unknown state"
 }

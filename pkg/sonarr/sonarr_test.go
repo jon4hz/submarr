@@ -61,12 +61,12 @@ func mustFile(path string) []byte {
 func TestSonarrClient(t *testing.T) {
 	h := &testClient{}
 	cfg := new(config.Config)
-	cfg.Sonarr = config.SonarrConfig{
+	cfg.Sonarr = &config.SonarrConfig{
 		ClientConfig: config.ClientConfig{
 			Host: testSonarrHost,
 		},
 	}
-	c := New(h, &cfg.Sonarr)
+	c := New(h, cfg.Sonarr)
 
 	{
 		h.handler = func(ctx context.Context, base, endpoint, method string, expRes, reqData any, opts ...httpclient.RequestOpts) (int, error) {

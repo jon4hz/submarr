@@ -63,7 +63,6 @@ func (d Delegate) Render(w io.Writer, m list.Model, index int, item list.Item) {
 
 var (
 	selectedForeground = lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}
-	subtileForeground  = lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}
 
 	titleStyle = lipgloss.NewStyle().
 			Bold(true).
@@ -159,7 +158,7 @@ func renderMonitored(item EpisodeItem, title, airDate, episodeStats string, down
 }
 
 func renderUnmonitored(item EpisodeItem, title, airDate, episodeStats string, downloadStatus string) string {
-	textColor := subtileForeground
+	textColor := common.SubtileColor
 	title = titleStyle.Foreground(textColor).Render(title)
 	airDate = lipgloss.NewStyle().Foreground(textColor).Render(airDate)
 

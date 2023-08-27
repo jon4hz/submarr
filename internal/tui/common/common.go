@@ -2,6 +2,7 @@ package common
 
 import (
 	"github.com/charmbracelet/bubbles/spinner"
+	"github.com/charmbracelet/lipgloss"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 )
@@ -28,3 +29,5 @@ func NewSpinner() Spinner {
 func (s Spinner) View() string {
 	return s.Model.View() + "  " + s.Message
 }
+
+var SubtileColor = lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}

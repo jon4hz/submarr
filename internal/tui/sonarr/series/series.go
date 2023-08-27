@@ -14,6 +14,7 @@ import (
 	"github.com/jon4hz/stickers/flexbox"
 	"github.com/jon4hz/subrr/internal/core/sonarr"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	sonarr_list "github.com/jon4hz/subrr/internal/tui/sonarr/list"
 	"github.com/jon4hz/subrr/internal/tui/sonarr/seasons"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
@@ -34,8 +35,6 @@ const (
 	seasonsCell
 	statsCell
 )
-
-var cellMap = map[cell]*flexbox.Cell{}
 
 type Model struct {
 	common.EmbedableModel
@@ -73,7 +72,7 @@ func New(sonarr *sonarr.Client, width, height int) *Model {
 		infoViewport:  viewport.New(0, 0),
 		statsViewport: viewport.New(0, 0),
 		selectedCell:  seasonsCell,
-		seasonsList:   list.New(newSeasonsItems(sonarr.GetSerie()), seasons.Delegate{}, 0, 0),
+		seasonsList:   sonarr_list.New("Seasons", newSeasonsItems(sonarr.GetSerie()), seasons.Delegate{}, 0, 0),
 	}
 
 	m.Width = width
@@ -95,8 +94,6 @@ func New(sonarr *sonarr.Client, width, height int) *Model {
 		),
 	}
 	m.flexBox.AddColumns(columns)
-
-	m.seasonsList.SetShowHelp(false)
 
 	// initial render
 	m.SetSize(width, height)
@@ -282,7 +279,6 @@ func (m *Model) SetSize(width, height int) {
 	m.seasonsList.SetSize(seasonListWidth, seasonListHeight)
 }
 
-// nolint:unparam
 func max(a, b int) int {
 	if a > b {
 		return a

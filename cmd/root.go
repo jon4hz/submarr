@@ -108,7 +108,7 @@ func root(cmd *cobra.Command, args []string) {
 			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
 		}
 		sonarrHTTP := httpclient.New(opts...)
-		sonarrClient = sonarr.New(sonarrHTTP, &cfg.Sonarr)
+		sonarrClient = sonarr.New(sonarrHTTP, cfg.Sonarr)
 	}
 
 	if cfg.Radarr.Host != "" {
@@ -124,7 +124,7 @@ func root(cmd *cobra.Command, args []string) {
 			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
 		}
 		radarrHTTP := httpclient.New(opts...)
-		radarrClient = radarr.New(radarrHTTP, &cfg.Radarr)
+		radarrClient = radarr.New(radarrHTTP, cfg.Radarr)
 	}
 
 	if cfg.Lidarr.Host != "" {
@@ -140,10 +140,11 @@ func root(cmd *cobra.Command, args []string) {
 			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
 		}
 		lidarrHTTP := httpclient.New(opts...)
-		lidarrClient = lidarr.New(lidarrHTTP, &cfg.Lidarr)
+		lidarrClient = lidarr.New(lidarrHTTP, cfg.Lidarr)
 	}
 
 	client := core.New(
+		cfg,
 		sonarrClient,
 		radarrClient,
 		lidarrClient,

@@ -10,6 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/jon4hz/subrr/internal/core/sonarr"
 	"github.com/jon4hz/subrr/internal/tui/common"
+	sonarr_list "github.com/jon4hz/subrr/internal/tui/sonarr/list"
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	zone "github.com/lrstanley/bubblezone"
 )
@@ -39,14 +40,12 @@ func New(sonarr *sonarr.Client, width, height int) *Model {
 		client:       sonarr,
 		state:        stateFetchEpisodes,
 		spinner:      common.NewSpinner(),
-		episodesList: list.NewModel(nil, Delegate{}, width, height),
+		episodesList: sonarr_list.New(fmt.Sprintf("%s - Season %d", sonarr.GetSerie().Title, sonarr.GetSeason().SeasonNumber), nil, Delegate{}, width, height),
 		mu:           &sync.Mutex{},
 	}
+
 	m.Width = width
 	m.Height = height
-
-	m.episodesList.SetShowHelp(false)
-	m.episodesList.Title = fmt.Sprintf("%s - Season %d", sonarr.GetSerie().Title, sonarr.GetSeason().SeasonNumber)
 
 	return &m
 }

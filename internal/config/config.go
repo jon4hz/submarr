@@ -9,9 +9,9 @@ import (
 
 // Config represents the config
 type Config struct {
-	Sonarr  SonarrConfig   `mapstructure:"sonarr"`
-	Radarr  RadarrConfig   `mapstructure:"radarr"`
-	Lidarr  LidarrConfig   `mapstructure:"lidarr"`
+	Sonarr  *SonarrConfig  `mapstructure:"sonarr"`
+	Radarr  *RadarrConfig  `mapstructure:"radarr"`
+	Lidarr  *LidarrConfig  `mapstructure:"lidarr"`
 	Logging *LoggingConfig `mapstructure:"logging"`
 	NoMouse bool           `mapstructure:"no_mouse"`
 }
@@ -27,7 +27,9 @@ type ClientConfig struct {
 
 // SonarrConfig represents the sonarr config
 type SonarrConfig struct {
-	ClientConfig `mapstructure:",squash"`
+	ClientConfig           `mapstructure:",squash"`
+	DefaultQualityProfile  string `mapstructure:"default_quality_profile"`
+	DefaultLanguageProfile string `mapstructure:"default_language_profile"`
 }
 
 // RadarrConfig represents the radarr config

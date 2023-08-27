@@ -65,6 +65,16 @@ func (c *Client) PutSerie(ctx context.Context, serie *SeriesResource, opts ...ht
 	return &res, nil
 }
 
+// PostSerie adds a new serie
+func (c *Client) PostSerie(ctx context.Context, serie *SeriesResource) (*SeriesResource, error) {
+	var res SeriesResource
+	_, err := c.http.Post(ctx, c.cfg.Host, "/api/v3/series", &res, serie)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
 // GetQueue returns the current download queue
 func (c *Client) GetQueue(ctx context.Context, opts ...httpclient.RequestOpts) (*QueueResourcePagingResource, error) {
 	var res QueueResourcePagingResource
@@ -170,4 +180,36 @@ func (c *Client) GetMissings(ctx context.Context) (*EpisodeResourcePagingResourc
 		return nil, err
 	}
 	return &res, nil
+}
+
+// GetSeriesLookup returns a list of series matching the given query
+func (c *Client) GetSeriesLookup(ctx context.Context, query string) ([]*SeriesResource, error) {
+	var res []*SeriesResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/series/lookup", &res, httpclient.WithParams(map[string]string{"term": query}))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// GetRootFolders returns all root folders
+func (c *Client) GetRootFolders(ctx context.Context) ([]*RootFolderResource, error) {
+	var res []*RootFolderResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/rootfolder", &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// GetLanguageProfiles returns all language profiles
+//
+// Deprecated: Will be obsolete in Sonarr v4
+func (c *Client) GetLanguageProfiles(ctx context.Context) ([]*LanguageProfileResource, error) {
+	var res []*LanguageProfileResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/languageprofile", &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }

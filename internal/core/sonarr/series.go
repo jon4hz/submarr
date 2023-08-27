@@ -2,6 +2,7 @@ package sonarr
 
 import (
 	"context"
+	"regexp"
 	"sort"
 	"strings"
 	"unicode"
@@ -17,6 +18,12 @@ type FetchSeriesResult struct {
 	Error error
 }
 
+type AddSeriesResult struct {
+	AddedTitle string
+	Items      []list.Item
+	Error      error
+}
+
 type SeriesItem struct {
 	Series *sonarr.SeriesResource
 }
@@ -30,13 +37,7 @@ func (c *Client) FetchSeries() tea.Cmd {
 		if err := c.fetchSeries(); err != nil {
 			return FetchSeriesResult{Error: err}
 		}
-
-		// Create a list item for each series
-		var items []list.Item
-		for _, s := range c.series {
-			items = append(items, SeriesItem{s})
-		}
-		return FetchSeriesResult{Items: items}
+		return FetchSeriesResult{Items: c.newSeriesItems()}
 	}
 }
 
@@ -47,36 +48,44 @@ func (c *Client) fetchSeries() error {
 		return err
 	}
 
-	// sort series by title
+	// Add the quality profile name to the series
+	for i := range series {
+		qp := c.GetQualityProfileByID(series[i].QualityProfileID)
+		if qp != nil {
+			series[i].ProfileName = qp.Name
+		}
+	}
+
+	// Sanitize series
+	sanitizeSeriesResources(series)
+
+	sortSeries(series)
+	c.series = series
+
+	return nil
+}
+
+// newSeriesItems creates a list item for each series
+func (c *Client) newSeriesItems() []list.Item {
+	var items []list.Item
+	for _, s := range c.series {
+		items = append(items, SeriesItem{s})
+	}
+	return items
+}
+
+// sortSeries sorts the series by their sort title
+func sortSeries(series []*sonarr.SeriesResource) {
 	sort.Slice(series, func(i, j int) bool {
 		return series[i].SortTitle < series[j].SortTitle
 	})
+}
 
-	// Fetch all quality profiles
-	profiles, err := c.sonarr.GetQualityProfiles(context.Background())
-	if err != nil {
-		logging.Log.Error().Err(err).Msg("Failed to fetch quality profiles")
-		return err
-	}
-
-	// Group profiles by ID
-	profilesByID := make(map[int32]*sonarr.QualityProfileResource)
-	for _, p := range profiles {
-		profilesByID[p.ID] = p
-	}
-
-	// store the profiles in the client so we can use them later
-	c.qualityProfiles = profilesByID
-
-	// Add the quality profile name to the series
-	// And sanitize the title
+func sanitizeSeriesResources(series []*sonarr.SeriesResource) {
 	for i := range series {
-		series[i].ProfileName = profilesByID[series[i].QualityProfileID].Name
 		series[i].Title = sanitizeTitle(series[i].Title)
+		series[i].Overview = sanitizeOverview(series[i].Overview)
 	}
-
-	c.series = series
-	return nil
 }
 
 // sanitizeTitle replaces all unicode whitespace characters with a single space.
@@ -88,4 +97,32 @@ func sanitizeTitle(s string) string {
 		}
 	}
 	return s
+}
+
+var punctuationRe = regexp.MustCompile(`([,.:])(\S)`)
+
+// sanitizeOverview removes all newline and tab characters from the overview.
+func sanitizeOverview(s string) string {
+	s = strings.ReplaceAll(s, "\n", "")
+	s = strings.ReplaceAll(s, "\t", " ")
+	s = strings.ReplaceAll(s, "\r", "")
+
+	res := punctuationRe.ReplaceAllString(s, "$1 $2")
+	return strings.TrimSpace(res)
+}
+
+func (c *Client) PostSeries(series *sonarr.SeriesResource) tea.Cmd {
+	return func() tea.Msg {
+		resp, err := c.sonarr.PostSerie(context.Background(), series)
+		if err != nil {
+			logging.Log.Error().Err(err).Msg("Failed to add series")
+			return AddSeriesResult{Error: err}
+		}
+		c.series = append(c.series, resp)
+		sortSeries(c.series)
+		return AddSeriesResult{
+			AddedTitle: series.Title,
+			Items:      c.newSeriesItems(),
+		}
+	}
 }
