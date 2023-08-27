@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
@@ -47,6 +48,7 @@ const (
 	addOptionTags
 	addOptionSearchForMissingEpisodes
 	addOptionSearchForCutoffUnmetEpisodes
+	addOptionAddSeries
 )
 
 var addOptions = map[addOption]string{
@@ -59,6 +61,7 @@ var addOptions = map[addOption]string{
 	addOptionTags:                         "Tags",
 	addOptionSearchForMissingEpisodes:     "Search for missing episodes",
 	addOptionSearchForCutoffUnmetEpisodes: "Search for cutoff unmet episodes",
+	addOptionAddSeries:                    "",
 }
 
 func New(client *sonarr.Client, series *sonarrAPI.SeriesResource, width, height int) common.SubModel {
@@ -103,6 +106,9 @@ func New(client *sonarr.Client, series *sonarrAPI.SeriesResource, width, height 
 		searchForMissingEpisodes:     toggle.New(true),
 		searchForCutoffUnmetEpisodes: toggle.New(true),
 	}
+
+	// make sure id is 0
+	m.series.ID = 0
 
 	m.Width = width
 	m.Height = height
@@ -313,12 +319,12 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
-		case "down":
+		switch {
+		case key.Matches(msg, DefaultKeyMap.Down):
 			m.nextOption()
-		case "up":
+		case key.Matches(msg, DefaultKeyMap.Up):
 			m.previousOption()
-		case "enter", " ":
+		case key.Matches(msg, DefaultKeyMap.Select):
 			switch m.selectedOption {
 			case
 				addOptionSeasonFolder,
@@ -326,12 +332,17 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 				addOptionSearchForMissingEpisodes,
 				addOptionSearchForCutoffUnmetEpisodes:
 				// no-op
+			case addOptionAddSeries:
+				return m, m.addSeries()
+
 			default:
 				m.showOptions = true
 			}
-		case "esc":
+		case key.Matches(msg, DefaultKeyMap.Add):
+			return m, m.addSeries()
+		case key.Matches(msg, DefaultKeyMap.Back):
 			m.IsBack = true
-		case "q":
+		case key.Matches(msg, DefaultKeyMap.Quit):
 			m.IsQuit = true
 		}
 	}
@@ -385,6 +396,10 @@ func (m *Model) previousOption() {
 	}
 }
 
+func (m Model) addSeries() tea.Cmd {
+	return m.client.PostSeries(m.series)
+}
+
 func (m Model) View() string {
 	if !m.showOptions {
 		return m.optionsView()
@@ -407,9 +422,10 @@ func (m Model) View() string {
 }
 
 var (
-	titleStyle = lipgloss.NewStyle().Align(lipgloss.Center).Bold(true).Underline(true)
-	keyStyle   = lipgloss.NewStyle().Align(lipgloss.Right).Margin(1, 2, 1, 0)
-	valueStyle = lipgloss.NewStyle().Border(lipgloss.RoundedBorder(), true).Padding(0, 1, 0)
+	titleStyle  = lipgloss.NewStyle().Align(lipgloss.Center).Bold(true).Underline(true)
+	keyStyle    = lipgloss.NewStyle().Align(lipgloss.Right).Margin(1, 2, 1, 0)
+	valueStyle  = lipgloss.NewStyle().Border(lipgloss.RoundedBorder(), true).Padding(0, 1, 0)
+	buttonStyle = lipgloss.NewStyle().Align(lipgloss.Center).Border(lipgloss.RoundedBorder(), true).Padding(0, 1, 0)
 )
 
 func (m Model) optionsView() string {
@@ -470,13 +486,26 @@ func (m Model) optionsView() string {
 		lines...,
 	)
 
+	width := lipgloss.Width(options)
 	s.WriteString(
-		titleStyle.Width(lipgloss.Width(options)).Render(fmt.Sprintf("%s (%d)", m.series.Title, m.series.Year)),
+		titleStyle.Width(width).Render(fmt.Sprintf("%s (%d)", m.series.Title, m.series.Year)),
 	)
 	s.WriteByte('\n')
 	s.WriteByte('\n')
 
 	s.WriteString(options)
+
+	s.WriteByte('\n')
+	s.WriteByte('\n')
+
+	var color lipgloss.TerminalColor = common.SubtileColor
+	if m.selectedOption == addOptionAddSeries {
+		color = lipgloss.Color("#00CCFF")
+	}
+	s.WriteString(
+		lipgloss.Place(width, 1, lipgloss.Center,
+			lipgloss.Top, buttonStyle.BorderForeground(color).Render("Add Series")),
+	)
 
 	return lipgloss.NewStyle().MaxWidth(m.Width + 2).Render(s.String())
 }

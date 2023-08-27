@@ -18,6 +18,11 @@ type FetchSeriesResult struct {
 	Error error
 }
 
+type AddSeriesResult struct {
+	Items []list.Item
+	Error error
+}
+
 type SeriesItem struct {
 	Series *sonarr.SeriesResource
 }
@@ -31,13 +36,7 @@ func (c *Client) FetchSeries() tea.Cmd {
 		if err := c.fetchSeries(); err != nil {
 			return FetchSeriesResult{Error: err}
 		}
-
-		// Create a list item for each series
-		var items []list.Item
-		for _, s := range c.series {
-			items = append(items, SeriesItem{s})
-		}
-		return FetchSeriesResult{Items: items}
+		return FetchSeriesResult{Items: c.newSeriesItems()}
 	}
 }
 
@@ -47,11 +46,6 @@ func (c *Client) fetchSeries() error {
 		logging.Log.Error().Err(err).Msg("Failed to fetch series")
 		return err
 	}
-
-	// sort series by title
-	sort.Slice(series, func(i, j int) bool {
-		return series[i].SortTitle < series[j].SortTitle
-	})
 
 	// Add the quality profile name to the series
 	for i := range series {
@@ -64,8 +58,26 @@ func (c *Client) fetchSeries() error {
 	// Sanitize series
 	sanitizeSeriesResources(series)
 
+	sortSeries(series)
 	c.series = series
+
 	return nil
+}
+
+// newSeriesItems creates a list item for each series
+func (c *Client) newSeriesItems() []list.Item {
+	var items []list.Item
+	for _, s := range c.series {
+		items = append(items, SeriesItem{s})
+	}
+	return items
+}
+
+// sortSeries sorts the series by their sort title
+func sortSeries(series []*sonarr.SeriesResource) {
+	sort.Slice(series, func(i, j int) bool {
+		return series[i].SortTitle < series[j].SortTitle
+	})
 }
 
 func sanitizeSeriesResources(series []*sonarr.SeriesResource) {
@@ -96,4 +108,17 @@ func sanitizeOverview(s string) string {
 
 	res := punctuationRe.ReplaceAllString(s, "$1 $2")
 	return strings.TrimSpace(res)
+}
+
+func (c *Client) PostSeries(series *sonarr.SeriesResource) tea.Cmd {
+	return func() tea.Msg {
+		resp, err := c.sonarr.PostSerie(context.Background(), series)
+		if err != nil {
+			logging.Log.Error().Err(err).Msg("Failed to add series")
+			return AddSeriesResult{Error: err}
+		}
+		c.series = append(c.series, resp)
+		sortSeries(c.series)
+		return AddSeriesResult{Items: c.newSeriesItems()}
+	}
 }

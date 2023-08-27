@@ -22,6 +22,7 @@ const (
 	stateUnknown state = iota
 	stateLoading
 	stateSeries
+	stateSeriesLoading
 	stateSeriesDetails
 	stateSeason
 	stateSearch
@@ -106,13 +107,27 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			case key.Matches(msg, DefaultKeyMap.Select):
 				item, _ := m.seriesList.SelectedItem().(sonarr.SeriesItem)
 				if !m.seriesList.SettingFilter() {
-					cmd := m.selectSeries(item.Series)
+					cmd := m.loadSeries(item.Series)
 					return m, cmd
 				}
 
 			case key.Matches(msg, DefaultKeyMap.AddNew):
 				return m, m.addNewSeries()
 			}
+
+		case stateSeriesLoading:
+			switch {
+			case key.Matches(msg, DefaultKeyMap.Back):
+				m.state = stateSeries
+				return m, nil
+
+			case key.Matches(msg, DefaultKeyMap.Quit):
+				if !m.seriesList.SettingFilter() {
+					m.IsQuit = true
+				}
+				return m, nil
+			}
+
 		}
 
 	case tea.MouseMsg:
@@ -133,7 +148,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					if zone.Get(item.Series.Title).InBounds(msg) {
 						// if we click on an already selected item, open the details
 						if i == m.seriesList.Index() {
-							cmd := m.selectSeries(item.Series)
+							cmd := m.loadSeries(item.Series)
 							return m, cmd
 						}
 						// else select the item
@@ -142,6 +157,19 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					}
 				}
 			}
+		}
+
+	case sonarr.FetchSerieResult:
+		switch m.state {
+		case stateSeriesLoading:
+			if msg.Error != nil {
+				return m, statusbar.NewErrCmd("Failed to fetch series")
+			}
+			m.state = stateSeriesDetails
+			m.client.SetSerie(msg.Serie)
+			m.submodel = series.New(m.client, m.Width, m.Height)
+
+			return m, m.submodel.Init()
 		}
 
 	case sonarr.FetchSeriesResult:
@@ -154,9 +182,23 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			m.state = stateSeries
 			if msg.Error != nil {
 				cmds = append(cmds, statusbar.NewErrCmd("Failed to fetch series"))
+			} else {
+				cmds = append(cmds, m.seriesList.SetItems(msg.Items))
 			}
-			cmds = append(cmds, m.seriesList.SetItems(msg.Items))
+			cmds = append(cmds, statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()))
 
+			return m, tea.Batch(cmds...)
+		}
+
+	case sonarr.AddSeriesResult:
+		switch m.state {
+		case stateSearch:
+			m.state = stateSeries
+			if msg.Error != nil {
+				cmds = append(cmds, statusbar.NewErrCmd("Failed to add series"))
+			} else {
+				cmds = append(cmds, m.seriesList.SetItems(msg.Items), statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()))
+			}
 			return m, tea.Batch(cmds...)
 		}
 
@@ -175,6 +217,11 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		m.seriesList, cmd = m.seriesList.Update(msg)
 		cmds = append(cmds, cmd)
 
+	case stateSeriesLoading:
+		var cmd tea.Cmd
+		m.spinner.Model, cmd = m.spinner.Update(msg)
+		cmds = append(cmds, cmd)
+
 	default:
 		var cmd tea.Cmd
 		m.submodel, cmd = m.submodel.Update(msg)
@@ -186,7 +233,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 
 		if m.submodel.Back() {
 			switch m.state {
-			case stateSeriesDetails, stateSearch:
+			case stateSeriesLoading, stateSeriesDetails, stateSearch:
 				m.state = stateSeries
 				cmds = append(cmds,
 					// reset the help of the statusbar
@@ -195,7 +242,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 
 			case stateSeason:
 				cmds = append(cmds,
-					m.selectSeries(m.client.GetSerie()),
+					m.loadSeries(m.client.GetSerie()),
 				)
 			}
 		}
@@ -204,12 +251,14 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	return m, tea.Batch(cmds...)
 }
 
-func (m *Model) selectSeries(seriesResource *sonarrAPI.SeriesResource) tea.Cmd {
-	m.state = stateSeriesDetails
+func (m *Model) loadSeries(seriesResource *sonarrAPI.SeriesResource) tea.Cmd {
+	m.state = stateSeriesLoading
+	m.spinner.Message = common.GetRandomLoadingMessage()
 	m.client.SetSerie(seriesResource)
-	m.submodel = series.New(m.client, m.Width, m.Height)
-
-	return m.submodel.Init()
+	return tea.Batch(
+		m.client.ReloadSerie(),
+		m.spinner.Tick,
+	)
 }
 
 func (m *Model) selectSeason(seasonResource *sonarrAPI.SeasonResource) tea.Cmd {
@@ -240,7 +289,7 @@ func (m *Model) SetSize(width, height int) {
 
 func (m Model) View() string {
 	switch m.state {
-	case stateLoading:
+	case stateLoading, stateSeriesLoading:
 		return m.spinner.View()
 
 	case stateSeries:

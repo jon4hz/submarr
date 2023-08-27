@@ -65,6 +65,16 @@ func (c *Client) PutSerie(ctx context.Context, serie *SeriesResource, opts ...ht
 	return &res, nil
 }
 
+// PostSerie adds a new serie
+func (c *Client) PostSerie(ctx context.Context, serie *SeriesResource) (*SeriesResource, error) {
+	var res SeriesResource
+	_, err := c.http.Post(ctx, c.cfg.Host, "/api/v3/series", &res, serie)
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
+}
+
 // GetQueue returns the current download queue
 func (c *Client) GetQueue(ctx context.Context, opts ...httpclient.RequestOpts) (*QueueResourcePagingResource, error) {
 	var res QueueResourcePagingResource
