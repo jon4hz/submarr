@@ -4,11 +4,13 @@ import (
 	"context"
 	"strings"
 
+	"github.com/jon4hz/subrr/internal/config"
 	"github.com/jon4hz/subrr/internal/logging"
 	"github.com/jon4hz/subrr/pkg/sonarr"
 )
 
 type Client struct {
+	Config *config.SonarrConfig
 	sonarr *sonarr.Client
 	// is the client available?
 	available bool
@@ -34,12 +36,13 @@ type Client struct {
 	languageProfiles []*sonarr.LanguageProfileResource
 }
 
-func New(sonarr *sonarr.Client) *Client {
-	if sonarr == nil {
+func New(cfg *config.SonarrConfig, sonarr *sonarr.Client) *Client {
+	if sonarr == nil || cfg == nil {
 		return nil
 	}
 	return &Client{
 		sonarr: sonarr,
+		Config: cfg,
 	}
 }
 

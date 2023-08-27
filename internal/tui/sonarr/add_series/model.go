@@ -138,13 +138,31 @@ func setDefaults(client *sonarr.Client, series *sonarrAPI.SeriesResource) {
 	}
 
 	qualityProfiles := client.GetQualityProfiles()
-	if len(qualityProfiles) > 0 {
-		series.QualityProfileID = qualityProfiles[0].ID
+	if client.Config.DefaultQualityProfile != "" {
+		for _, qualityProfile := range qualityProfiles {
+			if qualityProfile.Name == client.Config.DefaultQualityProfile {
+				series.QualityProfileID = qualityProfile.ID
+				break
+			}
+		}
+	} else {
+		if len(qualityProfiles) > 0 {
+			series.QualityProfileID = qualityProfiles[0].ID
+		}
 	}
 
 	languageProfiles := client.GetLanguageProfiles()
-	if len(languageProfiles) > 0 {
-		series.LanguageProfileID = languageProfiles[0].ID
+	if client.Config.DefaultLanguageProfile != "" {
+		for _, languageProfile := range languageProfiles {
+			if languageProfile.Name == client.Config.DefaultLanguageProfile {
+				series.LanguageProfileID = languageProfile.ID
+				break
+			}
+		}
+	} else {
+		if len(languageProfiles) > 0 {
+			series.LanguageProfileID = languageProfiles[0].ID
+		}
 	}
 
 	series.AddOptions = &sonarrAPI.AddSeriesOptions{

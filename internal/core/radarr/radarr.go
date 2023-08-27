@@ -1,10 +1,12 @@
 package radarr
 
 import (
+	"github.com/jon4hz/subrr/internal/config"
 	"github.com/jon4hz/subrr/pkg/radarr"
 )
 
 type Client struct {
+	Config *config.RadarrConfig
 	radarr *radarr.Client
 
 	// is the client available?
@@ -15,11 +17,12 @@ type Client struct {
 	queued  int
 }
 
-func New(radarr *radarr.Client) *Client {
-	if radarr == nil {
+func New(cfg *config.RadarrConfig, radarr *radarr.Client) *Client {
+	if radarr == nil || cfg == nil {
 		return nil
 	}
 	return &Client{
+		Config: cfg,
 		radarr: radarr,
 	}
 }
