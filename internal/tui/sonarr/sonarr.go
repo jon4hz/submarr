@@ -1,6 +1,8 @@
 package sonarr
 
 import (
+	"fmt"
+
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
@@ -197,7 +199,11 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			if msg.Error != nil {
 				cmds = append(cmds, statusbar.NewErrCmd("Failed to add series"))
 			} else {
-				cmds = append(cmds, m.seriesList.SetItems(msg.Items), statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()))
+				cmds = append(cmds,
+					m.seriesList.SetItems(msg.Items),
+					statusbar.NewMessageCmd(fmt.Sprintf("Added Series: %s", msg.AddedTitle)),
+					statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
+				)
 			}
 			return m, tea.Batch(cmds...)
 		}

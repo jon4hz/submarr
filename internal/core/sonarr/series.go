@@ -19,8 +19,9 @@ type FetchSeriesResult struct {
 }
 
 type AddSeriesResult struct {
-	Items []list.Item
-	Error error
+	AddedTitle string
+	Items      []list.Item
+	Error      error
 }
 
 type SeriesItem struct {
@@ -119,6 +120,9 @@ func (c *Client) PostSeries(series *sonarr.SeriesResource) tea.Cmd {
 		}
 		c.series = append(c.series, resp)
 		sortSeries(c.series)
-		return AddSeriesResult{Items: c.newSeriesItems()}
+		return AddSeriesResult{
+			AddedTitle: series.Title,
+			Items:      c.newSeriesItems(),
+		}
 	}
 }
