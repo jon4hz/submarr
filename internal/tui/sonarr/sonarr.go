@@ -192,6 +192,12 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 		}
 
+	case search.SeriesAlreadyAddedMsg:
+		switch m.state {
+		case stateSearch:
+			return m, m.loadSeries(msg.Series)
+		}
+
 	case sonarr.AddSeriesResult:
 		switch m.state {
 		case stateSearch:

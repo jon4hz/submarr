@@ -1,6 +1,7 @@
 package search
 
 import (
+	"context"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/key"
@@ -15,6 +16,10 @@ import (
 	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
 )
+
+type SeriesAlreadyAddedMsg struct {
+	Series *sonarrAPI.SeriesResource
+}
 
 type state int
 
@@ -36,6 +41,7 @@ type Model struct {
 	input   textinput.Model
 	result  list.Model
 	add     common.SubModel
+	cancel  context.CancelFunc
 }
 
 func New(sonarr *sonarr.Client, width, height int) *Model {
@@ -97,6 +103,9 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		}
 
 	case sonarr.SearchSeriesResult:
+		if m.state != stateSearching {
+			break
+		}
 		if msg.Error != nil {
 			m.state = stateInput
 			return m, tea.Sequence(
@@ -138,6 +147,12 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		case tea.KeyMsg:
 			if key.Matches(msg, InputKeyMap.Select) {
 				item := m.result.SelectedItem().(sonarr.SeriesItem)
+				if !item.Series.Added.IsZero() {
+					return m, func() tea.Msg {
+						return SeriesAlreadyAddedMsg{Series: item.Series}
+					}
+				}
+
 				return m, m.addSeries(item.Series)
 			}
 		}
@@ -168,9 +183,16 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 func (m *Model) searchSeries(term string) tea.Cmd {
 	m.state = stateSearching
 	m.input.Blur()
+	cmd, cancel := m.client.SearchSeries(term)
+	// cancel previous search
+	if m.cancel != nil {
+		m.cancel()
+	}
+	// set new cancel function
+	m.cancel = cancel
 	return tea.Batch(
 		m.spinner.Tick,
-		m.client.SearchSeries(term),
+		cmd,
 	)
 }
 
