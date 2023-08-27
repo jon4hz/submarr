@@ -18,7 +18,6 @@ import (
 
 var (
 	docStyle = lipgloss.NewStyle().Margin(1)
-	errStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000"))
 )
 
 type state int
