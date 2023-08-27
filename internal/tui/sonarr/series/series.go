@@ -36,8 +36,6 @@ const (
 	statsCell
 )
 
-var cellMap = map[cell]*flexbox.Cell{}
-
 type Model struct {
 	common.EmbedableModel
 
@@ -281,7 +279,6 @@ func (m *Model) SetSize(width, height int) {
 	m.seasonsList.SetSize(seasonListWidth, seasonListHeight)
 }
 
-// nolint:unparam
 func max(a, b int) int {
 	if a > b {
 		return a
