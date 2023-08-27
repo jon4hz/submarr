@@ -57,7 +57,7 @@ func New(sonarr *sonarr.Client, width, height int) *Model {
 
 func (m *Model) Init() tea.Cmd {
 	return tea.Batch(
-		statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
+		statusbar.NewHelpCmd(InputKeyMap.FullHelp()),
 		m.input.Focus(),
 	)
 }
@@ -66,17 +66,29 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch {
-		case key.Matches(msg, DefaultKeyMap.Back):
+		case key.Matches(msg, InputKeyMap.Back):
 			switch m.state {
 			case stateInput:
 				m.IsBack = true
 				return m, nil
-			case stateShowResults, stateSearching:
+			case stateShowResults:
+				if m.result.IsFiltered() || m.result.SettingFilter() {
+					break
+				}
 				m.state = stateInput
-				return m, m.input.Focus()
+				return m, tea.Sequence(
+					statusbar.NewHelpCmd(InputKeyMap.FullHelp()),
+					m.input.Focus(),
+				)
+			case stateSearching:
+				m.state = stateInput
+				return m, tea.Sequence(
+					statusbar.NewHelpCmd(InputKeyMap.FullHelp()),
+					m.input.Focus(),
+				)
 			}
 
-		case key.Matches(msg, DefaultKeyMap.Quit):
+		case key.Matches(msg, InputKeyMap.Quit):
 			if m.state == stateAddSeries {
 				break
 			}
@@ -87,22 +99,26 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	case sonarr.SearchSeriesResult:
 		if msg.Error != nil {
 			m.state = stateInput
-			return m, tea.Batch(
-				m.input.Focus(),
+			return m, tea.Sequence(
 				statusbar.NewErrCmd(msg.Error.Error()),
+				statusbar.NewHelpCmd(InputKeyMap.FullHelp()),
+				m.input.Focus(),
 			)
 		}
 
 		m.state = stateShowResults
 
-		return m, m.result.SetItems(msg.Items)
+		return m, tea.Sequence(
+			m.result.SetItems(msg.Items),
+			statusbar.NewHelpCmd(ResultKeyMap.FullHelp()),
+		)
 	}
 
 	switch m.state {
 	case stateInput:
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
-			if key.Matches(msg, DefaultKeyMap.Select) {
+			if key.Matches(msg, InputKeyMap.Select) {
 				term := strings.TrimSpace(m.input.Value())
 				return m, m.searchSeries(term)
 			}
@@ -120,7 +136,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	case stateShowResults:
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
-			if key.Matches(msg, DefaultKeyMap.Select) {
+			if key.Matches(msg, InputKeyMap.Select) {
 				item := m.result.SelectedItem().(sonarr.SeriesItem)
 				return m, m.addSeries(item.Series)
 			}
@@ -140,8 +156,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 
 		if m.add.Back() {
 			m.state = stateShowResults
-			// TODO: update statusbar help
-			return m, nil
+			return m, statusbar.NewHelpCmd(ResultKeyMap.FullHelp())
 		}
 
 		return m, cmd

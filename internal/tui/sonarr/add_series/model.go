@@ -10,6 +10,7 @@ import (
 	"github.com/jon4hz/subrr/internal/core/sonarr"
 	"github.com/jon4hz/subrr/internal/tui/common"
 	sonarr_list "github.com/jon4hz/subrr/internal/tui/sonarr/list"
+	"github.com/jon4hz/subrr/internal/tui/statusbar"
 	"github.com/jon4hz/subrr/internal/tui/toggle"
 	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
 )
@@ -177,7 +178,7 @@ func setDefaults(client *sonarr.Client, series *sonarrAPI.SeriesResource) {
 }
 
 func (m Model) Init() tea.Cmd {
-	return nil
+	return statusbar.NewHelpCmd(DefaultKeyMap.FullHelp())
 }
 
 func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
@@ -441,7 +442,7 @@ func (m Model) optionsView() string {
 		},
 		{
 			addOptions[addOptionTags],
-			strings.Join([]string{"replace", "me", "please"}, ", "),
+			strings.Join([]string{"not", "supported", "yet :)"}, ", "),
 		},
 		{
 			addOptions[addOptionSearchForMissingEpisodes],
