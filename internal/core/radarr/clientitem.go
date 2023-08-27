@@ -3,7 +3,7 @@ package radarr
 import (
 	"fmt"
 
-	"github.com/jon4hz/subrr/internal/tui/common"
+	"github.com/jon4hz/submarr/internal/tui/common"
 )
 
 type ClientItem struct {

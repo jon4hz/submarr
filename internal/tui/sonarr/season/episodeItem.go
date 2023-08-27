@@ -4,7 +4,7 @@ import (
 	"sort"
 
 	"github.com/charmbracelet/bubbles/list"
-	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
+	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 )
 
 type EpisodeItem struct {

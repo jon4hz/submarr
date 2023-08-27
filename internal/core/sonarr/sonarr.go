@@ -4,9 +4,9 @@ import (
 	"context"
 	"strings"
 
-	"github.com/jon4hz/subrr/internal/config"
-	"github.com/jon4hz/subrr/internal/logging"
-	"github.com/jon4hz/subrr/pkg/sonarr"
+	"github.com/jon4hz/submarr/internal/config"
+	"github.com/jon4hz/submarr/internal/logging"
+	"github.com/jon4hz/submarr/pkg/sonarr"
 )
 
 type Client struct {

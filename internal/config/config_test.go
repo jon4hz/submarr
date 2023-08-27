@@ -3,7 +3,7 @@ package config_test
 import (
 	"testing"
 
-	"github.com/jon4hz/subrr/internal/config"
+	"github.com/jon4hz/submarr/internal/config"
 	"github.com/stretchr/testify/assert"
 )
 

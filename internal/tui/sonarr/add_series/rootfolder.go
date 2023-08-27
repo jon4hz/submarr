@@ -7,7 +7,7 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/dustin/go-humanize"
-	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
+	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 )
 
 type rootFolderItem struct {

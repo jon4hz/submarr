@@ -1,8 +1,8 @@
 package lidarr
 
 import (
-	"github.com/jon4hz/subrr/internal/config"
-	"github.com/jon4hz/subrr/internal/httpclient"
+	"github.com/jon4hz/submarr/internal/config"
+	"github.com/jon4hz/submarr/internal/httpclient"
 )
 
 // Client represents a lidarr client

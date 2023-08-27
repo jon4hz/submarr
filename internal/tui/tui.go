@@ -7,12 +7,12 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/jon4hz/subrr/internal/core"
-	"github.com/jon4hz/subrr/internal/logging"
-	"github.com/jon4hz/subrr/internal/tui/clientslist"
-	"github.com/jon4hz/subrr/internal/tui/common"
-	"github.com/jon4hz/subrr/internal/tui/sonarr"
-	"github.com/jon4hz/subrr/internal/tui/statusbar"
+	"github.com/jon4hz/submarr/internal/core"
+	"github.com/jon4hz/submarr/internal/logging"
+	"github.com/jon4hz/submarr/internal/tui/clientslist"
+	"github.com/jon4hz/submarr/internal/tui/common"
+	"github.com/jon4hz/submarr/internal/tui/sonarr"
+	"github.com/jon4hz/submarr/internal/tui/statusbar"
 	zone "github.com/lrstanley/bubblezone"
 )
 
@@ -68,7 +68,7 @@ func New(client *core.Client) *Model {
 		client:         client,
 		spinner:        spinner.New(spinner.WithSpinner(spinner.Points)),
 		clientslist:    clientslist.New(client),
-		statusbar:      statusbar.New("Subrr"),
+		statusbar:      statusbar.New("Submarr"),
 		loadingMessage: common.GetRandomLoadingMessage(),
 	}
 
@@ -183,7 +183,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.state != stateReady {
 			m.state = stateReady
 			cmds = append(cmds,
-				statusbar.NewMessageCmd("Welcome to Subrr!", statusbar.WithMessageTimeout(2)),
+				statusbar.NewMessageCmd("Welcome to Submarr!", statusbar.WithMessageTimeout(2)),
 				statusbar.NewHelpCmd(m.clientslist.Help()),
 			)
 		}
@@ -224,7 +224,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.state = stateReady
 			cmds = append(cmds,
 				// reset the title of the statusbar
-				statusbar.NewTitleCmd("Subrr", statusbar.WithTitleForeground(lipgloss.Color("#39FF14"))),
+				statusbar.NewTitleCmd("Submarr", statusbar.WithTitleForeground(lipgloss.Color("#39FF14"))),
 				// reset the help of the statusbar
 				statusbar.NewHelpCmd(m.clientslist.Help()),
 			)

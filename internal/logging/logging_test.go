@@ -5,12 +5,12 @@ import (
 	"path"
 	"testing"
 
-	"github.com/jon4hz/subrr/internal/config"
+	"github.com/jon4hz/submarr/internal/config"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestEnsureFolderExists(t *testing.T) {
-	tmpFolder, err := os.MkdirTemp(os.TempDir(), "subrr-test")
+	tmpFolder, err := os.MkdirTemp(os.TempDir(), "submarr-test")
 	assert.NoError(t, err)
 	defer os.RemoveAll(tmpFolder)
 
@@ -41,7 +41,7 @@ func TestGetUserConfigDir(t *testing.T) {
 }
 
 func TestInit(t *testing.T) {
-	tmpDir, err := os.MkdirTemp(os.TempDir(), "subrr-test")
+	tmpDir, err := os.MkdirTemp(os.TempDir(), "submarr-test")
 	assert.NoError(t, err)
 	defer os.RemoveAll(tmpDir)
 	cfg := &config.LoggingConfig{
@@ -63,7 +63,7 @@ func TestInitUserCfgDir(t *testing.T) {
 
 func TestRmIfEmptyRm(t *testing.T) {
 	var err error
-	logFile, err = os.CreateTemp(os.TempDir(), "subrr-test")
+	logFile, err = os.CreateTemp(os.TempDir(), "submarr-test")
 	assert.NoError(t, err)
 	defer os.Remove(logFile.Name())
 
@@ -73,7 +73,7 @@ func TestRmIfEmptyRm(t *testing.T) {
 
 func TestRmIfEmpty(t *testing.T) {
 	var err error
-	logFile, err = os.CreateTemp(os.TempDir(), "subrr-test")
+	logFile, err = os.CreateTemp(os.TempDir(), "submarr-test")
 	assert.NoError(t, err)
 	defer os.Remove(logFile.Name())
 

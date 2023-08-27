@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/jon4hz/subrr/cmd"
+	"github.com/jon4hz/submarr/cmd"
 	zone "github.com/lrstanley/bubblezone"
 )
 

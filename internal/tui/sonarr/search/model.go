@@ -9,12 +9,12 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/jon4hz/subrr/internal/core/sonarr"
-	"github.com/jon4hz/subrr/internal/tui/common"
-	addseries "github.com/jon4hz/subrr/internal/tui/sonarr/add_series"
-	sonarr_list "github.com/jon4hz/subrr/internal/tui/sonarr/list"
-	"github.com/jon4hz/subrr/internal/tui/statusbar"
-	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
+	"github.com/jon4hz/submarr/internal/core/sonarr"
+	"github.com/jon4hz/submarr/internal/tui/common"
+	addseries "github.com/jon4hz/submarr/internal/tui/sonarr/add_series"
+	sonarr_list "github.com/jon4hz/submarr/internal/tui/sonarr/list"
+	"github.com/jon4hz/submarr/internal/tui/statusbar"
+	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 )
 
 type SeriesAlreadyAddedMsg struct {

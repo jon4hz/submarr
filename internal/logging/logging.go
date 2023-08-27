@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jon4hz/subrr/internal/config"
+	"github.com/jon4hz/submarr/internal/config"
 	"github.com/rs/zerolog"
 )
 
@@ -74,7 +74,7 @@ func openFile(folder string) error {
 
 func initLogger(folder, level string) error {
 	// if folder is empty, try to get the user config dir
-	// and create a subfolder for subrr and its logs
+	// and create a subfolder for submarr and its logs
 	if folder == "" {
 		var err error
 		folder, err = getUserConfigDir()
@@ -117,7 +117,7 @@ func getUserConfigDir() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return filepath.Join(folder, "subrr", "logs"), nil
+	return filepath.Join(folder, "submarr", "logs"), nil
 }
 
 func ensureFolderExists(folder string) {

@@ -1,12 +1,12 @@
 package core
 
 import (
-	"github.com/jon4hz/subrr/internal/config"
-	coreRadarr "github.com/jon4hz/subrr/internal/core/radarr"
-	coreSonarr "github.com/jon4hz/subrr/internal/core/sonarr"
-	"github.com/jon4hz/subrr/pkg/lidarr"
-	"github.com/jon4hz/subrr/pkg/radarr"
-	"github.com/jon4hz/subrr/pkg/sonarr"
+	"github.com/jon4hz/submarr/internal/config"
+	coreRadarr "github.com/jon4hz/submarr/internal/core/radarr"
+	coreSonarr "github.com/jon4hz/submarr/internal/core/sonarr"
+	"github.com/jon4hz/submarr/pkg/lidarr"
+	"github.com/jon4hz/submarr/pkg/radarr"
+	"github.com/jon4hz/submarr/pkg/sonarr"
 )
 
 type Client struct {

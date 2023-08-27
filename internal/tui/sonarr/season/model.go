@@ -8,10 +8,10 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/jon4hz/subrr/internal/core/sonarr"
-	"github.com/jon4hz/subrr/internal/tui/common"
-	sonarr_list "github.com/jon4hz/subrr/internal/tui/sonarr/list"
-	"github.com/jon4hz/subrr/internal/tui/statusbar"
+	"github.com/jon4hz/submarr/internal/core/sonarr"
+	"github.com/jon4hz/submarr/internal/tui/common"
+	sonarr_list "github.com/jon4hz/submarr/internal/tui/sonarr/list"
+	"github.com/jon4hz/submarr/internal/tui/statusbar"
 	zone "github.com/lrstanley/bubblezone"
 )
 

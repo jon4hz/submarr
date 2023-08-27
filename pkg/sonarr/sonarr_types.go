@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jon4hz/subrr/internal/httpclient"
+	"github.com/jon4hz/submarr/internal/httpclient"
 )
 
 // Ping is the response from the ping endpoint

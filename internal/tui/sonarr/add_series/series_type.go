@@ -6,7 +6,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
+	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 )
 
 type seriesTypeItem struct {

@@ -3,7 +3,7 @@ package seasons
 import (
 	"fmt"
 
-	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
+	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 )
 
 type SeasonItem struct {

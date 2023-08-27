@@ -8,9 +8,9 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/dustin/go-humanize"
-	"github.com/jon4hz/subrr/internal/core/sonarr"
-	"github.com/jon4hz/subrr/internal/tui/common"
-	sonarrAPI "github.com/jon4hz/subrr/pkg/sonarr"
+	"github.com/jon4hz/submarr/internal/core/sonarr"
+	"github.com/jon4hz/submarr/internal/tui/common"
+	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
 )

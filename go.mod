@@ -1,4 +1,4 @@
-module github.com/jon4hz/subrr
+module github.com/jon4hz/submarr
 
 go 1.20
 

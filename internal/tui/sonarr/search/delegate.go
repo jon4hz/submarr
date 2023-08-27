@@ -7,9 +7,9 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/jon4hz/subrr/internal/core/sonarr"
-	"github.com/jon4hz/subrr/internal/tui/common"
-	"github.com/jon4hz/subrr/internal/tui/sonarr/series"
+	"github.com/jon4hz/submarr/internal/core/sonarr"
+	"github.com/jon4hz/submarr/internal/tui/common"
+	"github.com/jon4hz/submarr/internal/tui/sonarr/series"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
 )

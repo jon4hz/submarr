@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/jon4hz/subrr/internal/version"
+	"github.com/jon4hz/submarr/internal/version"
 	"github.com/spf13/cobra"
 )
 

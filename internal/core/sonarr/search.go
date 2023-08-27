@@ -6,7 +6,7 @@ import (
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/jon4hz/subrr/internal/logging"
+	"github.com/jon4hz/submarr/internal/logging"
 )
 
 type SearchSeriesResult struct {

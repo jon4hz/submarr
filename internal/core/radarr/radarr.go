@@ -1,8 +1,8 @@
 package radarr
 
 import (
-	"github.com/jon4hz/subrr/internal/config"
-	"github.com/jon4hz/subrr/pkg/radarr"
+	"github.com/jon4hz/submarr/internal/config"
+	"github.com/jon4hz/submarr/pkg/radarr"
 )
 
 type Client struct {

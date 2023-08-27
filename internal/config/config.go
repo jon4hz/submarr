@@ -63,8 +63,8 @@ type HeaderConfig struct {
 // Load loads the config file.
 // It searches in the following locations:
 //
-// /etc/subrr/config.yml,
-// $HOME/.config/subrr/config.yml,
+// /etc/submarr/config.yml,
+// $HOME/.config/submarr/config.yml,
 // config.yml
 //
 // command arguments will overwrite the value from the config
@@ -77,8 +77,8 @@ func Load(path string) (cfg *Config, err error) {
 		"config.yml",
 		".config.yaml",
 		"config.yaml",
-		"subrr.yml",
-		"subrr.yaml",
+		"submarr.yml",
+		"submarr.yaml",
 	} {
 		cfg, err = load(f)
 		if err != nil && os.IsNotExist(err) {
@@ -99,8 +99,8 @@ func load(file string) (cfg *Config, err error) {
 	viper.SetConfigName(file)
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./")
-	viper.AddConfigPath("$HOME/.config/subrr/")
-	viper.AddConfigPath("/etc/subrr/")
+	viper.AddConfigPath("$HOME/.config/submarr/")
+	viper.AddConfigPath("/etc/submarr/")
 	if err = viper.ReadInConfig(); err != nil {
 		return
 	}

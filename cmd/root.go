@@ -5,23 +5,23 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/jon4hz/subrr/internal/config"
-	"github.com/jon4hz/subrr/internal/core"
-	"github.com/jon4hz/subrr/internal/httpclient"
-	"github.com/jon4hz/subrr/internal/logging"
-	"github.com/jon4hz/subrr/internal/tui"
-	"github.com/jon4hz/subrr/internal/version"
-	"github.com/jon4hz/subrr/pkg/lidarr"
-	"github.com/jon4hz/subrr/pkg/radarr"
-	"github.com/jon4hz/subrr/pkg/sonarr"
+	"github.com/jon4hz/submarr/internal/config"
+	"github.com/jon4hz/submarr/internal/core"
+	"github.com/jon4hz/submarr/internal/httpclient"
+	"github.com/jon4hz/submarr/internal/logging"
+	"github.com/jon4hz/submarr/internal/tui"
+	"github.com/jon4hz/submarr/internal/version"
+	"github.com/jon4hz/submarr/pkg/lidarr"
+	"github.com/jon4hz/submarr/pkg/radarr"
+	"github.com/jon4hz/submarr/pkg/sonarr"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
 var rootCmd = &cobra.Command{
-	Use:               "subrr",
-	Short:             "subrr is a tui for sonarr, radarr and lidarr",
+	Use:               "submarr",
+	Short:             "submarr is a tui for sonarr, radarr and lidarr",
 	Version:           version.Version,
 	Run:               root,
 	CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
@@ -87,7 +87,7 @@ func root(cmd *cobra.Command, args []string) {
 			log.Fatalln(err)
 		}
 	}()
-	logging.Log.Debug().Str("version", version.Version).Msg("starting subrr")
+	logging.Log.Debug().Str("version", version.Version).Msg("starting submarr")
 
 	var (
 		sonarrClient *sonarr.Client
