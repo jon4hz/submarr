@@ -2,12 +2,7 @@ package common
 
 import (
 	"math/rand"
-	"time"
 )
-
-func init() {
-	rand.Seed(time.Now().UnixNano())
-}
 
 // loadingMessages is a list of messages displayed while loading.
 // They are copied from sonarr and radarr.
