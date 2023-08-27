@@ -21,13 +21,14 @@ func (c *Client) ReloadSerie() tea.Cmd {
 	return func() tea.Msg {
 		// if currently no serie is selected, return error
 		if c.serie == nil {
+			logging.Log.Error(ErrNoSerieSelected)
 			return FetchSerieResult{Error: ErrNoSerieSelected}
 		}
 
 		s, err := c.sonarr.GetSerie(context.Background(), c.serie.TVDBID)
 		// only update serie if there was no error
 		if err != nil {
-			logging.Log.Error().Err(err).Msg("Failed to reload serie")
+			logging.Log.Error("Failed to reload serie", "err", err)
 			return FetchSerieResult{Serie: s, Error: fmt.Errorf("Failed to reload serie")} //lint:ignore ST1005 Error will be displayed in the status bar
 		}
 		c.serie = s
@@ -38,16 +39,18 @@ func (c *Client) ReloadSerie() tea.Cmd {
 func (c *Client) ToggleMonitorSeason(id int) tea.Cmd {
 	return func() tea.Msg {
 		if c.serie == nil {
+			logging.Log.Error(ErrNoSerieSelected)
 			return FetchSerieResult{Error: ErrNoSerieSelected}
 		}
 		if len(c.serie.Seasons) <= id {
+			logging.Log.Error("Season not found")
 			return FetchSerieResult{Error: fmt.Errorf("Season not found")} //lint:ignore ST1005 Error will be displayed in the status bar
 		}
 		// toggle season monitored state
 		c.serie.Seasons[id].Monitored = !c.serie.Seasons[id].Monitored
 		serie, err := c.sonarr.PutSerie(context.Background(), c.serie)
 		if err != nil {
-			logging.Log.Error().Err(err).Msg("Failed to toggle season monitored state")
+			logging.Log.Error("Failed to toggle season monitored state", "err", err)
 			return FetchSerieResult{Serie: c.serie, Error: fmt.Errorf("Failed to toggle season monitored state")} //lint:ignore ST1005 Error will be displayed in the status bar
 		}
 		c.serie = serie
@@ -58,13 +61,14 @@ func (c *Client) ToggleMonitorSeason(id int) tea.Cmd {
 func (c *Client) ToggleMonitorSeries() tea.Cmd {
 	return func() tea.Msg {
 		if c.serie == nil {
+			logging.Log.Error(ErrNoSerieSelected)
 			return FetchSerieResult{Error: ErrNoSerieSelected}
 		}
 
 		c.serie.Monitored = !c.serie.Monitored
 		serie, err := c.sonarr.PutSerie(context.Background(), c.serie)
 		if err != nil {
-			logging.Log.Error().Err(err).Msg("Failed to toggle serie monitored state")
+			logging.Log.Error("Failed to toggle serie monitored state", "err", err)
 			return FetchSerieResult{Serie: c.serie, Error: fmt.Errorf("Failed to toggle serie monitored state")} //lint:ignore ST1005 Error will be displayed in the status bar
 		}
 		c.serie = serie
@@ -80,13 +84,13 @@ type FetchSeasonEpisodesResult struct {
 func (c *Client) FetchSeasonEpisodes(season int32) tea.Cmd {
 	return func() tea.Msg {
 		if err := c.getSeasonEpisodes(season); err != nil {
-			logging.Log.Error().Err(err).Msg("Failed to fetch season episodes")
+			logging.Log.Error("Failed to fetch season episodes", "err", err)
 			return FetchSeasonEpisodesResult{Error: err}
 		}
 
 		// refresh queue for current serie
 		if err := c.getSeriesQueue(); err != nil {
-			logging.Log.Error().Err(err).Msg("Failed to fetch series queue")
+			logging.Log.Error("Failed to fetch series queue", "err", err)
 			return FetchSeasonEpisodesResult{Error: err}
 		}
 
@@ -96,6 +100,7 @@ func (c *Client) FetchSeasonEpisodes(season int32) tea.Cmd {
 
 func (c *Client) getSeasonEpisodes(season int32) error {
 	if c.serie == nil {
+		logging.Log.Error(ErrNoSerieSelected)
 		return ErrNoSerieSelected
 	}
 
@@ -103,7 +108,7 @@ func (c *Client) getSeasonEpisodes(season int32) error {
 	var err error
 	c.seasonEpisodes, err = c.sonarr.GetEpisodes(context.Background(), c.serie.ID, season)
 	if err != nil {
-		logging.Log.Error().Err(err).Msg("Failed to get episodes")
+		logging.Log.Error("Failed to get episodes", "err", err)
 		return err
 	}
 
@@ -111,7 +116,7 @@ func (c *Client) getSeasonEpisodes(season int32) error {
 	for i, episode := range c.seasonEpisodes {
 		c.seasonEpisodes[i], err = c.sonarr.GetEpisode(context.Background(), episode.ID)
 		if err != nil {
-			logging.Log.Error().Err(err).Msg("Failed to get episode")
+			logging.Log.Error("Failed to get episode", "err", err)
 			continue
 		}
 	}
@@ -121,11 +126,12 @@ func (c *Client) getSeasonEpisodes(season int32) error {
 
 func (c *Client) getSeriesQueue() error {
 	if c.serie == nil {
+		logging.Log.Error(ErrNoSerieSelected)
 		return ErrNoSerieSelected
 	}
 	queue, err := c.sonarr.GetQueueDetails(context.Background(), c.serie.ID)
 	if err != nil {
-		logging.Log.Error().Err(err).Msg("Failed to get queue")
+		logging.Log.Error("Failed to get queue", "err", err)
 		return err
 	}
 	c.seriesQueue = queue

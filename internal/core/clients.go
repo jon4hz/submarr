@@ -19,14 +19,14 @@ func (c *Client) FetchClients() tea.Cmd {
 		)
 		if c.Sonarr != nil {
 			if err := c.Sonarr.Init(); err != nil {
-				logging.Log.Error().Err(err).Msg("Failed to initialize sonarr")
+				logging.Log.Error("Failed to initialize sonarr", "err", err)
 				errors = append(errors, "Failed to initialize sonarr")
 			}
 			items = append(items, c.Sonarr.ClientListItem())
 		}
 		if c.Radarr != nil {
 			if err := c.Radarr.Init(); err != nil {
-				logging.Log.Error().Err(err).Msg("Failed to initialize radarr")
+				logging.Log.Error("Failed to initialize radarr", "err", err)
 				errors = append(errors, "Failed to initialize radarr")
 			}
 			items = append(items, c.Radarr.ClientListItem())

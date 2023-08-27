@@ -2,17 +2,18 @@ package logging
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/log"
 	"github.com/jon4hz/submarr/internal/config"
-	"github.com/rs/zerolog"
 )
 
 var (
-	Log         *zerolog.Logger
+	Log         *log.Logger
 	logFile     *os.File
 	initialized bool
 )
@@ -35,7 +36,7 @@ func Init(cfg *config.LoggingConfig) error {
 // Close closes the log file, sets initialized to false and resets the logger.
 func Close() error {
 	initialized = false
-	Log = &zerolog.Logger{}
+	Log = log.New(io.Discard)
 
 	if err := rmIfEmpty(); err != nil {
 		return err
@@ -88,27 +89,23 @@ func initLogger(folder, level string) error {
 		return err
 	}
 
-	// create a new zerolog logger
-	zerolog.TimeFieldFormat = time.RFC3339
-	zl := zerolog.New(logFile)
-	zl = zl.With().Caller().Timestamp().Logger()
+	l := log.New(logFile)
+	l.SetReportCaller(true)
 
 	// set the log level
 	switch level {
 	case "debug":
-		zl = zl.Level(zerolog.DebugLevel)
-	case "info":
-		zl = zl.Level(zerolog.InfoLevel)
+		l.SetLevel(log.DebugLevel)
 	case "warn":
-		zl = zl.Level(zerolog.WarnLevel)
+		l.SetLevel(log.WarnLevel)
 	case "error":
-		zl = zl.Level(zerolog.ErrorLevel)
+		l.SetLevel(log.ErrorLevel)
 	default:
-		zl = zl.Level(zerolog.InfoLevel)
+		l.SetLevel(log.InfoLevel)
 	}
 
 	// set the global logger
-	Log = &zl
+	Log = l
 	return nil
 }
 
