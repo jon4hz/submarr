@@ -94,16 +94,17 @@ func renderItem(item SeasonItem, itemWidth int) string {
 	)
 
 	prevAiring := "---"
-	if !item.Season.Statistics.PreviousAiring.IsZero() {
-		prevAiring = item.Season.Statistics.PreviousAiring.Local().Format("02.01.2006 @ 15:04")
-	}
-	prevAiring = truncate.StringWithTail(prevAiring, uint(itemWidth), common.Ellipsis)
-
-	diskSize := fmt.Sprintf("%s", humanize.Bytes(uint64(item.Season.Statistics.SizeOnDisk)))
-	diskSize = truncate.StringWithTail(diskSize, uint(itemWidth), common.Ellipsis)
-
+	diskSize := "---"
 	var seasonStats string
 	if item.Season.Statistics != nil {
+		if !item.Season.Statistics.PreviousAiring.IsZero() {
+			prevAiring = item.Season.Statistics.PreviousAiring.Local().Format("02.01.2006 @ 15:04")
+		}
+		prevAiring = truncate.StringWithTail(prevAiring, uint(itemWidth), common.Ellipsis)
+
+		diskSize = humanize.Bytes(uint64(item.Season.Statistics.SizeOnDisk))
+		diskSize = truncate.StringWithTail(diskSize, uint(itemWidth), common.Ellipsis)
+
 		seasonStats = fmt.Sprintf("%.0f%% • %d/%d Episodes Available", item.Season.Statistics.PercentOfEpisodes, item.Season.Statistics.EpisodeFileCount, item.Season.Statistics.EpisodeCount)
 		seasonStats = truncate.StringWithTail(seasonStats, uint(itemWidth), common.Ellipsis)
 	}
