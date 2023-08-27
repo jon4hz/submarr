@@ -11,7 +11,6 @@ import (
 type Config struct {
 	Sonarr  *SonarrConfig  `mapstructure:"sonarr"`
 	Radarr  *RadarrConfig  `mapstructure:"radarr"`
-	Lidarr  *LidarrConfig  `mapstructure:"lidarr"`
 	Logging *LoggingConfig `mapstructure:"logging"`
 	NoMouse bool           `mapstructure:"no_mouse"`
 }
@@ -34,11 +33,6 @@ type SonarrConfig struct {
 
 // RadarrConfig represents the radarr config
 type RadarrConfig struct {
-	ClientConfig `mapstructure:",squash"`
-}
-
-// LidarrConfig represents the lidarr config
-type LidarrConfig struct {
 	ClientConfig `mapstructure:",squash"`
 }
 

@@ -14,7 +14,6 @@ type DefaultItemStyles struct {
 	DefaultClient  lipgloss.Style
 	SelectedSonarr lipgloss.Style
 	SelectedRadarr lipgloss.Style
-	SelectedLidarr lipgloss.Style
 }
 
 var (

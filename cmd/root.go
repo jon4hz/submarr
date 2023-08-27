@@ -11,7 +11,6 @@ import (
 	"github.com/jon4hz/submarr/internal/logging"
 	"github.com/jon4hz/submarr/internal/tui"
 	"github.com/jon4hz/submarr/internal/version"
-	"github.com/jon4hz/submarr/pkg/lidarr"
 	"github.com/jon4hz/submarr/pkg/radarr"
 	"github.com/jon4hz/submarr/pkg/sonarr"
 	"github.com/spf13/cobra"
@@ -21,7 +20,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:               "submarr",
-	Short:             "submarr is a tui for sonarr, radarr and lidarr",
+	Short:             "submarr is a tui for sonarr and radarr",
 	Version:           version.Version,
 	Run:               root,
 	CompletionOptions: cobra.CompletionOptions{DisableDefaultCmd: true},
@@ -40,7 +39,7 @@ func init() {
 
 	rootCmd.Flags().StringVarP(&rootCmdFlags.configFile, "config", "c", "", "path to the config file")
 
-	for _, v := range []string{"sonarr", "radarr", "lidarr"} {
+	for _, v := range []string{"sonarr", "radarr"} {
 		bindClientFlags(rootCmd, v)
 	}
 
@@ -92,7 +91,6 @@ func root(cmd *cobra.Command, args []string) {
 	var (
 		sonarrClient *sonarr.Client
 		radarrClient *radarr.Client
-		lidarrClient *lidarr.Client
 	)
 
 	if cfg.Sonarr.Host != "" {
@@ -127,27 +125,10 @@ func root(cmd *cobra.Command, args []string) {
 		radarrClient = radarr.New(radarrHTTP, cfg.Radarr)
 	}
 
-	if cfg.Lidarr.Host != "" {
-		opts := []httpclient.ClientOpts{
-			httpclient.WithAPIKey(cfg.Lidarr.APIKey),
-			httpclient.WithoutTLSVerfiy(cfg.Lidarr.IgnoreTLS),
-			httpclient.WithTimeout(time.Duration(cfg.Lidarr.Timeout * int(time.Second))),
-		}
-		if cfg.Lidarr.BasicAuth != nil {
-			opts = append(opts, httpclient.WithBasicAuth(cfg.Lidarr.BasicAuth.Username, cfg.Lidarr.BasicAuth.Password))
-		}
-		for _, v := range cfg.Lidarr.HeaderConfigs {
-			opts = append(opts, httpclient.WithHeader(v.Key, v.Value))
-		}
-		lidarrHTTP := httpclient.New(opts...)
-		lidarrClient = lidarr.New(lidarrHTTP, cfg.Lidarr)
-	}
-
 	client := core.New(
 		cfg,
 		sonarrClient,
 		radarrClient,
-		lidarrClient,
 	)
 
 	tui := tui.New(client)
