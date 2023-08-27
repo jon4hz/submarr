@@ -124,7 +124,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				if selected != nil {
 					item, ok := selected.(clientslist.ClientsItem)
 					if !ok {
-						logging.Log.Error().Msg("could not convert selected item to clientsitem")
+						logging.Log.Error("Could not convert selected item to clientsitem")
 						return m, nil
 					}
 					cmd := m.enterClient(item)

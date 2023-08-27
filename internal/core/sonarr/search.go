@@ -22,7 +22,7 @@ func (c *Client) SearchSeries(term string) (tea.Cmd, context.CancelFunc) {
 			if errors.Is(err, context.Canceled) {
 				return nil
 			}
-			logging.Log.Error().Err(err).Msg("Failed to search series")
+			logging.Log.Error("Failed to search series", "err", err)
 			return SearchSeriesResult{Error: err}
 		}
 

@@ -86,7 +86,7 @@ func root(cmd *cobra.Command, args []string) {
 			log.Fatalln(err)
 		}
 	}()
-	logging.Log.Debug().Str("version", version.Version).Msg("starting submarr")
+	logging.Log.Debug("starting submarr", "version", version.Version)
 
 	var (
 		sonarrClient *sonarr.Client

@@ -35,6 +35,7 @@ func (s SeriesItem) FilterValue() string {
 func (c *Client) FetchSeries() tea.Cmd {
 	return func() tea.Msg {
 		if err := c.fetchSeries(); err != nil {
+			logging.Log.Error("Failed to fetch series", "err", err)
 			return FetchSeriesResult{Error: err}
 		}
 		return FetchSeriesResult{Items: c.newSeriesItems()}
@@ -44,7 +45,7 @@ func (c *Client) FetchSeries() tea.Cmd {
 func (c *Client) fetchSeries() error {
 	series, err := c.sonarr.GetSeries(context.Background())
 	if err != nil {
-		logging.Log.Error().Err(err).Msg("Failed to fetch series")
+		logging.Log.Error("Failed to fetch series", "err", err)
 		return err
 	}
 
@@ -115,7 +116,7 @@ func (c *Client) PostSeries(series *sonarr.SeriesResource) tea.Cmd {
 	return func() tea.Msg {
 		resp, err := c.sonarr.PostSerie(context.Background(), series)
 		if err != nil {
-			logging.Log.Error().Err(err).Msg("Failed to add series")
+			logging.Log.Error("Failed to add series", "err", err)
 			return AddSeriesResult{Error: err}
 		}
 		c.series = append(c.series, resp)

@@ -51,7 +51,7 @@ func New(cfg *config.SonarrConfig, sonarr *sonarr.Client) *Client {
 func (c *Client) Init() error {
 	ping, err := c.sonarr.Ping(context.Background())
 	if err != nil {
-		logging.Log.Error().Err(err).Msg("failed to ping sonarr")
+		logging.Log.Error("Failed to ping sonarr", "err", err)
 		return err
 	}
 	if strings.ToLower(ping.Status) == "ok" {
@@ -81,7 +81,7 @@ func (c *Client) FetchQueueNumber() error {
 	queue, err := c.sonarr.GetQueue(context.Background())
 	if err != nil {
 		c.available = false
-		logging.Log.Error().Err(err).Msg("failed to get queue")
+		logging.Log.Error("Failed to get queue", "err", err)
 		return err
 	}
 
@@ -97,7 +97,7 @@ func (c *Client) FetchMissingNumber() error {
 	totalMissings, err := c.sonarr.GetMissings(context.Background())
 	if err != nil {
 		c.available = false
-		logging.Log.Error().Err(err).Msg("Failed to get totalMissing episodes")
+		logging.Log.Error("Failed to get totalMissing episodes", "err", err)
 		return err
 	}
 
@@ -112,12 +112,12 @@ func (c *Client) FetchMissingNumber() error {
 func (c *Client) FetchQualityProfiles() error {
 	profiles, err := c.sonarr.GetQualityProfiles(context.Background())
 	if err != nil {
-		logging.Log.Error().Err(err).Msg("Failed to fetch quality profiles")
+		logging.Log.Error("Failed to fetch quality profiles", "err", err)
 		return err
 	}
 
 	if len(profiles) == 0 {
-		logging.Log.Warn().Msg("No quality profiles found")
+		logging.Log.Warn("No quality profiles found")
 		return nil
 	}
 
@@ -130,12 +130,12 @@ func (c *Client) FetchQualityProfiles() error {
 func (c *Client) FetchRootFolders() error {
 	folders, err := c.sonarr.GetRootFolders(context.Background())
 	if err != nil {
-		logging.Log.Error().Err(err).Msg("Failed to fetch root folders")
+		logging.Log.Error("Failed to fetch root folders", "err", err)
 		return err
 	}
 
 	if len(folders) == 0 {
-		logging.Log.Warn().Msg("No root folders found")
+		logging.Log.Warn("No root folders found")
 		return nil
 	}
 
@@ -148,12 +148,12 @@ func (c *Client) FetchRootFolders() error {
 func (c *Client) FetchLanguageProfiles() error {
 	profiles, err := c.sonarr.GetLanguageProfiles(context.Background())
 	if err != nil {
-		logging.Log.Error().Err(err).Msg("Failed to fetch language profiles")
+		logging.Log.Error("Failed to fetch language profiles", "err", err)
 		return err
 	}
 
 	if len(profiles) == 0 {
-		logging.Log.Warn().Msg("No language profiles found")
+		logging.Log.Warn("No language profiles found")
 		return nil
 	}
 
