@@ -20,6 +20,10 @@ var (
 	defaultStyle = series.DefaultStyle.Copy()
 
 	selectedStyle = series.SelectedStyle.Copy()
+
+	statusStyle = lipgloss.NewStyle().
+			Padding(0, 0, 0, 1).
+			Align(lipgloss.Right)
 )
 
 func (d Delegate) Height() int { return 6 }
@@ -71,9 +75,20 @@ func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 		textColor = common.SubtileColor
 	}
 
+	status := ""
+	if !item.Series.Added.IsZero() {
+		status = common.Available
+	}
+	status = statusStyle.Render(status)
+	width := itemWidth - lipgloss.Width(status)
+
 	title := TitleStyle.Foreground(textColor).Render(item.Series.Title)
 	title = zone.Mark(item.Series.Title,
-		truncate.StringWithTail(title, uint(itemWidth), common.Ellipsis),
+		truncate.StringWithTail(title, uint(width), common.Ellipsis),
+	)
+
+	title = lipgloss.JoinHorizontal(lipgloss.Left,
+		title, lipgloss.PlaceHorizontal(itemWidth-lipgloss.Width(title), lipgloss.Right, status),
 	)
 
 	var episodeStats string
