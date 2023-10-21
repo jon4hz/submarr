@@ -146,7 +146,10 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		switch msg := msg.(type) {
 		case tea.KeyMsg:
 			if key.Matches(msg, InputKeyMap.Select) {
-				item := m.result.SelectedItem().(sonarr.SeriesItem)
+				item, ok := m.result.SelectedItem().(sonarr.SeriesItem)
+				if !ok {
+					break
+				}
 				if !item.Series.Added.IsZero() {
 					return m, func() tea.Msg {
 						return SeriesAlreadyAddedMsg{Series: item.Series}
