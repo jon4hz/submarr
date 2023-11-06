@@ -11,7 +11,7 @@ require (
 	github.com/jon4hz/stickers v1.3.2-0.20230203232135-107e928c203e
 	github.com/lrstanley/bubblezone v0.0.0-20221222153816-e95291e2243e
 	github.com/muesli/reflow v0.3.0
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.17.0
 	github.com/stretchr/testify v1.8.4
