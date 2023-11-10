@@ -9,11 +9,13 @@ import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
 	"github.com/jon4hz/submarr/internal/tui/components/sonarr/addseries"
 	sonarr_list "github.com/jon4hz/submarr/internal/tui/components/sonarr/list"
 	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
+	"github.com/jon4hz/submarr/internal/tui/overlay"
 	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 )
 
@@ -206,12 +208,15 @@ func (m *Model) addSeries(series *sonarrAPI.SeriesResource) tea.Cmd {
 }
 
 func (m *Model) SetSize(width, height int) {
+	m.Width = width
+	m.Height = height
+
 	m.input.Width = width
 
 	m.result.SetSize(width, height-inputHeight)
 
 	if m.state == stateAddSeries {
-		m.add.SetSize(width, height)
+		m.add.SetSize(min(width, 54), min(height, 34))
 	}
 }
 
@@ -224,7 +229,12 @@ func (m Model) View() string {
 	case stateShowResults:
 		return m.resultView()
 	case stateAddSeries:
-		return m.add.View()
+		fg := m.add.View()
+		x := ((m.Width - lipgloss.Width(fg)) / 2)
+		y := ((m.Height - lipgloss.Height(fg)) / 2)
+		// make sure background fills the whole screen
+		bg := lipgloss.NewStyle().Width(m.Width).Height(m.Height).Render(m.resultView())
+		return overlay.PlaceOverlay(x, y, fg, bg)
 	}
 	return "unknown"
 }

@@ -45,7 +45,6 @@ const (
 	addOptionLanguageProfile
 	addOptionSeriesType
 	addOptionSeasonFolder
-	addOptionTags
 	addOptionSearchForMissingEpisodes
 	addOptionSearchForCutoffUnmetEpisodes
 	addOptionAddSeries
@@ -58,9 +57,8 @@ var addOptions = map[addOption]string{
 	addOptionLanguageProfile:              "Language Profile",
 	addOptionSeriesType:                   "Series Type",
 	addOptionSeasonFolder:                 "Season Folder",
-	addOptionTags:                         "Tags",
-	addOptionSearchForMissingEpisodes:     "Search for missing episodes",
-	addOptionSearchForCutoffUnmetEpisodes: "Search for cutoff unmet episodes",
+	addOptionSearchForMissingEpisodes:     "Search missing",
+	addOptionSearchForCutoffUnmetEpisodes: "Search cutoff unmet",
 	addOptionAddSeries:                    "",
 }
 
@@ -328,7 +326,6 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			switch m.selectedOption {
 			case
 				addOptionSeasonFolder,
-				addOptionTags,
 				addOptionSearchForMissingEpisodes,
 				addOptionSearchForCutoffUnmetEpisodes:
 				// no-op
@@ -407,21 +404,22 @@ func (m Model) View() string {
 
 	switch m.selectedOption {
 	case addOptionRootFolder:
-		return m.rootFolder.View()
+		return boxStyle.Width(m.Width - 2).Render(m.rootFolder.View())
 	case addOptionMonitor:
-		return m.monitor.View()
+		return boxStyle.Width(m.Width - 2).Render(m.monitor.View())
 	case addOptionQualityProfile:
-		return m.qualityProfile.View()
+		return boxStyle.Width(m.Width - 2).Render(m.qualityProfile.View())
 	case addOptionLanguageProfile:
-		return m.languageProfile.View()
+		return boxStyle.Width(m.Width - 2).Render(m.languageProfile.View())
 	case addOptionSeriesType:
-		return m.seriesType.View()
+		return boxStyle.Width(m.Width - 2).Render(m.seriesType.View())
 	default:
 		return m.optionsView()
 	}
 }
 
 var (
+	boxStyle    = lipgloss.NewStyle().Border(lipgloss.RoundedBorder(), true).Padding(1, 2, 1, 2)
 	titleStyle  = lipgloss.NewStyle().Align(lipgloss.Center).Bold(true).Underline(true)
 	keyStyle    = lipgloss.NewStyle().Align(lipgloss.Right).Margin(1, 2, 1, 0)
 	valueStyle  = lipgloss.NewStyle().Border(lipgloss.RoundedBorder(), true).Padding(0, 1, 0)
@@ -455,10 +453,6 @@ func (m Model) optionsView() string {
 		{
 			addOptions[addOptionSeasonFolder],
 			m.seasonFolder.View(),
-		},
-		{
-			addOptions[addOptionTags],
-			strings.Join([]string{"not", "supported", "yet :)"}, ", "),
 		},
 		{
 			addOptions[addOptionSearchForMissingEpisodes],
@@ -507,10 +501,13 @@ func (m Model) optionsView() string {
 			lipgloss.Top, buttonStyle.BorderForeground(color).Render("Add Series")),
 	)
 
-	return lipgloss.NewStyle().MaxWidth(m.Width + 2).Render(s.String())
+	return boxStyle.MaxWidth(m.Width).Render(s.String())
 }
 
 func (m *Model) SetSize(width, height int) {
+	width -= boxStyle.GetHorizontalFrameSize()
+	height -= boxStyle.GetVerticalFrameSize()
+
 	m.Width = width
 	m.Height = height
 
