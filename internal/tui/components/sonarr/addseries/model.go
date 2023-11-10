@@ -309,7 +309,6 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			var cmd tea.Cmd
 			m.seriesType, cmd = m.seriesType.Update(msg)
 			return m, cmd
-
 		}
 
 		return m, nil

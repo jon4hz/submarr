@@ -75,4 +75,4 @@ func (d monitorDelegate) Render(w io.Writer, m list.Model, index int, item list.
 	fmt.Fprintf(w, "%s", title)
 }
 
-func (d monitorDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd { return nil }
+func (d monitorDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }

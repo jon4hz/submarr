@@ -66,4 +66,4 @@ func (d qualityProfileDelegate) Render(w io.Writer, m list.Model, index int, ite
 	fmt.Fprint(w, title)
 }
 
-func (d qualityProfileDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd { return nil }
+func (d qualityProfileDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }

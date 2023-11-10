@@ -66,4 +66,4 @@ func (d languageProfileDelegate) Render(w io.Writer, m list.Model, index int, it
 	fmt.Fprintf(w, "%s", title)
 }
 
-func (d languageProfileDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd { return nil }
+func (d languageProfileDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }

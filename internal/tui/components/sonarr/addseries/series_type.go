@@ -70,4 +70,4 @@ func (d seriesTypeDelegate) Render(w io.Writer, m list.Model, index int, item li
 	fmt.Fprintf(w, "%s", title)
 }
 
-func (d seriesTypeDelegate) Update(msg tea.Msg, m *list.Model) tea.Cmd { return nil }
+func (d seriesTypeDelegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
