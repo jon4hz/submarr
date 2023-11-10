@@ -1,6 +1,6 @@
 module github.com/jon4hz/submarr
 
-go 1.20
+go 1.21
 
 require (
 	github.com/charmbracelet/bubbles v0.16.1
@@ -10,6 +10,8 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/jon4hz/stickers v1.3.2-0.20230203232135-107e928c203e
 	github.com/lrstanley/bubblezone v0.0.0-20221222153816-e95291e2243e
+	github.com/mattn/go-runewidth v0.0.15
+	github.com/muesli/ansi v0.0.0-20221106050444-61f0cd9a192a
 	github.com/muesli/reflow v0.3.0
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
@@ -31,9 +33,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-localereader v0.0.1 // indirect
-	github.com/mattn/go-runewidth v0.0.15 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/muesli/ansi v0.0.0-20221106050444-61f0cd9a192a // indirect
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
