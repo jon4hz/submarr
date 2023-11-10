@@ -35,16 +35,16 @@ var DefaultKeyMap = KeyMap{
 	ToggleMonitor:       key.NewBinding(key.WithKeys("m"), key.WithHelp("m", "toggle monitor")),
 	ToggleMonitorSeries: key.NewBinding(key.WithKeys("M"), key.WithHelp("shift+m", "toggle monitor for series")),
 	Refresh:             key.NewBinding(key.WithKeys("ctrl+r"), key.WithHelp("ctrl+r", "refresh & scan")),
-	AutomaticSearch:     key.NewBinding(key.WithKeys("ctrl+s"), key.WithHelp("ctrl+s", "search for season")),
-	AutomaticSearchAll:  key.NewBinding(key.WithKeys("ctrl+a"), key.WithHelp("ctrl+a", "search for all seasons")),
-	InteractiveSearch:   key.NewBinding(key.WithKeys("ctrl+w"), key.WithHelp("ctrl+w", "interactive search for season")),
+	AutomaticSearch:     key.NewBinding(key.WithKeys("ctrl+s"), key.WithHelp("ctrl+s", "search season")),
+	AutomaticSearchAll:  key.NewBinding(key.WithKeys("ctrl+a"), key.WithHelp("ctrl+a", "search all seasons")),
+	InteractiveSearch:   key.NewBinding(key.WithKeys("ctrl+w"), key.WithHelp("ctrl+w", "interactive search season")),
 }
 
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.Tab, k.CursorUp, k.CursorDown},
-		{k.Select, k.Reload, k.ToggleMonitorSeries, k.ToggleMonitor},
-		{k.Refresh, k.AutomaticSearchAll, k.AutomaticSearch, k.InteractiveSearch},
+		{k.Tab, k.CursorUp, k.CursorDown, k.Select},
+		{k.Reload, k.ToggleMonitorSeries, k.ToggleMonitor, k.Refresh},
+		{k.AutomaticSearchAll, k.AutomaticSearch, k.InteractiveSearch},
 		{k.Help, k.Back, k.Quit},
 	}
 }

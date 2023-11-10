@@ -6,7 +6,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core"
-	"github.com/jon4hz/submarr/internal/tui/statusbar"
+	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
 	zone "github.com/lrstanley/bubblezone"
 )
 

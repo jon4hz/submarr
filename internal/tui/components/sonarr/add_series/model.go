@@ -10,9 +10,9 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
-	sonarr_list "github.com/jon4hz/submarr/internal/tui/sonarr/list"
-	"github.com/jon4hz/submarr/internal/tui/statusbar"
-	"github.com/jon4hz/submarr/internal/tui/toggle"
+	sonarr_list "github.com/jon4hz/submarr/internal/tui/components/sonarr/list"
+	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
+	"github.com/jon4hz/submarr/internal/tui/components/toggle"
 	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 )
 

@@ -9,10 +9,10 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core"
 	"github.com/jon4hz/submarr/internal/logging"
-	"github.com/jon4hz/submarr/internal/tui/clientslist"
 	"github.com/jon4hz/submarr/internal/tui/common"
-	"github.com/jon4hz/submarr/internal/tui/sonarr"
-	"github.com/jon4hz/submarr/internal/tui/statusbar"
+	"github.com/jon4hz/submarr/internal/tui/components/clientslist"
+	"github.com/jon4hz/submarr/internal/tui/components/sonarr"
+	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
 	zone "github.com/lrstanley/bubblezone"
 )
 

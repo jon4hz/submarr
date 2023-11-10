@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
-	"github.com/jon4hz/submarr/internal/tui/sonarr/series"
+	"github.com/jon4hz/submarr/internal/tui/components/sonarr/series"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
 )

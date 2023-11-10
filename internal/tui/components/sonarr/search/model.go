@@ -11,9 +11,9 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
-	addseries "github.com/jon4hz/submarr/internal/tui/sonarr/add_series"
-	sonarr_list "github.com/jon4hz/submarr/internal/tui/sonarr/list"
-	"github.com/jon4hz/submarr/internal/tui/statusbar"
+	addseries "github.com/jon4hz/submarr/internal/tui/components/sonarr/add_series"
+	sonarr_list "github.com/jon4hz/submarr/internal/tui/components/sonarr/list"
+	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
 	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 )
 
