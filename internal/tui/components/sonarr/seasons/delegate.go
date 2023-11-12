@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/dustin/go-humanize"
 	"github.com/jon4hz/submarr/internal/tui/common"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
 )
@@ -134,7 +135,7 @@ func renderMonitored(item SeasonItem, title, prevAiring, diskSize, seasonStats s
 }
 
 func renderUnmonitored(item SeasonItem, title, diskSize, seasonStats string) string {
-	textColor := common.SubtileColor
+	textColor := styles.SubtileColor
 	title = titleStyle.Foreground(textColor).Render(title)
 	prevAiring := lipgloss.NewStyle().Foreground(textColor).Render("---")
 	diskSize = lipgloss.NewStyle().Foreground(textColor).Render(diskSize)

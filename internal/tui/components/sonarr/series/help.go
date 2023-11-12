@@ -20,6 +20,7 @@ type KeyMap struct {
 	AutomaticSearch     key.Binding
 	AutomaticSearchAll  key.Binding
 	InteractiveSearch   key.Binding
+	Delete              key.Binding
 }
 
 var DefaultKeyMap = KeyMap{
@@ -38,13 +39,14 @@ var DefaultKeyMap = KeyMap{
 	AutomaticSearch:     key.NewBinding(key.WithKeys("ctrl+s"), key.WithHelp("ctrl+s", "search season")),
 	AutomaticSearchAll:  key.NewBinding(key.WithKeys("ctrl+a"), key.WithHelp("ctrl+a", "search all seasons")),
 	InteractiveSearch:   key.NewBinding(key.WithKeys("ctrl+w"), key.WithHelp("ctrl+w", "interactive search season")),
+	Delete:              key.NewBinding(key.WithKeys("ctrl+d"), key.WithHelp("ctrl+d", "delete series")),
 }
 
 func (k KeyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.Tab, k.CursorUp, k.CursorDown, k.Select},
 		{k.Reload, k.ToggleMonitorSeries, k.ToggleMonitor, k.Refresh},
-		{k.AutomaticSearchAll, k.AutomaticSearch, k.InteractiveSearch},
+		{k.AutomaticSearchAll, k.AutomaticSearch, k.InteractiveSearch, k.Delete},
 		{k.Help, k.Back, k.Quit},
 	}
 }

@@ -13,6 +13,7 @@ import (
 	sonarr_list "github.com/jon4hz/submarr/internal/tui/components/sonarr/list"
 	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
 	"github.com/jon4hz/submarr/internal/tui/components/toggle"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 )
 
@@ -111,16 +112,15 @@ func New(client *sonarr.Client, series *sonarrAPI.SeriesResource, width, height 
 	m.Width = width
 	m.Height = height
 
-	sublists := []list.Model{
+	for _, l := range []list.Model{
 		m.rootFolder,
 		m.monitor,
 		m.qualityProfile,
 		m.languageProfile,
 		m.seriesType,
-	}
-	for _, sublist := range sublists {
-		sublist.SetShowFilter(false)
-		sublist.SetShowStatusBar(false)
+	} {
+		l.SetShowFilter(false)
+		l.SetShowStatusBar(false)
 	}
 
 	return &m
@@ -465,7 +465,7 @@ func (m Model) optionsView() string {
 
 	lines := make([]string, len(kvs))
 	for i, kv := range kvs {
-		var color lipgloss.TerminalColor = common.SubtileColor
+		var color lipgloss.TerminalColor = styles.SubtileColor
 		if i == int(m.selectedOption)-1 {
 			color = lipgloss.Color("#00CCFF")
 		}
@@ -491,7 +491,7 @@ func (m Model) optionsView() string {
 	s.WriteByte('\n')
 	s.WriteByte('\n')
 
-	var color lipgloss.TerminalColor = common.SubtileColor
+	var color lipgloss.TerminalColor = styles.SubtileColor
 	if m.selectedOption == addOptionAddSeries {
 		color = lipgloss.Color("#00CCFF")
 	}

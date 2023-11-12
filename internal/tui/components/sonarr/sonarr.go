@@ -214,6 +214,23 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 			return m, tea.Batch(cmds...)
 		}
 
+	case sonarr.DeleteSeriesResult:
+		switch m.state {
+		case stateSeriesDetails:
+			m.state = stateSeries
+			if msg.Error != nil {
+				return m, tea.Batch(
+					statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
+					statusbar.NewMessageCmd(msg.Error.Error(), statusbar.WithMessageTimeout(3)),
+				)
+			}
+			return m, tea.Batch(
+				m.seriesList.SetItems(msg.Items),
+				statusbar.NewMessageCmd(fmt.Sprintf("Deleted Series: %s", msg.DeletedTitle)),
+				statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
+			)
+		}
+
 	case series.SelectSeasonMsg:
 		return m, m.selectSeason(m.client.GetSerie().Seasons[msg])
 	}

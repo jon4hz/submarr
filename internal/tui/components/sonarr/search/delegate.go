@@ -10,6 +10,7 @@ import (
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
 	"github.com/jon4hz/submarr/internal/tui/components/sonarr/series"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
 )
@@ -71,7 +72,7 @@ var (
 func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 	textColor := SelectedForeground
 	if !isSelected {
-		textColor = common.SubtileColor
+		textColor = styles.SubtileColor
 	}
 
 	status := ""
