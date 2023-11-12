@@ -4,9 +4,9 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core"
 	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 	zone "github.com/lrstanley/bubblezone"
 )
 
@@ -27,7 +27,7 @@ func New(client *core.Client) Model {
 	m.clientList.SetFilteringEnabled(false)
 	m.clientList.Title = "Available Clients"
 	m.clientList.Styles.Title = m.clientList.Styles.Title.Copy().
-		Background(lipgloss.Color("#7B61FF"))
+		Background(styles.PurpleColor)
 	m.clientList.SetShowHelp(false)
 
 	return m

@@ -221,3 +221,13 @@ func (c *Client) GetLanguageProfiles(ctx context.Context) ([]*LanguageProfileRes
 	}
 	return res, nil
 }
+
+// GetHistory returns the history of an object
+func (c *Client) GetHistory(ctx context.Context, opts ...httpclient.RequestOpts) (*HistoryResourcePagingResource, error) {
+	var res *HistoryResourcePagingResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/history", &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
