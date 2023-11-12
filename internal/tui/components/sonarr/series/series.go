@@ -64,15 +64,14 @@ type Model struct {
 
 var (
 	cellStyle = lipgloss.NewStyle().
-			Border(lipgloss.NormalBorder(), true).
+			Border(lipgloss.RoundedBorder(), true).
 			BorderForeground(subtleColor)
 
 	infoCellStyle = cellStyle.Copy().
-			MarginLeft(2).
 			Padding(0, 2, 1, 2)
 
 	statsCellStyle = cellStyle.Copy().
-			MarginLeft(2)
+			Padding(0, 1)
 
 	seasonsCellStyle = cellStyle.Copy()
 )

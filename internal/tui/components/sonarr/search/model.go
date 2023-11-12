@@ -32,7 +32,8 @@ const (
 	stateAddSeries
 )
 
-const inputHeight = 5
+// this should probably be dynamic somehow
+const inputHeight = 4
 
 type Model struct {
 	common.EmbedableModel
@@ -227,7 +228,7 @@ func (m Model) View() string {
 	case stateSearching:
 		return m.searchView()
 	case stateShowResults:
-		return m.resultView()
+		return lipgloss.NewStyle().Width(m.Width).Height(m.Height).Render(m.resultView())
 	case stateAddSeries:
 		fg := m.add.View()
 		x := ((m.Width - lipgloss.Width(fg)) / 2)

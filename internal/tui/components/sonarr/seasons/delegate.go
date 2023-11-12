@@ -31,9 +31,7 @@ func (d Delegate) Height() int { return 6 }
 
 func (d Delegate) Spacing() int { return 0 }
 
-func (d Delegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
-	return nil
-}
+func (d Delegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
 
 func (d Delegate) Render(w io.Writer, m list.Model, index int, item list.Item) {
 	var season string
