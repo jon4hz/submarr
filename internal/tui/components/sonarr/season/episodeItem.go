@@ -27,11 +27,21 @@ func episodeToItems(episodes []*sonarrAPI.EpisodeResource, queue []*sonarrAPI.Qu
 
 	items := make([]list.Item, len(episodes))
 	for i, episode := range episodes {
-		// check if episode is in download queue
+		// Check if episode is in download queue.
+		// If the episode is in the queue multiple times,
+		// the one with the most download progress is used.
 		var queueItem *sonarrAPI.QueueResource
 		for _, q := range queue {
 			if episode.ID == q.EpisodeID {
-				queueItem = q
+				if queueItem != nil {
+					np := (q.Size - q.Sizeleft) / q.Size
+					op := (queueItem.Size - queueItem.Sizeleft) / queueItem.Size
+					if np > op {
+						queueItem = q
+					}
+				} else {
+					queueItem = q
+				}
 			}
 		}
 		items[i] = NewEpisodeItem(episode, queueItem)
