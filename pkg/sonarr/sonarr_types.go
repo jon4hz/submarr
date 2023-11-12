@@ -575,7 +575,7 @@ type HistoryResource struct {
 	Date                time.Time               `json:"date"`
 	DownloadID          string                  `json:"downloadId"`
 	EventType           EpisodeHistoryEventType `json:"eventType"`
-	Data                map[any]string          `json:"data"`
+	Data                any                     `json:"data"`
 	Episode             *EpisodeResource        `json:"episode"`
 	Series              *SeriesResource         `json:"series"`
 }

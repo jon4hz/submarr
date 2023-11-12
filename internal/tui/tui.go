@@ -261,7 +261,7 @@ func (m *Model) setSize(width, height int) {
 	m.clientslist.SetSize(width, height)
 
 	if m.state == stateClient {
-		m.clientModel.SetSize(width, height)
+		m.clientModel.SetSize(width, height+1)
 	}
 }
 
