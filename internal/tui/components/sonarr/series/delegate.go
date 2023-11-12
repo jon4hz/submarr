@@ -10,6 +10,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
@@ -32,9 +33,7 @@ func (d Delegate) Height() int { return 6 }
 
 func (d Delegate) Spacing() int { return 0 }
 
-func (d Delegate) Update(msg tea.Msg, m *list.Model) tea.Cmd {
-	return nil
-}
+func (d Delegate) Update(_ tea.Msg, _ *list.Model) tea.Cmd { return nil }
 
 func (d Delegate) Render(w io.Writer, m list.Model, index int, item list.Item) {
 	var serie string
@@ -81,7 +80,7 @@ var (
 func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 	textColor := SelectedForeground
 	if !isSelected {
-		textColor = common.SubtileColor
+		textColor = styles.SubtileColor
 	}
 
 	title := TitleStyle.Foreground(textColor).Render(item.Series.Title)

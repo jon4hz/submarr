@@ -9,6 +9,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/tui/common"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
 )
@@ -29,11 +30,11 @@ var (
 			Padding(0, 1)
 
 	messageStyle = statusBarStyle.Copy().
-			Foreground(lipgloss.AdaptiveColor{Light: "#89F0CB", Dark: "#89F0CB"}).
+			Foreground(styles.OkColor).
 			Background(statusBarBg)
 
 	errorStyle = statusBarStyle.Copy().
-			Foreground(lipgloss.AdaptiveColor{Light: "#F08F89", Dark: "#F08F89"}).
+			Foreground(styles.ErrorColor).
 			Background(statusBarBg)
 
 	helpStyle = lipgloss.NewStyle().

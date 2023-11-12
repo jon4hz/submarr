@@ -4,11 +4,13 @@ import (
 	"context"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"unicode"
 
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/jon4hz/submarr/internal/httpclient"
 	"github.com/jon4hz/submarr/internal/logging"
 	"github.com/jon4hz/submarr/pkg/sonarr"
 )
@@ -22,6 +24,12 @@ type AddSeriesResult struct {
 	AddedTitle string
 	Items      []list.Item
 	Error      error
+}
+
+type DeleteSeriesResult struct {
+	DeletedTitle string
+	Items        []list.Item
+	Error        error
 }
 
 type SeriesItem struct {
@@ -124,6 +132,33 @@ func (c *Client) PostSeries(series *sonarr.SeriesResource) tea.Cmd {
 		return AddSeriesResult{
 			AddedTitle: series.Title,
 			Items:      c.newSeriesItems(),
+		}
+	}
+}
+
+func (c *Client) DeleteSeries(series *sonarr.SeriesResource, deleteFiles, addExclusion bool) tea.Cmd {
+	return func() tea.Msg {
+		if err := c.sonarr.DeleteSerie(context.Background(), series.ID, httpclient.WithParams(
+			map[string]string{
+				"deleteFiles":            strconv.FormatBool(deleteFiles),
+				"addImportListExclusion": strconv.FormatBool(addExclusion),
+			},
+		)); err != nil {
+			logging.Log.Error("Failed to delete series", "err", err)
+			return DeleteSeriesResult{
+				DeletedTitle: series.Title,
+				Error:        err,
+			}
+		}
+		for i, s := range c.series {
+			if s.ID == series.ID {
+				c.series = append(c.series[:i], c.series[i+1:]...)
+				break
+			}
+		}
+		return DeleteSeriesResult{
+			DeletedTitle: series.Title,
+			Items:        c.newSeriesItems(),
 		}
 	}
 }

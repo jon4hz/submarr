@@ -6,6 +6,7 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/tui/common"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 	zone "github.com/lrstanley/bubblezone"
 	"github.com/muesli/reflow/truncate"
 )
@@ -30,7 +31,7 @@ var (
 			Bold(true)
 
 	statusStyle = lipgloss.NewStyle().
-			Foreground(common.SubtileColor).
+			Foreground(styles.SubtileColor).
 			Padding(0, 0, 0, 1).
 			Align(lipgloss.Right)
 
@@ -45,7 +46,7 @@ var (
 func renderItem(item ClientsItem, itemWidth int, isSelected bool) string {
 	textColor := selectedForeground
 	if !isSelected {
-		textColor = common.SubtileColor
+		textColor = styles.SubtileColor
 	}
 
 	title := titleStyle.Foreground(textColor).Render(item.Title() + "\n")

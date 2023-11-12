@@ -15,8 +15,10 @@ import (
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
 	sonarr_list "github.com/jon4hz/submarr/internal/tui/components/sonarr/list"
+	"github.com/jon4hz/submarr/internal/tui/components/sonarr/removeseries"
 	"github.com/jon4hz/submarr/internal/tui/components/sonarr/seasons"
 	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
+	"github.com/jon4hz/submarr/internal/tui/overlay"
 	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 	zone "github.com/lrstanley/bubblezone"
 )
@@ -36,6 +38,13 @@ const (
 	statsCell
 )
 
+type state int
+
+const (
+	stateSeries state = iota + 1
+	stateDelete
+)
+
 type Model struct {
 	common.EmbedableModel
 
@@ -48,6 +57,8 @@ type Model struct {
 	infoViewport  viewport.Model
 	statsViewport viewport.Model
 	seasonsList   list.Model
+	state         state
+	delete        common.SubModel
 }
 
 var (
@@ -72,6 +83,7 @@ func New(sonarr *sonarr.Client, width, height int) *Model {
 		infoViewport:  viewport.New(0, 0),
 		statsViewport: viewport.New(0, 0),
 		selectedCell:  seasonsCell,
+		state:         stateSeries,
 		seasonsList:   sonarr_list.New("Seasons", newSeasonsItems(sonarr.GetSerie()), seasons.Delegate{}, 0, 0),
 	}
 
@@ -122,140 +134,174 @@ func (m Model) Init() tea.Cmd {
 func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch {
-		case key.Matches(msg, DefaultKeyMap.Back):
-			if !m.seasonsList.SettingFilter() {
-				m.IsBack = true
-				return m, nil
-			}
+		switch m.state {
+		case stateSeries:
+			switch {
+			case key.Matches(msg, DefaultKeyMap.Back):
+				if !m.seasonsList.SettingFilter() {
+					m.IsBack = true
+					return m, nil
+				}
 
-		case key.Matches(msg, DefaultKeyMap.Quit):
-			if !m.seasonsList.SettingFilter() {
-				m.IsQuit = true
-				return m, nil
-			}
+			case key.Matches(msg, DefaultKeyMap.Quit):
+				if !m.seasonsList.SettingFilter() {
+					m.IsQuit = true
+					return m, nil
+				}
 
-		case key.Matches(msg, DefaultKeyMap.Tab):
-			if !m.seasonsList.SettingFilter() {
-				m.focusNext()
-				return m, nil
-			}
+			case key.Matches(msg, DefaultKeyMap.Tab):
+				if !m.seasonsList.SettingFilter() {
+					m.focusNext()
+					return m, nil
+				}
 
-		case key.Matches(msg, DefaultKeyMap.ShiftTab):
-			if !m.seasonsList.SettingFilter() {
-				m.focusPrev()
-				return m, nil
-			}
+			case key.Matches(msg, DefaultKeyMap.ShiftTab):
+				if !m.seasonsList.SettingFilter() {
+					m.focusPrev()
+					return m, nil
+				}
 
-		case key.Matches(msg, DefaultKeyMap.Reload):
-			if !m.seasonsList.SettingFilter() {
+			case key.Matches(msg, DefaultKeyMap.Reload):
+				if !m.seasonsList.SettingFilter() {
+					return m, tea.Batch(
+						m.client.ReloadSerie(),
+						m.seasonsList.StartSpinner(),
+						statusbar.NewMessageCmd("Reloading series...", statusbar.WithMessageTimeout(2)),
+					)
+				}
+
+			case key.Matches(msg, DefaultKeyMap.ToggleMonitor):
+				if !m.seasonsList.SettingFilter() {
+					return m, tea.Batch(
+						m.client.ToggleMonitorSeason(m.seasonsList.Index()),
+						m.seasonsList.StartSpinner(),
+						statusbar.NewMessageCmd("Toggling season monitor...", statusbar.WithMessageTimeout(2)),
+					)
+				}
+
+			case key.Matches(msg, DefaultKeyMap.ToggleMonitorSeries):
+				if !m.seasonsList.SettingFilter() {
+					return m, tea.Batch(
+						m.client.ToggleMonitorSeries(),
+						m.seasonsList.StartSpinner(),
+						statusbar.NewMessageCmd("Toggling series monitor...", statusbar.WithMessageTimeout(2)),
+					)
+				}
+
+			case key.Matches(msg, DefaultKeyMap.Select):
+				if !m.seasonsList.SettingFilter() {
+					item := m.seasonsList.SelectedItem().(seasons.SeasonItem)
+					return m, func() tea.Msg { return SelectSeasonMsg(item.Index) }
+				}
+
+			case key.Matches(msg, DefaultKeyMap.Refresh):
 				return m, tea.Batch(
-					m.client.ReloadSerie(),
-					m.seasonsList.StartSpinner(),
-					statusbar.NewMessageCmd("Reloading series...", statusbar.WithMessageTimeout(2)),
+					m.client.RefreshSeries(),
+					statusbar.NewMessageCmd("Refreshing series...", statusbar.WithMessageTimeout(2)),
 				)
-			}
 
-		case key.Matches(msg, DefaultKeyMap.ToggleMonitor):
-			if !m.seasonsList.SettingFilter() {
+			case key.Matches(msg, DefaultKeyMap.AutomaticSearch):
+				if !m.seasonsList.SettingFilter() {
+					season := m.seasonsList.SelectedItem().(seasons.SeasonItem)
+					return m, tea.Batch(
+						m.client.AutomaticSearchSeason(season.Season.SeasonNumber),
+						statusbar.NewMessageCmd(fmt.Sprintf("Searching for season %d...", season.Season.SeasonNumber), statusbar.WithMessageTimeout(2)),
+					)
+				}
+
+			case key.Matches(msg, DefaultKeyMap.AutomaticSearchAll):
 				return m, tea.Batch(
-					m.client.ToggleMonitorSeason(m.seasonsList.Index()),
-					m.seasonsList.StartSpinner(),
-					statusbar.NewMessageCmd("Toggling season monitor...", statusbar.WithMessageTimeout(2)),
+					m.client.AutomaticSearchSeries(),
+					statusbar.NewMessageCmd("Searching for all seasons...", statusbar.WithMessageTimeout(2)),
 				)
+
+			case key.Matches(msg, DefaultKeyMap.Delete):
+				return m, m.deleteSeries()
 			}
-
-		case key.Matches(msg, DefaultKeyMap.ToggleMonitorSeries):
-			if !m.seasonsList.SettingFilter() {
-				return m, tea.Batch(
-					m.client.ToggleMonitorSeries(),
-					m.seasonsList.StartSpinner(),
-					statusbar.NewMessageCmd("Toggling series monitor...", statusbar.WithMessageTimeout(2)),
-				)
-			}
-
-		case key.Matches(msg, DefaultKeyMap.Select):
-			if !m.seasonsList.SettingFilter() {
-				item := m.seasonsList.SelectedItem().(seasons.SeasonItem)
-				return m, func() tea.Msg { return SelectSeasonMsg(item.Index) }
-			}
-
-		case key.Matches(msg, DefaultKeyMap.Refresh):
-			return m, tea.Batch(
-				m.client.RefreshSeries(),
-				statusbar.NewMessageCmd("Refreshing series...", statusbar.WithMessageTimeout(2)),
-			)
-
-		case key.Matches(msg, DefaultKeyMap.AutomaticSearch):
-			if !m.seasonsList.SettingFilter() {
-				season := m.seasonsList.SelectedItem().(seasons.SeasonItem)
-				return m, tea.Batch(
-					m.client.AutomaticSearchSeason(season.Season.SeasonNumber),
-					statusbar.NewMessageCmd(fmt.Sprintf("Searching for season %d...", season.Season.SeasonNumber), statusbar.WithMessageTimeout(2)),
-				)
-			}
-
-		case key.Matches(msg, DefaultKeyMap.AutomaticSearchAll):
-			return m, tea.Batch(
-				m.client.AutomaticSearchSeries(),
-				statusbar.NewMessageCmd("Searching for all seasons...", statusbar.WithMessageTimeout(2)),
-			)
 		}
 
 	case sonarr.FetchSerieResult:
 		m.seasonsList.StopSpinner()
 		if msg.Error != nil {
-			return m, statusbar.NewMessageCmd(msg.Error.Error(), statusbar.WithMessageTimeout(2))
+			return m, statusbar.NewMessageCmd(msg.Error.Error(), statusbar.WithMessageTimeout(3))
 		}
 		m.updateStatsViewport()
 		return m, m.seasonsList.SetItems(newSeasonsItems(msg.Serie))
 
 	case tea.MouseMsg:
-		switch m.selectedCell {
-		case seasonsCell:
-			switch msg.Type {
-			case tea.MouseWheelUp:
-				m.seasonsList.CursorUp()
-				return m, nil
+		switch m.state {
+		case stateSeries:
+			switch m.selectedCell {
+			case seasonsCell:
+				switch msg.Type {
+				case tea.MouseWheelUp:
+					m.seasonsList.CursorUp()
+					return m, nil
 
-			case tea.MouseWheelDown:
-				m.seasonsList.CursorDown()
-				return m, nil
+				case tea.MouseWheelDown:
+					m.seasonsList.CursorDown()
+					return m, nil
 
-			case tea.MouseLeft:
-				for i, listItem := range m.seasonsList.VisibleItems() {
-					item, _ := listItem.(seasons.SeasonItem)
-					if zone.Get(fmt.Sprintf("Season %d", item.Season.SeasonNumber)).InBounds(msg) {
-						// if we click on an already selected item, open the details
-						if i == m.seasonsList.Index() {
-							return m, func() tea.Msg { return SelectSeasonMsg(item.Index) }
+				case tea.MouseLeft:
+					for i, listItem := range m.seasonsList.VisibleItems() {
+						item, _ := listItem.(seasons.SeasonItem)
+						if zone.Get(fmt.Sprintf("Season %d", item.Season.SeasonNumber)).InBounds(msg) {
+							// if we click on an already selected item, open the details
+							if i == m.seasonsList.Index() {
+								return m, func() tea.Msg { return SelectSeasonMsg(item.Index) }
+							}
+							// else select the item
+							m.seasonsList.Select(i)
+							break
 						}
-						// else select the item
-						m.seasonsList.Select(i)
-						break
 					}
 				}
 			}
 		}
 	}
 
-	switch m.selectedCell {
-	case infoCell:
-		var cmd tea.Cmd
-		m.infoViewport, cmd = m.infoViewport.Update(msg)
-		return m, cmd
+	switch m.state {
+	case stateSeries:
 
-	case statsCell:
-		var cmd tea.Cmd
-		m.statsViewport, cmd = m.statsViewport.Update(msg)
-		return m, cmd
+		switch m.selectedCell {
+		case infoCell:
+			var cmd tea.Cmd
+			m.infoViewport, cmd = m.infoViewport.Update(msg)
+			return m, cmd
 
-	case seasonsCell:
+		case statsCell:
+			var cmd tea.Cmd
+			m.statsViewport, cmd = m.statsViewport.Update(msg)
+			return m, cmd
+
+		case seasonsCell:
+			var cmd tea.Cmd
+			m.seasonsList, cmd = m.seasonsList.Update(msg)
+			return m, cmd
+		}
+	case stateDelete:
 		var cmd tea.Cmd
-		m.seasonsList, cmd = m.seasonsList.Update(msg)
+		m.delete, cmd = m.delete.Update(msg)
+
+		if m.delete.Quit() {
+			m.IsQuit = true
+			return m, nil
+		}
+
+		if m.delete.Back() {
+			m.state = stateSeries
+			return m, statusbar.NewHelpCmd(DefaultKeyMap.FullHelp())
+		}
+
 		return m, cmd
 	}
 	return m, nil
+}
+
+func (m *Model) deleteSeries() tea.Cmd {
+	m.state = stateDelete
+	m.delete = removeseries.New(m.client, m.client.GetSerie(), m.Width, m.Height)
+	return m.delete.Init()
 }
 
 func (m *Model) SetSize(width, height int) {
@@ -277,13 +323,10 @@ func (m *Model) SetSize(width, height int) {
 	seasonListHeight := max(m.cellmap[seasonsCell].GetContentHeight()-seasonsCellStyle.GetVerticalPadding(), 0)
 	seasonListWidth := max(m.cellmap[seasonsCell].GetContentWidth()-seasonsCellStyle.GetHorizontalPadding(), 0)
 	m.seasonsList.SetSize(seasonListWidth, seasonListHeight)
-}
 
-func max(a, b int) int {
-	if a > b {
-		return a
+	if m.state == stateDelete {
+		m.delete.SetSize(width, height)
 	}
-	return b
 }
 
 func (m *Model) focusNext() {
@@ -465,6 +508,20 @@ func (m Model) renderStatsCell() string {
 }
 
 func (m Model) View() string {
-	m.redraw()
-	return m.flexBox.Render()
+	switch m.state {
+	case stateSeries:
+		m.redraw()
+		return m.flexBox.Render()
+
+	case stateDelete:
+		m.redraw()
+		fg := m.delete.View()
+		x := ((m.Width - lipgloss.Width(fg)) / 2)
+		y := ((m.Height - lipgloss.Height(fg)) / 2)
+		// make sure background fills the whole screen
+		bg := lipgloss.NewStyle().Width(m.Width).Height(m.Height).Render(m.flexBox.Render())
+		return overlay.PlaceOverlay(x, y, fg, bg)
+	}
+
+	return ":("
 }

@@ -75,6 +75,14 @@ func (c *Client) PostSerie(ctx context.Context, serie *SeriesResource) (*SeriesR
 	return &res, nil
 }
 
+func (c *Client) DeleteSerie(ctx context.Context, serieID int32, opts ...httpclient.RequestOpts) error {
+	_, err := c.http.Delete(ctx, c.cfg.Host, fmt.Sprintf("/api/v3/series/%d", serieID), nil, nil, opts...)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // GetQueue returns the current download queue
 func (c *Client) GetQueue(ctx context.Context, opts ...httpclient.RequestOpts) (*QueueResourcePagingResource, error) {
 	var res QueueResourcePagingResource
