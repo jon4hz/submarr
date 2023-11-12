@@ -2,10 +2,22 @@ package common
 
 import tea "github.com/charmbracelet/bubbletea"
 
+type TabModel interface {
+	SubModelBase
+
+	Title() string
+	Update(msg tea.Msg) (TabModel, tea.Cmd)
+}
+
 type SubModel interface {
+	SubModelBase
+
+	Update(msg tea.Msg) (SubModel, tea.Cmd)
+}
+
+type SubModelBase interface {
 	// some bubbleteaish Model methods
 	Init() tea.Cmd
-	Update(msg tea.Msg) (SubModel, tea.Cmd)
 	View() string
 
 	// some custom methods
