@@ -19,6 +19,7 @@ import (
 	"github.com/jon4hz/submarr/internal/tui/components/sonarr/seasons"
 	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
 	"github.com/jon4hz/submarr/internal/tui/overlay"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 	zone "github.com/lrstanley/bubblezone"
 )
@@ -27,7 +28,7 @@ type SelectSeasonMsg int
 
 var (
 	subtleColor   = lipgloss.AdaptiveColor{Light: "#9B9B9B", Dark: "#5C5C5C"}
-	selectedColor = lipgloss.Color("#00CCFF")
+	selectedColor = styles.SonarrBlue
 )
 
 type cell int

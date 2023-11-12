@@ -6,7 +6,6 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
 	sonarr_list "github.com/jon4hz/submarr/internal/tui/components/sonarr/list"
@@ -14,6 +13,7 @@ import (
 	"github.com/jon4hz/submarr/internal/tui/components/sonarr/season"
 	"github.com/jon4hz/submarr/internal/tui/components/sonarr/series"
 	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 	zone "github.com/lrstanley/bubblezone"
 )
@@ -63,7 +63,7 @@ func New(c *sonarr.Client, width, height int) *Model {
 
 func (m Model) Init() tea.Cmd {
 	return tea.Batch(
-		statusbar.NewTitleCmd("Sonarr", statusbar.WithTitleForeground(lipgloss.Color("#00CCFF"))),
+		statusbar.NewTitleCmd("Sonarr", statusbar.WithTitleForeground(styles.SonarrBlue)),
 		statusbar.NewHelpCmd(DefaultKeyMap.FullHelp()),
 		m.spinner.Tick,
 		m.client.FetchSeries(),

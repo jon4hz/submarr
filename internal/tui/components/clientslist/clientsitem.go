@@ -31,14 +31,14 @@ var (
 			Bold(true)
 
 	statusStyle = lipgloss.NewStyle().
-			Foreground(styles.SubtileColor).
+			Foreground(styles.SubtleColor).
 			Padding(0, 0, 0, 1).
 			Align(lipgloss.Right)
 
 	statsStyle = lipgloss.NewStyle()
 
 	separator = lipgloss.NewStyle().
-			Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}).
+			Foreground(styles.SubtleColor).
 			Padding(0, 1).
 			Render("•")
 )
@@ -46,7 +46,7 @@ var (
 func renderItem(item ClientsItem, itemWidth int, isSelected bool) string {
 	textColor := selectedForeground
 	if !isSelected {
-		textColor = styles.SubtileColor
+		textColor = styles.SubtleColor
 	}
 
 	title := titleStyle.Foreground(textColor).Render(item.Title() + "\n")

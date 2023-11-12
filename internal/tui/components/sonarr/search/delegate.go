@@ -72,7 +72,7 @@ var (
 func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 	textColor := SelectedForeground
 	if !isSelected {
-		textColor = styles.SubtileColor
+		textColor = styles.SubtleColor
 	}
 
 	status := ""

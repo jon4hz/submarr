@@ -153,9 +153,9 @@ func (m Model) View() string {
 
 	lines := make([]string, len(kvs))
 	for i, kv := range kvs {
-		var color lipgloss.TerminalColor = styles.SubtileColor
+		var color lipgloss.TerminalColor = styles.SubtleColor
 		if i == int(m.selectedOption)-1 {
-			color = lipgloss.Color("#00CCFF")
+			color = styles.SonarrBlue
 		}
 		lines[i] = lipgloss.JoinHorizontal(lipgloss.Left,
 			keyStyle.Width(m.longestOptionWidth).Render(kv[0]),
@@ -188,9 +188,9 @@ func (m Model) View() string {
 		s.WriteString("\n\n")
 	}
 
-	var color lipgloss.TerminalColor = styles.SubtileColor
+	var color lipgloss.TerminalColor = styles.SubtleColor
 	if m.selectedOption == rmOptionRemoveSeries {
-		color = lipgloss.Color("#00CCFF")
+		color = styles.SonarrBlue
 	}
 	s.WriteString(
 		lipgloss.Place(width, 1, lipgloss.Center,

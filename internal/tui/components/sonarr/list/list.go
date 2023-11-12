@@ -3,6 +3,7 @@ package sonarr_list
 import (
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 )
 
 // New returns an opinionated list model for sonarr submodels.
@@ -15,6 +16,6 @@ func New(title string, items []list.Item, delegate list.ItemDelegate, width, hei
 		Background(lipgloss.Color("#7B61FF"))
 	l.SetShowHelp(false)
 
-	l.FilterInput.Cursor.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("#00CCFF"))
+	l.FilterInput.Cursor.Style = lipgloss.NewStyle().Foreground(styles.SonarrBlue)
 	return l
 }

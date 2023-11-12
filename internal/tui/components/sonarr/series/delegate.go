@@ -26,7 +26,7 @@ var (
 
 	SelectedStyle = DefaultStyle.Copy().
 			BorderStyle(lipgloss.ThickBorder()).
-			BorderForeground(lipgloss.Color("#00CCFF"))
+			BorderForeground(styles.SonarrBlue)
 )
 
 func (d Delegate) Height() int { return 6 }
@@ -72,7 +72,7 @@ var (
 			MaxHeight(1)
 
 	Separator = lipgloss.NewStyle().
-			Foreground(lipgloss.AdaptiveColor{Light: "#A49FA5", Dark: "#777777"}).
+			Foreground(styles.SubtleColor).
 			Padding(0, 1).
 			Render("•")
 )
@@ -80,7 +80,7 @@ var (
 func renderItem(item sonarr.SeriesItem, itemWidth int, isSelected bool) string {
 	textColor := SelectedForeground
 	if !isSelected {
-		textColor = styles.SubtileColor
+		textColor = styles.SubtleColor
 	}
 
 	title := TitleStyle.Foreground(textColor).Render(item.Series.Title)

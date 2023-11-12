@@ -24,7 +24,7 @@ var (
 
 	selectedStyle = defaultStyle.Copy().
 			BorderStyle(lipgloss.ThickBorder()).
-			BorderForeground(lipgloss.Color("#00CCFF"))
+			BorderForeground(styles.SonarrBlue)
 )
 
 func (d Delegate) Height() int { return 5 }
@@ -158,7 +158,7 @@ func renderMonitored(item EpisodeItem, title, airDate, episodeStats string, down
 }
 
 func renderUnmonitored(item EpisodeItem, title, airDate, episodeStats string, downloadStatus string) string {
-	textColor := styles.SubtileColor
+	textColor := styles.SubtleColor
 	title = titleStyle.Foreground(textColor).Render(title)
 	airDate = lipgloss.NewStyle().Foreground(textColor).Render(airDate)
 

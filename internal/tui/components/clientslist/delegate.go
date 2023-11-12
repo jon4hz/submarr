@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/jon4hz/submarr/internal/tui/styles"
 )
 
 type DefaultItemStyles struct {
@@ -27,7 +28,7 @@ var (
 
 	selectedSonarr = selectedStyle.Copy().
 			Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
-			BorderForeground(lipgloss.Color("#00CCFF"))
+			BorderForeground(styles.SonarrBlue)
 
 	selectedRadarr = selectedStyle.Copy().
 			Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
