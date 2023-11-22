@@ -28,8 +28,6 @@ func New(client *sonarr.Client, episode *sonarrAPI.EpisodeResource, width, heigh
 		client:  *client,
 		episode: episode,
 	}
-	m.Width = width
-	m.Height = height
 
 	if episode.HasFile {
 		rows := []table.Row{
@@ -41,16 +39,11 @@ func New(client *sonarr.Client, episode *sonarrAPI.EpisodeResource, width, heigh
 			},
 		}
 
-		qualityWidth := lipgloss.Width(rows[0][3])
-		languageWidth := lipgloss.Width(rows[0][2])
-		sizeWidth := lipgloss.Width(rows[0][1])
-		pathWidth := width - (qualityWidth + languageWidth + sizeWidth + 9)
-
 		columns := []table.Column{
-			{Title: "Path", Width: pathWidth},
-			{Title: "Size", Width: sizeWidth},
-			{Title: "Language", Width: languageWidth},
-			{Title: "Quality", Width: qualityWidth},
+			{Title: "Path"},
+			{Title: "Size"},
+			{Title: "Language"},
+			{Title: "Quality"},
 		}
 
 		t := table.New(
@@ -74,6 +67,8 @@ func New(client *sonarr.Client, episode *sonarrAPI.EpisodeResource, width, heigh
 
 		m.table = t
 	}
+
+	m.SetSize(width, height)
 
 	return &m
 }
@@ -151,13 +146,13 @@ func (m Model) View() string {
 }
 
 func (m *Model) SetSize(width, height int) {
-	height = height - 2
+	height = height - boxStyle.GetVerticalFrameSize()
 
 	m.Width = width
 	m.Height = height
 
-	m.table.SetWidth(width - 2)
-	m.resizeTable(width - 2)
+	m.table.SetWidth(width - boxStyle.GetHorizontalFrameSize())
+	m.resizeTable(width - boxStyle.GetHorizontalFrameSize())
 }
 
 func (m *Model) resizeTable(width int) {
