@@ -18,14 +18,14 @@ import (
 type Model struct {
 	common.EmbedableModel
 
-	client  sonarr.Client
+	client  *sonarr.Client
 	episode *sonarrAPI.EpisodeResource
 	table   table.Model
 }
 
 func New(client *sonarr.Client, episode *sonarrAPI.EpisodeResource, width, height int) common.SubModel {
 	m := Model{
-		client:  *client,
+		client:  client,
 		episode: episode,
 	}
 
