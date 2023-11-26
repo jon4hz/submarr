@@ -62,6 +62,9 @@ func (m *Model) setKVs() {
 }
 
 func wrap(s string, width int) string {
+	if lipgloss.Width(s) <= width {
+		return s
+	}
 	return lipgloss.NewStyle().Width(width).Render(s)
 }
 
@@ -80,13 +83,14 @@ var (
 			Bold(true).
 			Background(styles.PurpleColor)
 	kvKeyStyle = lipgloss.NewStyle().
+			Align(lipgloss.Right).
 			Padding(0, 2, 0, 0)
 	kvValStyle = lipgloss.NewStyle()
 )
 
 func (m Model) View() string {
 	var s strings.Builder
-	keyStyle := kvKeyStyle.Copy().AlignHorizontal(lipgloss.Right).Width(m.longestKey + 2)
+	keyStyle := kvKeyStyle.Copy().Width(m.longestKey + 2)
 
 	keys := make([]string, 0, len(m.kvs))
 	values := make([]string, 0, len(m.kvs))
@@ -114,7 +118,7 @@ func (m Model) View() string {
 	return s.String()
 }
 
-func (m Model) SetSize(width, height int) {
+func (m *Model) SetSize(width, height int) {
 	m.Width = width
 	m.Height = height
 }
