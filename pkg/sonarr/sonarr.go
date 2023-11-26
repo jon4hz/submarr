@@ -231,3 +231,13 @@ func (c *Client) GetHistory(ctx context.Context, opts ...httpclient.RequestOpts)
 	}
 	return res, nil
 }
+
+// GetEpisodeFiles returns all episode files for a given series
+func (c *Client) GetEpisodeFiles(ctx context.Context, seriesID int32) ([]*EpisodeFileResource, error) {
+	var res []*EpisodeFileResource
+	_, err := c.http.Get(ctx, c.cfg.Host, "/api/v3/episodefile", &res, httpclient.WithParams(map[string]string{"seriesId": fmt.Sprint(seriesID)}))
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
