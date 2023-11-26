@@ -228,7 +228,7 @@ func (m Model) episodeView() string {
 
 var overlayStyle = lipgloss.NewStyle().
 	Border(lipgloss.RoundedBorder()).
-	Padding(1, 1, 1, 1)
+	Padding(1, 2, 1, 2)
 
 func (m Model) episodeDetailsView() string {
 	fg := overlayStyle.Render(m.mediaInfo.View())
