@@ -109,8 +109,7 @@ func New(client *sonarr.Client, series *sonarrAPI.SeriesResource, width, height 
 	// make sure id is 0
 	m.series.ID = 0
 
-	m.Width = width
-	m.Height = height
+	m.SetSize(width, height)
 
 	for _, l := range []list.Model{
 		m.rootFolder,

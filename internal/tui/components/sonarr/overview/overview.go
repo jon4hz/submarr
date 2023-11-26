@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
 	sonarr_list "github.com/jon4hz/submarr/internal/tui/components/sonarr/list"
@@ -52,8 +53,7 @@ func New(c *sonarr.Client, width, height int) common.TabModel {
 		spinner:    common.NewSpinner(),
 	}
 
-	m.Width = width
-	m.Height = height
+	m.SetSize(width, height)
 
 	m.seriesList.InfiniteScrolling = true
 	m.seriesList.FilterInput.Prompt = "Search: "
@@ -310,22 +310,25 @@ func (m *Model) addNewSeries() tea.Cmd {
 
 func (m *Model) SetSize(width, height int) {
 	m.Width = width
-	m.Height = height
+	m.Height = height - boxStyle.GetHorizontalFrameSize()
 
-	m.seriesList.SetSize(width, height)
+	m.seriesList.SetSize(width, height-boxStyle.GetVerticalFrameSize())
 
 	if m.submodel != nil {
 		m.submodel.SetSize(width, height)
 	}
 }
 
+var boxStyle = lipgloss.NewStyle().
+	Padding(1, 0, 0, 0)
+
 func (m Model) View() string {
 	switch m.state {
 	case stateLoading, stateSeriesLoading:
-		return m.spinner.View()
+		return boxStyle.Render(m.spinner.View())
 
 	case stateSeries:
-		return m.seriesList.View()
+		return boxStyle.Render(m.seriesList.View())
 
 	default:
 		if m.submodel != nil {

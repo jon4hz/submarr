@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
 	"github.com/jon4hz/submarr/internal/tui/components/sonarr/episode"
@@ -48,8 +49,7 @@ func New(sonarr *sonarr.Client, width, height int) *Model {
 		mu:           &sync.Mutex{},
 	}
 
-	m.Width = width
-	m.Height = height
+	m.SetSize(width, height)
 
 	return &m
 }
@@ -212,22 +212,29 @@ func (m *Model) selectEpisode(episode *sonarrAPI.EpisodeResource) tea.Cmd {
 }
 
 func (m *Model) SetSize(width, height int) {
+	width -= boxStyle.GetHorizontalFrameSize()
+	height -= boxStyle.GetVerticalFrameSize()
+
 	m.Width = width
 	m.Height = height
+
 	m.episodesList.SetSize(width, height)
 
 	if m.episode != nil {
-		m.episode.SetSize(width, height)
+		m.episode.SetSize(width, height+boxStyle.GetVerticalFrameSize())
 	}
 }
+
+var boxStyle = lipgloss.NewStyle().
+	Padding(1, 0, 0, 0)
 
 func (m *Model) View() string {
 	switch m.state {
 	case stateFetchEpisodes:
-		return m.spinner.View()
+		return boxStyle.Render(m.spinner.View())
 
 	case stateShowEpisodes:
-		return m.episodesList.View()
+		return boxStyle.Render(m.episodesList.View())
 
 	case stateEpisodeDetails:
 		return m.episode.View()
