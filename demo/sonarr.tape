@@ -27,10 +27,14 @@ Enter
 
 Sleep 5s
 Type "m"
-Sleep 1s
+Sleep 1.2s
 Type "m"
-Sleep 1s
+Sleep 1.2s
 
 Enter
-Down@1s 2
-Up@1s 2
+Down@1.2s 2
+Up@1.2s 2
+Sleep 1.2s
+
+Enter
+Sleep 5s
