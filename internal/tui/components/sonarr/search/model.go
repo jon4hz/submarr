@@ -32,9 +32,6 @@ const (
 	stateAddSeries
 )
 
-// this should probably be dynamic somehow
-const inputHeight = 4
-
 type Model struct {
 	common.EmbedableModel
 
@@ -55,8 +52,8 @@ func New(sonarr *sonarr.Client, width, height int) *Model {
 		input:   textinput.New(),
 		result:  sonarr_list.New("Search Results", nil, Delegate{}, width, height),
 	}
-	m.Width = width
-	m.Height = height
+
+	m.SetSize(width, height)
 
 	m.input.Placeholder = "eg. Breaking Bad, tvdb:####"
 	m.input.Width = width
@@ -209,32 +206,38 @@ func (m *Model) addSeries(series *sonarrAPI.SeriesResource) tea.Cmd {
 }
 
 func (m *Model) SetSize(width, height int) {
+	width -= boxStyle.GetVerticalFrameSize()
+	height -= boxStyle.GetHorizontalFrameSize()
 	m.Width = width
 	m.Height = height
 
 	m.input.Width = width
 
-	m.result.SetSize(width, height-inputHeight)
+	//inputHeight := lipgloss.Height(m.inputView())
+	m.result.SetSize(width, height-1)
 
 	if m.state == stateAddSeries {
 		m.add.SetSize(min(width, 54), min(height, 34))
 	}
 }
 
+var boxStyle = lipgloss.NewStyle().
+	Padding(1, 2, 0, 2)
+
 func (m Model) View() string {
 	switch m.state {
 	case stateInput:
-		return m.inputView()
+		return boxStyle.Render(m.inputView())
 	case stateSearching:
-		return m.searchView()
+		return boxStyle.Render(m.searchView())
 	case stateShowResults:
-		return lipgloss.NewStyle().Width(m.Width).Height(m.Height).Render(m.resultView())
+		return boxStyle.Render(m.resultView())
 	case stateAddSeries:
 		fg := m.add.View()
 		x := ((m.Width - lipgloss.Width(fg)) / 2)
 		y := ((m.Height - lipgloss.Height(fg)) / 2)
 		// make sure background fills the whole screen
-		bg := lipgloss.NewStyle().Width(m.Width).Height(m.Height).Render(m.resultView())
+		bg := boxStyle.Render(m.resultView())
 		return overlay.PlaceOverlay(x, y, fg, bg)
 	}
 	return "unknown"

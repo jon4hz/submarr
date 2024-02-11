@@ -105,8 +105,7 @@ func (m *Model) SetSize(width, height int) {
 var tabStyle = lipgloss.NewStyle().
 	Border(lipgloss.RoundedBorder()).
 	BorderForeground(styles.SubtleColor).
-	Padding(0, 2, 0, 2).
-	Margin(0, 0, 1, 0)
+	Padding(0, 2, 0, 2)
 
 func (m Model) View() string {
 	return lipgloss.JoinVertical(lipgloss.Top,

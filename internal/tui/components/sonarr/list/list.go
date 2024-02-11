@@ -13,7 +13,7 @@ func New(title string, items []list.Item, delegate list.ItemDelegate, width, hei
 	l.Title = title
 	l.DisableQuitKeybindings()
 	l.Styles.Title = l.Styles.Title.Copy().
-		Background(lipgloss.Color("#7B61FF"))
+		Background(styles.PurpleColor)
 	l.SetShowHelp(false)
 
 	l.FilterInput.Cursor.Style = lipgloss.NewStyle().Foreground(styles.SonarrBlue)
