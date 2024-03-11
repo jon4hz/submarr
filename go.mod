@@ -5,7 +5,7 @@ go 1.21
 require (
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.25.0
-	github.com/charmbracelet/lipgloss v0.9.1
+	github.com/charmbracelet/lipgloss v0.10.0
 	github.com/charmbracelet/log v0.3.1
 	github.com/dustin/go-humanize v1.0.1
 	github.com/jon4hz/stickers v1.3.2-0.20230203232135-107e928c203e
@@ -38,7 +38,7 @@ require (
 	github.com/muesli/termenv v0.15.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/rivo/uniseg v0.4.6 // indirect
+	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/sagikazarmark/locafero v0.3.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sahilm/fuzzy v0.1.1-0.20230530133925-c48e322e2a8f // indirect
