@@ -6,7 +6,7 @@ require (
 	github.com/charmbracelet/bubbles v0.18.0
 	github.com/charmbracelet/bubbletea v0.25.0
 	github.com/charmbracelet/lipgloss v0.10.0
-	github.com/charmbracelet/log v0.3.1
+	github.com/charmbracelet/log v0.4.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/jon4hz/stickers v1.3.2-0.20230203232135-107e928c203e
 	github.com/lrstanley/bubblezone v0.0.0-20221222153816-e95291e2243e
