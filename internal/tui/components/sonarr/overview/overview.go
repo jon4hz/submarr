@@ -45,7 +45,7 @@ type Model struct {
 	state state
 }
 
-func New(c *sonarr.Client, width, height int) common.TabModel {
+func New(c *sonarr.Client, width, height int) common.SubModel {
 	m := Model{
 		state:      stateLoading,
 		client:     c,
@@ -74,7 +74,7 @@ func (m Model) Init() tea.Cmd {
 	)
 }
 
-func (m *Model) Update(msg tea.Msg) (common.TabModel, tea.Cmd) {
+func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	var cmds []tea.Cmd
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
