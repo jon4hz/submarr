@@ -35,3 +35,18 @@ func (c *Client) GetEpisodeHistory(episode *sonarrAPI.EpisodeResource) tea.Cmd {
 		}
 	}
 }
+
+type EpisodeDeleteResult struct {
+	Error error
+}
+
+func (c *Client) DeleteEpisodeFile(episode *sonarrAPI.EpisodeResource) tea.Cmd {
+	return func() tea.Msg {
+		err := c.sonarr.DeleteEpisodeFile(context.Background(), episode.EpisodeFileID)
+		if err != nil {
+			logging.Log.Error("Failed to delete episode file", "id", strconv.Itoa(int(episode.ID)), "series", episode.SeriesTitle, "err", err)
+			return EpisodeDeleteResult{Error: err}
+		}
+		return EpisodeDeleteResult{}
+	}
+}

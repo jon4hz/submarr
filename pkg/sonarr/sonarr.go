@@ -241,3 +241,12 @@ func (c *Client) GetEpisodeFiles(ctx context.Context, seriesID int32) ([]*Episod
 	}
 	return res, nil
 }
+
+// DeleteEpisodeFile deletes an episode file by its ID
+func (c *Client) DeleteEpisodeFile(ctx context.Context, episodeFileID int32) error {
+	_, err := c.http.Delete(ctx, c.cfg.Host, fmt.Sprintf("/api/v3/episodefile/%d", episodeFileID), nil, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}

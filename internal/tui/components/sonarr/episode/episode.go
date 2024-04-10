@@ -11,6 +11,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
+	"github.com/jon4hz/submarr/internal/tui/components/sonarr/episode/deleteepisode"
 	"github.com/jon4hz/submarr/internal/tui/components/sonarr/episode/mediainfo"
 	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
 	"github.com/jon4hz/submarr/internal/tui/overlay"
@@ -110,7 +111,8 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 				return m, m.mediaInfo.Init()
 			case key.Matches(msg, DefaultKeyMap.Delete):
 				m.state = stateConfirmDelete
-				return m, nil
+				m.confirmDelete = deleteepisode.New(m.client, m.episode, m.Width, m.Height)
+				return m, m.confirmDelete.Init()
 			}
 
 		case stateDetails:
@@ -133,6 +135,14 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 				return m, nil
 			}
 		}
+
+	case sonarr.EpisodeDeleteResult:
+		if msg.Error != nil {
+			return m, statusbar.NewErrCmd(fmt.Sprintf("Failed to delete episode file: %s", msg.Error))
+		}
+		m.episode.HasFile = false
+		m.episode.EpisodeFile = nil
+		m.IsBack = true
 	}
 
 	switch m.state {
@@ -153,6 +163,10 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		}
 		var cmd tea.Cmd
 		m.confirmDelete, cmd = m.confirmDelete.Update(msg)
+		if m.confirmDelete.Back() {
+			m.state = stateEpisode
+			return m, statusbar.NewHelpCmd(DefaultKeyMap.FullHelp())
+		}
 		return m, cmd
 	}
 
@@ -240,7 +254,12 @@ func (m Model) episodeDetailsView() string {
 }
 
 func (m Model) episodeConfirmDeleteView() string {
-	return "confirm delete"
+	fg := overlayStyle.Render(m.confirmDelete.View())
+	x := ((m.Width - lipgloss.Width(fg)) / 2)
+	y := ((m.Height - lipgloss.Height(fg)) / 2)
+	// make sure background fills the whole screen
+	bg := m.episodeView()
+	return overlay.PlaceOverlay(x, y, fg, bg)
 }
 
 func (m *Model) SetSize(width, height int) {
