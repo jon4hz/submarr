@@ -61,16 +61,16 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		return m, tea.Batch(cmds...)
 
 	case tea.MouseMsg:
-		switch msg.Type {
-		case tea.MouseWheelUp:
+		switch msg.Button {
+		case tea.MouseButtonWheelUp:
 			m.clientList.CursorUp()
 			return m, nil
 
-		case tea.MouseWheelDown:
+		case tea.MouseButtonWheelDown:
 			m.clientList.CursorDown()
 			return m, nil
 
-		case tea.MouseLeft:
+		case tea.MouseButtonLeft:
 			for i, listItem := range m.clientList.VisibleItems() {
 				item, _ := listItem.(ClientsItem)
 				// Check each item to see if it's in bounds.

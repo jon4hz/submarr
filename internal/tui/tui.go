@@ -135,8 +135,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.MouseMsg:
 		// handle mouse events for all states
-		switch msg.Type {
-		case tea.MouseLeft:
+		switch msg.Button {
+		case tea.MouseButtonLeft:
 			// handle the statusbar gracefully here.
 			// Because after toggeling the help view, the other views must be resized.
 			if zone.Get("toggle-help").InBounds(msg) {
@@ -151,8 +151,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// handle mouse events per state
 		switch m.state {
 		case stateReady:
-			switch msg.Type {
-			case tea.MouseLeft:
+			switch msg.Button {
+			case tea.MouseButtonLeft:
 				for i, listItem := range m.clientslist.VisibleItems() {
 					item, _ := listItem.(clientslist.ClientsItem)
 					// Check each item to see if it's in bounds.

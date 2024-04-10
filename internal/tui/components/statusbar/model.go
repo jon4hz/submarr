@@ -111,8 +111,8 @@ func (m Model) Update(msg tea.Msg) (Model, tea.Cmd) {
 		return m, nil
 
 	case tea.MouseMsg:
-		switch msg.Type {
-		case tea.MouseLeft:
+		switch msg.Button {
+		case tea.MouseButtonLeft:
 			if zone.Get("toggle-help").InBounds(msg) {
 				m.showHelp = !m.showHelp
 			}

@@ -119,16 +119,16 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	case tea.MouseMsg:
 		switch m.state {
 		case stateShowEpisodes:
-			switch msg.Type {
-			case tea.MouseWheelUp:
+			switch msg.Button {
+			case tea.MouseButtonWheelUp:
 				m.episodesList.CursorUp()
 				return m, nil
 
-			case tea.MouseWheelDown:
+			case tea.MouseButtonWheelDown:
 				m.episodesList.CursorDown()
 				return m, nil
 
-			case tea.MouseLeft:
+			case tea.MouseButtonLeft:
 				for i, listItem := range m.episodesList.VisibleItems() {
 					item, _ := listItem.(EpisodeItem)
 					if zone.Get(fmt.Sprintf("%d. %s", item.episode.EpisodeNumber, item.episode.Title)).InBounds(msg) {

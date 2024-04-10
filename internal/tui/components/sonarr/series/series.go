@@ -233,16 +233,16 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		case stateSeries:
 			switch m.selectedCell {
 			case seasonsCell:
-				switch msg.Type {
-				case tea.MouseWheelUp:
+				switch msg.Button {
+				case tea.MouseButtonWheelUp:
 					m.seasonsList.CursorUp()
 					return m, nil
 
-				case tea.MouseWheelDown:
+				case tea.MouseButtonWheelDown:
 					m.seasonsList.CursorDown()
 					return m, nil
 
-				case tea.MouseLeft:
+				case tea.MouseButtonLeft:
 					for i, listItem := range m.seasonsList.VisibleItems() {
 						item, _ := listItem.(seasons.SeasonItem)
 						if zone.Get(fmt.Sprintf("Season %d", item.Season.SeasonNumber)).InBounds(msg) {

@@ -138,16 +138,16 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	case tea.MouseMsg:
 		switch m.state {
 		case stateSeries:
-			switch msg.Type {
-			case tea.MouseWheelUp:
+			switch msg.Button {
+			case tea.MouseButtonWheelUp:
 				m.seriesList.CursorUp()
 				return m, nil
 
-			case tea.MouseWheelDown:
+			case tea.MouseButtonWheelDown:
 				m.seriesList.CursorDown()
 				return m, nil
 
-			case tea.MouseLeft:
+			case tea.MouseButtonLeft:
 				for i, listItem := range m.seriesList.VisibleItems() {
 					item, _ := listItem.(sonarr.SeriesItem)
 					if zone.Get(item.Series.Title).InBounds(msg) {
