@@ -8,10 +8,13 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/jon4hz/submarr/internal/core/sonarr"
 	"github.com/jon4hz/submarr/internal/tui/common"
+	"github.com/jon4hz/submarr/internal/tui/components/sonarr/episode"
 	sonarr_list "github.com/jon4hz/submarr/internal/tui/components/sonarr/list"
 	"github.com/jon4hz/submarr/internal/tui/components/statusbar"
+	sonarrAPI "github.com/jon4hz/submarr/pkg/sonarr"
 	zone "github.com/lrstanley/bubblezone"
 )
 
@@ -20,6 +23,7 @@ type state int
 const (
 	stateFetchEpisodes state = iota + 1
 	stateShowEpisodes
+	stateEpisodeDetails
 )
 
 type Model struct {
@@ -29,6 +33,7 @@ type Model struct {
 	state        state
 	episodesList list.Model
 	spinner      common.Spinner
+	episode      common.SubModel
 
 	// make sure we only reload once at a time
 	reloading bool
@@ -40,12 +45,11 @@ func New(sonarr *sonarr.Client, width, height int) *Model {
 		client:       sonarr,
 		state:        stateFetchEpisodes,
 		spinner:      common.NewSpinner(),
-		episodesList: sonarr_list.New(fmt.Sprintf("%s - Season %d", sonarr.GetSerie().Title, sonarr.GetSeason().SeasonNumber), nil, Delegate{}, width, height),
+		episodesList: sonarr_list.New(fmt.Sprintf("%s ❯ Season %d", sonarr.GetSerie().Title, sonarr.GetSeason().SeasonNumber), nil, Delegate{}, width, height),
 		mu:           &sync.Mutex{},
 	}
 
-	m.Width = width
-	m.Height = height
+	m.SetSize(width, height)
 
 	return &m
 }
@@ -61,39 +65,54 @@ func (m Model) Init() tea.Cmd {
 func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch {
-		case key.Matches(msg, DefaultKeyMap.Back):
-			if !m.episodesList.SettingFilter() && !m.episodesList.IsFiltered() {
-				m.IsBack = true
-				return m, nil
-			}
-
-		case key.Matches(msg, DefaultKeyMap.Quit):
-			if !m.episodesList.SettingFilter() {
-				m.IsQuit = true
-				return m, nil
-			}
-
-		case key.Matches(msg, DefaultKeyMap.Reload):
-			if !m.episodesList.SettingFilter() && !m.GetReloading() {
-				m.SetReloading(true)
-				return m, tea.Batch(
-					m.episodesList.StartSpinner(),
-					m.client.FetchSeasonEpisodes(m.client.GetSeason().SeasonNumber),
-					statusbar.NewMessageCmd("Reloading episodes...", statusbar.WithMessageTimeout(2)),
-				)
-			}
-
-		case key.Matches(msg, DefaultKeyMap.AutomaticSearch):
-			if !m.episodesList.SettingFilter() {
-				item, _ := m.episodesList.SelectedItem().(EpisodeItem)
-				if item.episode == nil {
+		switch m.state {
+		case stateFetchEpisodes, stateShowEpisodes:
+			switch {
+			case key.Matches(msg, DefaultKeyMap.Back):
+				if !m.episodesList.SettingFilter() && !m.episodesList.IsFiltered() {
+					m.IsBack = true
 					return m, nil
 				}
-				return m, tea.Batch(
-					m.client.AutomaticSearchEpisode(item.episode.ID),
-					statusbar.NewMessageCmd(fmt.Sprintf("Searching for episode %d...", item.episode.EpisodeNumber), statusbar.WithMessageTimeout(2)),
-				)
+
+			case key.Matches(msg, DefaultKeyMap.Quit):
+				if !m.episodesList.SettingFilter() {
+					m.IsQuit = true
+					return m, nil
+				}
+
+			case key.Matches(msg, DefaultKeyMap.Reload):
+				if !m.episodesList.SettingFilter() && !m.GetReloading() {
+					m.SetReloading(true)
+					return m, tea.Batch(
+						m.episodesList.StartSpinner(),
+						m.client.FetchSeasonEpisodes(m.client.GetSeason().SeasonNumber),
+						statusbar.NewMessageCmd("Reloading episodes...", statusbar.WithMessageTimeout(2)),
+					)
+				}
+
+			case key.Matches(msg, DefaultKeyMap.AutomaticSearch):
+				if !m.episodesList.SettingFilter() {
+					item, _ := m.episodesList.SelectedItem().(EpisodeItem)
+					if item.episode == nil {
+						return m, nil
+					}
+					return m, tea.Batch(
+						m.client.AutomaticSearchEpisode(item.episode.ID),
+						statusbar.NewMessageCmd(fmt.Sprintf("Searching for episode %d...", item.episode.EpisodeNumber), statusbar.WithMessageTimeout(2)),
+					)
+				}
+
+			case key.Matches(msg, DefaultKeyMap.Select):
+				if !m.episodesList.SettingFilter() {
+					item, _ := m.episodesList.SelectedItem().(EpisodeItem)
+					if item.episode == nil {
+						return m, nil
+					}
+					return m, tea.Batch(
+						m.selectEpisode(item.episode),
+						statusbar.NewMessageCmd(fmt.Sprintf("Loading episode %d...", item.episode.EpisodeNumber), statusbar.WithMessageTimeout(2)),
+					)
+				}
 			}
 		}
 
@@ -114,7 +133,10 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 					item, _ := listItem.(EpisodeItem)
 					if zone.Get(fmt.Sprintf("%d. %s", item.episode.EpisodeNumber, item.episode.Title)).InBounds(msg) {
 						if i == m.episodesList.Index() {
-							return m, func() tea.Msg { return nil } // TODO: open episode details
+							return m, tea.Batch(
+								m.selectEpisode(item.episode),
+								statusbar.NewMessageCmd(fmt.Sprintf("Loading episode %d...", item.episode.EpisodeNumber), statusbar.WithMessageTimeout(2)),
+							)
 						}
 						m.episodesList.Select(i)
 						break
@@ -138,12 +160,35 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 		}
 		m.state = stateShowEpisodes
 		return m, m.episodesList.SetItems(episodeToItems(msg.Episodes, m.client.GetSeriesQueue()))
+
+	case sonarr.EpisodeHistoryResult:
+		if msg.Error != nil {
+			return m, statusbar.NewErrCmd("Error while fetching episode history!")
+		}
+		m.state = stateEpisodeDetails
+		m.episode = episode.New(m.client, msg.Episode, m.Width, m.Height)
+		return m, m.episode.Init()
 	}
 
 	switch m.state {
 	case stateShowEpisodes:
 		var cmd tea.Cmd
 		m.episodesList, cmd = m.episodesList.Update(msg)
+		return m, cmd
+
+	case stateEpisodeDetails:
+		var cmd tea.Cmd
+		m.episode, cmd = m.episode.Update(msg)
+
+		if m.episode.Back() {
+			m.state = stateShowEpisodes
+			return m, statusbar.NewHelpCmd(DefaultKeyMap.FullHelp())
+		}
+		if m.episode.Quit() {
+			m.IsQuit = true
+			return m, nil
+		}
+
 		return m, cmd
 	}
 
@@ -162,19 +207,38 @@ func (m *Model) SetReloading(reloading bool) {
 	m.reloading = reloading
 }
 
+func (m *Model) selectEpisode(episode *sonarrAPI.EpisodeResource) tea.Cmd {
+	return m.client.GetEpisodeHistory(episode)
+}
+
 func (m *Model) SetSize(width, height int) {
+	width -= boxStyle.GetHorizontalFrameSize()
+	height -= boxStyle.GetVerticalFrameSize()
+
 	m.Width = width
 	m.Height = height
+
 	m.episodesList.SetSize(width, height)
+
+	if m.episode != nil {
+		m.episode.SetSize(width, height+boxStyle.GetVerticalFrameSize())
+	}
 }
+
+var boxStyle = lipgloss.NewStyle().
+	Padding(1, 0, 0, 0)
 
 func (m *Model) View() string {
 	switch m.state {
 	case stateFetchEpisodes:
-		return m.spinner.View()
+		return boxStyle.Render(m.spinner.View())
 
 	case stateShowEpisodes:
-		return m.episodesList.View()
+		return boxStyle.Render(m.episodesList.View())
+
+	case stateEpisodeDetails:
+		return m.episode.View()
 	}
+
 	return ""
 }
