@@ -176,7 +176,7 @@ func (m *Model) Update(msg tea.Msg) (common.SubModel, tea.Cmd) {
 var (
 	boxStyle = lipgloss.NewStyle().
 			Border(lipgloss.RoundedBorder(), true).
-			Padding(0, 1, 1, 1)
+			Padding(0, 1)
 
 	titleStyle = lipgloss.NewStyle().
 			Padding(0, 1).
