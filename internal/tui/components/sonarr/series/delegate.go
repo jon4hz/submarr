@@ -25,7 +25,7 @@ var (
 			Margin(0, 1)
 
 	SelectedStyle = DefaultStyle.Copy().
-			BorderStyle(lipgloss.ThickBorder()).
+			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(styles.SonarrBlue)
 )
 

@@ -24,7 +24,7 @@ var (
 			Margin(0, 1)
 
 	selectedStyle = defaultClient.Copy().
-			BorderStyle(lipgloss.ThickBorder())
+			BorderStyle(lipgloss.RoundedBorder())
 
 	selectedSonarr = selectedStyle.Copy().
 			Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
