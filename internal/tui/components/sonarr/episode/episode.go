@@ -72,7 +72,7 @@ func New(client *sonarr.Client, episode *sonarrAPI.EpisodeResource, width, heigh
 
 		s := table.DefaultStyles()
 		s.Header = s.Header.
-			BorderStyle(lipgloss.NormalBorder()).
+			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(styles.SubtleColor).
 			BorderBottom(true).
 			Bold(false)

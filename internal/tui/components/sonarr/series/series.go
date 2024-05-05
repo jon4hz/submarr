@@ -476,7 +476,7 @@ func (m *Model) redraw() {
 var (
 	seriesTitleStyle = lipgloss.NewStyle().
 				Bold(true).
-				Border(lipgloss.NormalBorder(), false, false, true, false). // top, right, bottom, left
+				Border(lipgloss.RoundedBorder(), false, false, true, false). // top, right, bottom, left
 				BorderForeground(subtleColor).
 		//Margin(0, 2).
 		Align(lipgloss.Center)

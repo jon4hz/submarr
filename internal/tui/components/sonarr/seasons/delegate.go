@@ -18,7 +18,7 @@ type Delegate struct{}
 
 var (
 	defaultStyle = lipgloss.NewStyle().
-			Border(lipgloss.NormalBorder(), true).
+			Border(lipgloss.RoundedBorder(), true).
 			Padding(0, 2).
 			Margin(0, 1)
 
