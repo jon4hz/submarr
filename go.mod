@@ -10,7 +10,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/jon4hz/stickers v1.3.2-0.20230203232135-107e928c203e
 	github.com/lrstanley/bubblezone v0.0.0-20221222153816-e95291e2243e
-	github.com/mattn/go-runewidth v0.0.15
+	github.com/mattn/go-runewidth v0.0.16
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6
 	github.com/muesli/reflow v0.3.0
 	github.com/spf13/cobra v1.8.1
